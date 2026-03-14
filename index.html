@@ -1,0 +1,1710 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PALAMINI AUTO</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4f8bc4">
+    <!-- Supabase config inline — niente config.js -->
+
+    <style>
+        :root {
+            --primary-blue: #4f8bc4;
+            --dark-blue: #3b6d9c;
+            --light-blue: #6aa3d9;
+            --bg-color: #f4f7f6;
+        }
+
+        /* BASE & LAYOUT */
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background-color: var(--bg-color); height: 100vh; overflow: hidden; }
+        
+        /* LOGIN */
+        #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: var(--dark-blue); color: white; }
+        .login-box { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); text-align: center; color: #333; width: 90%; max-width: 350px; }
+        .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .login-box button { width: 100%; padding: 12px; background: var(--primary-blue); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .login-box button:disabled { background: #95a5a6; cursor: not-allowed; }
+
+        /* APP E SIDEBAR FISSA */
+        #app-screen { display: none; height: 100vh; flex-direction: row; }
+        #sidebar { width: 160px; min-width: 160px; background: var(--dark-blue); color: white; padding: 10px 8px; overflow-y: auto; flex-shrink: 0; box-sizing: border-box; display: flex; flex-direction: column; }
+        #sidebar h3 { font-size: 14px; margin-top: 0; text-transform: uppercase; letter-spacing: 1px; color: #d6e8f7;}
+        #sidebar button { display: block; width: 100%; padding: 8px 10px; margin-bottom: 5px; cursor: pointer; background: rgba(255,255,255,0.1); color: white; border: none; text-align: left; border-radius: 6px; transition: 0.2s; font-weight: 500; font-size: 13px; }
+        #sidebar button:hover, #sidebar button.active { background: var(--primary-blue); box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        #buttons-container { flex-grow: 1; overflow-y: auto; }
+
+        /* Label CALENDARIO + pulsante CALE */
+        #sidebar-cale-section { margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.2); }
+        #sidebar-cale-label { font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.5); margin: 0 0 4px 2px; }
+        #btn-apri-cale { background: #f39c12 !important; font-weight: bold; text-align: center !important; }
+
+        #main-container { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; width: 100%; }
+        #header { background: white; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); z-index: 10; border-bottom: 3px solid var(--primary-blue); gap: 10px; }
+        #content { padding: 20px; overflow-y: auto; flex-grow: 1; }
+
+        /* Bottoni header emoji-only */
+        .btn-icon { width: 38px; height: 38px; border: none; border-radius: 6px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; transition: 0.2s; flex-shrink: 0; }
+        .btn-icon:hover { opacity: 0.85; }
+        .btn-icon-sync { background: #f39c12; color: white; padding: 0 10px; width: auto; font-size: 13px; font-weight: bold; }
+        #hamburger-btn { display: none; }
+
+        /* ================================================
+           MOBILE: Hamburger + Drawer
+           ================================================ */
+        @media (max-width: 768px) {
+            #sidebar { display: none !important; }
+            #header { padding: 10px 12px; }
+            #hamburger-btn { display: flex; }
+            /* Nasconde titolo foglio su mobile per fare spazio */
+            #titolo-foglio { font-size: 15px; }
+        }
+
+        /* Drawer mobile */
+        #drawer-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 5000; }
+        #drawer { position: fixed; top: 0; left: -280px; width: 260px; height: 100%; background: var(--dark-blue); z-index: 5001; transition: left 0.25s ease; display: flex; flex-direction: column; padding: 20px 15px; box-sizing: border-box; overflow-y: auto; }
+        #drawer.open { left: 0; }
+        #drawer-overlay.open { display: block; }
+        #drawer h3 { color: #d6e8f7; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 10px; }
+        #drawer button { display: block; width: 100%; padding: 10px 12px; margin-bottom: 6px; cursor: pointer; background: rgba(255,255,255,0.1); color: white; border: none; text-align: left; border-radius: 6px; font-weight: 500; }
+        #drawer button:hover, #drawer button.active { background: var(--primary-blue); }
+        #drawer-cale-btn { background: #f39c12 !important; font-weight: bold; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.2); }
+        #drawer-buttons { flex-grow: 1; overflow-y: auto; }
+        #drawer-footer { margin-top: 15px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.2); display: flex; gap: 8px; }
+        #drawer-footer button { flex: 1; padding: 10px; font-size: 18px; text-align: center; border-radius: 6px; border: none; cursor: pointer; }
+
+        /* ================================================
+           CALE FULLSCREEN OVERLAY (sostituisce iframe)
+           ================================================ */
+        #cale-container {
+            display: none;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #f1f3f4; z-index: 9999;
+            flex-direction: column;
+        }
+        #cale-header {
+            background: var(--dark-blue); color: white;
+            padding: 10px 20px; display: flex; align-items: center; gap: 15px;
+            flex-shrink: 0; z-index: 10000;
+        }
+        #cale-header h2 { margin: 0; font-size: 16px; flex-grow: 1; }
+        .btn-close-cale { padding: 8px 18px; background: #e74c3c; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .btn-refresh-cale { padding: 8px 14px; background: #f39c12; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+
+        /* Tabella CALE */
+        #cale-scroll { overflow: auto; flex: 1 1 0; min-height: 0; min-width: 0; }
+
+        /* Variabili CALE */
+        #cale-scroll { --cell-height: 65px; --cell-width: 30px; --w-col-1: 60px; --w-col-2: 60px; --w-col-3: 60px; --w-col-4: 20px; --blue-header: #c6dafc; }
+
+        #cale-scroll * { box-sizing: border-box; }
+        #cale-table { border-collapse: separate; border-spacing: 0; table-layout: fixed; width: max-content; }
+        #cale-table th { position: sticky; top: 0; background: var(--blue-header, #c6dafc); z-index: 40; border-bottom: 2px solid #ccc; border-right: 1px solid #ccc; height: 35px; font-weight: bold; font-size: 15px; text-align: center; color: #000; }
+        .cale-sticky { position: sticky; z-index: 20; background: #fff; border-right: 1px solid #eee; border-bottom: 1px solid #eee; }
+        #cale-table th.cale-sticky { z-index: 50; }
+        .cale-col-1 { width: 60px; left: 0; }
+        .cale-col-2 { width: 60px; left: 60px; }
+        .cale-col-3 { width: 60px; left: 120px; }
+        .cale-col-4 { width: 20px; left: 180px; }
+        .cale-col-time { width: 22px; min-width: 22px; }
+        .cale-bordo-pausa { border-right: 1px solid #000 !important; }
+        .cale-bordo-sup { border-top: 1px solid #000 !important; }
+        .cale-bordo-inf { border-bottom: 1px solid #000 !important; }
+        #cale-table td { height: 65px; border-right: 1px solid #eee; border-bottom: 1px solid #eee; padding: 0; background-color: white; cursor: cell; position: relative; }
+        /* BUGFIX: #cale-table td ha specificità più alta di .cale-sticky — override esplicito */
+        #cale-table td.cale-sticky { position: sticky !important; z-index: 20 !important; background: #fff; }
+        #cale-table td.cale-sticky:hover { background-color: #fff9c4 !important; outline: 2px solid #000; z-index: 30 !important; }
+        #cale-table td:not(.cale-sticky):hover { z-index: 10; }
+        .cale-hover-slot { position: absolute; top: 0; bottom: 0; width: 22px; background-color: #fff9c4 !important; outline: 2px solid #000; pointer-events: none; z-index: 5; }
+        .cale-testo { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; align-items: safe center; overflow: hidden; white-space: normal; word-break: break-word; font-weight: bold; font-size: 15px; line-height: 1.1; padding: 4px; text-align: center; pointer-events: none; z-index: 10; }
+        /* Colori celle CALE */
+        .bg-att { background-color: #f7b7b1 !important; color: #b71c1c; border: 1px solid #b71c1c !important; }
+        .bg-m   { background-color: #adcaf9 !important; color: #0d47a1; border: 1px solid #0d47a1 !important; }
+        .bg-pnm { background-color: #fddb66 !important; color: #bf360c; border: 1px solid #bf360c !important; }
+        .bg-sat { background-color: #a8dab5 !important; color: #1b5e20; border: 1px solid #1b5e20 !important; }
+        .bg-panda { background-color: #ff9800 !important; color: white !important; }
+        .bg-clio  { background-color: #9c27b0 !important; color: white !important; }
+        .bg-generic { background-color: #e8e8e8 !important; color: #333; border: 1px solid #000 !important; }
+        .bg-mf-special { background-color: #adcaf9 !important; background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(13,71,161,0.2) 10px, rgba(13,71,161,0.2) 20px) !important; color: #0d47a1; border: 1px solid #0d47a1 !important; }
+        .bg-mp-special { background-color: #f7b7b1 !important; background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(183,28,28,0.2) 10px, rgba(183,28,28,0.2) 20px) !important; color: #b71c1c; border: 1px solid #b71c1c !important; }
+        .bg-pnm-special { background-color: #fddb66 !important; background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,152,0,0.4) 10px, rgba(255,152,0,0.4) 20px) !important; color: #bf360c; border: 1px solid #bf360c !important; }
+
+        /* Modal CALE */
+        #cale-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10100; align-items: center; justify-content: center; }
+        #cale-modal-overlay .cale-modal-content { background: white; padding: 25px; border-radius: 8px; width: 90%; max-width: 450px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        #cale-modal-title { margin: 0; color: #1a73e8; font-size: 20px; font-weight: bold; border-bottom: 2px solid #f1f3f4; padding-bottom: 10px; }
+        #cale-input-lavoro { width: 100%; height: 120px; padding: 12px; font-size: 18px; text-transform: uppercase; border: 2px solid #1a73e8; border-radius: 4px; resize: none; font-family: inherit; font-weight: bold; box-sizing: border-box; }
+        .cale-modal-buttons { display: flex; gap: 10px; }
+        .cale-btn-save { background: #1a73e8; color: white; border: none; padding: 15px; flex: 1; cursor: pointer; font-weight: bold; border-radius: 4px; }
+        .cale-btn-cancel { background: #eee; color: #333; border: none; padding: 15px; flex: 1; cursor: pointer; border-radius: 4px; }
+        #cale-loading { display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 18px; color: var(--dark-blue); font-weight: bold; }
+
+        /* TOOLBAR RICERCA E ORDINAMENTO */
+        .toolbar { display: flex; gap: 10px; margin-bottom: 15px; align-items: center; flex-wrap: wrap; background: white; padding: 12px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .toolbar input, .toolbar select { padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; flex-grow: 1; min-width: 150px; font-size: 14px; }
+        .toolbar .btn-sort { background: var(--dark-blue); color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; white-space: nowrap; font-weight: bold; }
+        
+        /* Font size tabella regolabile */
+        #tabella-container { --table-font: 13px; }
+        #tabella-container td, #tabella-container th { font-size: var(--table-font); }
+
+        /* ===== CARD VIEW ===== */
+        .cards-grid { display: flex; flex-direction: column; gap: 10px; }
+        .card {
+            background: white; border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 12px 14px; cursor: pointer;
+            border-left: 4px solid var(--primary-blue);
+            transition: box-shadow 0.15s;
+        }
+        .card:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.13); }
+        .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 5px; }
+        .card-data  { font-weight: 700; font-size: 14px; color: #2c3e50; flex-shrink: 0; }
+        .card-badge { font-size: 12px; color: #2c3e50; text-align: right; max-width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-body  { font-size: 13px; color: #2c3e50; line-height: 1.4; }
+        .card-actions { display: flex; gap: 8px; margin-top: 8px; justify-content: flex-end; }
+        .card-actions button { border: none; border-radius: 6px; padding: 5px 10px; font-size: 14px; cursor: pointer; color: white; }
+        .card-btn-edit   { background: var(--light-blue); }
+        .card-btn-delete { background: #e74c3c; }
+        .table-wrapper { overflow-x: auto; background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        table { border-collapse: collapse; width: 100%; }
+        @media (min-width: 769px) { table { table-layout: fixed; } }
+        th, td { border: 1px solid #eee; padding: 10px; text-align: center; word-wrap: break-word; overflow-wrap: break-word; }
+        th { background-color: var(--primary-blue); color: white; }
+        tr:hover { background-color: #f0f6fa; }
+
+        /* BOTTONI INTESTAZIONE */
+        .btn { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: white; }
+        .btn-sync { background: #f39c12; }
+        .btn-settings { background: #7f8c8d; margin-left: 5px; }
+        .btn-add { background: var(--primary-blue); display: none; margin-top: 10px; width: max-content; }
+        .btn-edit   { background: var(--light-blue); padding: 5px 8px; font-size: 15px; }
+        .btn-delete { background: #e74c3c; padding: 5px 8px; font-size: 15px; margin-left: 4px; }
+
+        /* MODALI APP */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 1000; }
+        .modal-content { background: white; padding: 25px; border-radius: 8px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-sizing: border-box; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; color: var(--dark-blue); }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .checkbox-label { display: flex; align-items: center; gap: 8px; font-weight: normal; margin-top: 8px; cursor: pointer; font-size: 15px; }
+        .checkbox-label input { width: auto !important; margin: 0 !important; cursor: pointer; transform: scale(1.2); }
+        .modal-buttons { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+        .btn-save { background: var(--primary-blue); }
+        .btn-cancel { background: #e74c3c; }
+        .order-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee; background: #f9f9f9; margin-bottom: 5px; border-radius: 4px; }
+        /* Multiselezione */
+        #multi-delete-bar { display:none; position:sticky; bottom:0; left:0; right:0; background:#c0392b; color:white; padding:10px 16px; z-index:200; align-items:center; gap:12px; font-size:14px; font-weight:bold; border-top:2px solid #a93226; }
+        #multi-delete-bar button { background:white; color:#c0392b; border:none; border-radius:6px; padding:6px 14px; font-weight:bold; cursor:pointer; font-size:13px; }
+        #multi-delete-bar button.annulla { background:rgba(255,255,255,0.2); color:white; border:1px solid rgba(255,255,255,0.5); }
+        .sel-td { width:32px; text-align:center; }
+        tr.selected-row td { background-color: #fde8e6 !important; }
+        .kanban-board { display: flex; gap: 14px; overflow-x: auto; height: 100%; padding-bottom: 10px; }
+        .kanban-col { min-width: 260px; max-width: 300px; flex-shrink: 0; display: flex; flex-direction: column; background: #f0f4f8; border-radius: 10px; overflow: hidden; }
+        .kanban-col-header { background: var(--dark-blue); color: white; padding: 10px 14px; font-weight: bold; font-size: 13px; display: flex; justify-content: space-between; align-items: center; }
+        .kanban-col-count { background: rgba(255,255,255,0.25); border-radius: 10px; padding: 2px 8px; font-size: 12px; }
+        .kanban-col-body { flex: 1; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 8px; }
+        .kanban-card { background: white; border-radius: 8px; padding: 10px 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); cursor: pointer; border-left: 3px solid var(--primary-blue); transition: box-shadow 0.15s; }
+        .kanban-card:hover { box-shadow: 0 3px 10px rgba(0,0,0,0.14); }
+        .kanban-card-top { display: flex; justify-content: space-between; margin-bottom: 4px; }
+        .kanban-card-data { font-weight: 700; font-size: 12px; color: #2c3e50; }
+        .kanban-card-badge { font-size: 11px; color: #7f8c8d; max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .kanban-card-body { font-size: 12px; color: #2c3e50; line-height: 1.4; }
+        .kanban-card-actions { display: flex; gap: 6px; margin-top: 6px; justify-content: flex-end; }
+        .kanban-card-actions button { border: none; border-radius: 5px; padding: 3px 8px; font-size: 12px; cursor: pointer; color: white; }
+        .fmt-rule { display:grid; grid-template-columns:1fr 110px 1fr 46px 76px; gap:4px; align-items:center; padding:5px; background:#f8f9fa; border-radius:6px; margin-bottom:5px; border:1px solid #e0e0e0; }
+        .fmt-rule select, .fmt-rule input[type=text] { padding:4px; border:1px solid #ccc; border-radius:4px; font-size:11px; width:100%; box-sizing:border-box; }
+        .fmt-rule input[type=color] { width:40px; height:28px; border:1px solid #ccc; border-radius:4px; cursor:pointer; padding:1px; }
+        .order-btns button { padding: 5px 10px; border: none; background: #ddd; border-radius: 4px; cursor: pointer; }
+        .order-btns button:hover { background: #ccc; }
+
+        /* (mobile gestito dal drawer sopra) */
+        @media (max-width: 768px) { .desktop-only { display: none !important; } }
+    </style>
+</head>
+<body>
+
+    <!-- LOGIN -->
+    <div id="login-screen">
+        <div class="login-box">
+            <h2 style="color: var(--primary-blue); margin-top:0;">APP PALAMINI AUTO</h2>
+            <input type="password" id="pass-input" placeholder="Password di accesso">
+            <button onclick="faiLogin()" id="btn-login">Entra</button>
+        </div>
+    </div>
+
+    <!-- DRAWER MOBILE -->
+    <div id="drawer-overlay" onclick="chiudiDrawer()"></div>
+    <div id="drawer">
+        <button style="background:#f39c12; margin-bottom:12px; text-align:center; color:white; font-weight:bold;" onclick="apriCale(); chiudiDrawer()">📅 CALE</button>
+        <h3>Fogli</h3>
+        <div id="drawer-buttons"></div>
+        <div id="drawer-footer">
+            <button style="background:rgba(255,255,255,0.15); color:white;" onclick="apriOrdinamento(); chiudiDrawer()" title="Ordina Menu">↕️</button>
+            <button style="background:rgba(255,255,255,0.15); color:white;" onclick="apriImpostazioni(); chiudiDrawer()" title="Impostazioni">⚙️</button>
+        </div>
+    </div>
+
+    <!-- ================================================
+         CALE - Calendario fullscreen nativo (no iframe)
+         ================================================ -->
+    <div id="cale-container">
+        <div id="cale-header">
+            <h2>📅 CALENDARIO OFFICINA PALAMINI</h2>
+            <button class="btn-refresh-cale" id="cale-btn-refresh" onclick="sincronizzaCale()">🔄 Sync</button>
+            <button class="btn-refresh-cale" style="background:#34495e;" onclick="cambiaCaleZoom(-0.05)">A-</button>
+            <button class="btn-refresh-cale" style="background:#34495e;" onclick="cambiaCaleZoom(+0.05)">A+</button>
+            <button class="btn-close-cale" onclick="chiudiCale()">❌ Chiudi</button>
+        </div>
+        <div style="flex:1 1 0; min-height:0; overflow:hidden; position:relative; display:flex;">
+            <div id="cale-scroll"></div>
+            <div id="cale-loading">⏳ Caricamento calendario...</div>
+        </div>
+    </div>
+
+    <!-- Modal modifica cella CALE -->
+    <div id="cale-modal-overlay">
+        <div class="cale-modal-content">
+            <div id="cale-modal-title">MODIFICA</div>
+            <div id="cale-modal-info" style="font-size:13px;color:#666;font-weight:bold;"></div>
+            <textarea id="cale-input-lavoro" placeholder=""></textarea>
+            <div class="cale-modal-buttons">
+                <button class="cale-btn-cancel" onclick="chiudiModalCale()">ANNULLA</button>
+                <button class="cale-btn-save" id="cale-btn-save" onclick="salvaLavoroCale()">SALVA</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- APP PRINCIPALE -->
+    <div id="app-screen">
+        <div id="sidebar">
+            <div id="sidebar-cale-section">
+                <p id="sidebar-cale-label">Calendario</p>
+                <button id="btn-apri-cale" onclick="apriCale()">📅 CALE</button>
+            </div>
+            <div id="buttons-container"></div>
+        </div>
+
+        <div id="main-container">
+            <div id="header">
+                <div style="display:flex; flex-direction:column; min-width:0;">
+                    <h2 id="titolo-foglio" style="margin:0; color: var(--dark-blue); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Benvenuto</h2>
+                    <button id="btn-add-record" class="btn btn-add" onclick="apriForm(null)">+ Nuova Riga</button>
+                </div>
+                <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
+                    <!-- Hamburger solo mobile -->
+                    <button id="hamburger-btn" class="btn-icon" style="background:var(--dark-blue); color:white;" onclick="apriDrawer()">☰</button>
+                    <!-- Sync sempre visibile -->
+                    <button onclick="sincronizza()" id="btn-sync" class="btn btn-icon btn-icon-sync">🔄 Sync</button>
+                    <!-- Font size -->
+                    <button onclick="cambiaFont(-1)" class="btn-icon desktop-only" style="background:#34495e; color:white; font-weight:bold;" title="Riduci testo">A-</button>
+                    <button onclick="cambiaFont(1)"  class="btn-icon desktop-only" style="background:#34495e; color:white; font-weight:bold;" title="Aumenta testo">A+</button>
+                    <!-- Ordina menu e Impostazioni: solo desktop -->
+                    <button onclick="apriOrdinamento()" class="btn-icon desktop-only" style="background:#7f8c8d; color:white;" title="Ordina Menu">↕️</button>
+                    <button onclick="apriImpostazioni()" class="btn-icon desktop-only" style="background:#7f8c8d; color:white;" title="Impostazioni">⚙️</button>
+                </div>
+            </div>
+            <div id="content">
+                <div id="status-message">Seleziona un foglio per iniziare.</div>
+                <div id="toolbar" class="toolbar" style="display: none;">
+                    <input type="text" id="search-input" placeholder="🔍 Cerca in questo foglio..." oninput="renderTabella()">
+                    <select id="sort-column" onchange="cambiaOrdinamento()"></select>
+                    <button id="btn-sort-dir" class="btn-sort" onclick="cambiaDirezioneOrdinamento()">⬇️ A-Z</button>
+                </div>
+                <div class="table-wrapper" id="tabella-container"></div>
+                <div id="multi-delete-bar">
+                    <span id="multi-count-label">0 selezionate</span>
+                    <button onclick="eliminaSelezionate()">🗑️ Elimina selezionate</button>
+                    <button class="annulla" onclick="deselezionaTutti()">✕ Annulla</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modali App -->
+    <div id="modal-form" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="modal-title" style="color: var(--primary-blue);">Nuovo Record</h3>
+            <div id="modal-form-fields"></div>
+            <div class="modal-buttons">
+                <button class="btn btn-cancel" onclick="chiudiModal('modal-form')">Annulla</button>
+                <button class="btn btn-save" onclick="salvaDati()" id="btn-save-modal">Salva Dati</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-settings" class="modal-overlay">
+        <div class="modal-content">
+            <h3 style="color: var(--primary-blue);">⚙️ Impostazioni Foglio: <b id="settings-nome-foglio"></b></h3>
+
+            <div class="form-group">
+                <label>Nome nel Menu (Opzionale)</label>
+                <p style="font-size:11px;margin:0 0 5px;color:#666;">Usa <b>{{COUNT}}</b> per il totale righe, o <b>{{COUNT:Colonna=Valore}}</b> per contare righe specifiche.</p>
+                <input type="text" id="set-display-name" placeholder="Es. SAT ({{COUNT}})">
+            </div>
+
+            <label class="checkbox-label"><input type="checkbox" id="set-add"> Permetti aggiunta di nuove righe</label>
+            <label class="checkbox-label"><input type="checkbox" id="set-edit"> Permetti modifica delle righe</label>
+            <label class="checkbox-label"><input type="checkbox" id="set-delete"> Permetti eliminazione righe</label>
+
+            <div class="form-group" style="margin-top:12px;">
+                <label>Ordinamento predefinito</label>
+                <div style="display:flex;gap:8px;">
+                    <select id="set-sort-col" style="flex:1;padding:8px;border:1px solid #ccc;border-radius:4px;"></select>
+                    <select id="set-sort-dir" style="width:90px;padding:8px;border:1px solid #ccc;border-radius:4px;">
+                        <option value="1">A → Z</option>
+                        <option value="-1">Z → A</option>
+                    </select>
+                </div>
+            </div>
+
+            <hr style="border:0;border-top:1px solid #ccc;margin:15px 0;">
+            <div id="settings-colonne"></div>
+
+            <!-- ===== CONFIGURAZIONE VISTA CARD ===== -->
+            <hr style="border:0;border-top:1px solid #ccc;margin:15px 0;">
+            <div>
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+                    <label style="font-weight:bold;color:var(--dark-blue);font-size:14px;margin:0;">📋 Vista Card</label>
+                    <label class="checkbox-label" style="margin:0;">
+                        <input type="checkbox" id="set-card-attiva"> Attiva vista card per questo foglio
+                    </label>
+                </div>
+                <p style="font-size:11px;color:#666;margin:0 0 10px;">Se attiva, questo foglio si aprirà sempre in vista card.</p>
+                <div id="card-config-body">
+                    <div class="form-group">
+                        <label>Etichetta superiore (in alto a sinistra, arancione)</label>
+                        <select id="card-col-data" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:4px;"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Etichetta laterale (in alto a destra, grigio)</label>
+                        <select id="card-col-badge" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:4px;"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Colonne CORPO (nell'ordine, separate da " – ")</label>
+                        <div id="card-col-corpo-list"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== KANBAN VIEW ===== -->
+            <hr style="border:0;border-top:1px solid #ccc;margin:15px 0;">
+            <div>
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+                    <label style="font-weight:bold;color:var(--dark-blue);font-size:14px;margin:0;">🗂️ Vista Kanban</label>
+                    <label class="checkbox-label" style="margin:0;">
+                        <input type="checkbox" id="set-kanban-attiva"> Attiva vista kanban per questo foglio
+                    </label>
+                </div>
+                <p style="font-size:11px;color:#666;margin:0 0 10px;">Le card vengono raggruppate in colonne orizzontali in base al valore della colonna scelta.</p>
+                <div class="form-group">
+                    <label>Colonna di raggruppamento (intestazione colonne)</label>
+                    <select id="kanban-col-gruppo" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:4px;"></select>
+                </div>
+                <div class="form-group">
+                    <label>Ordine colonne kanban (una per riga, dall'alto in basso)</label>
+                    <textarea id="kanban-ordine" rows="8" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:4px;font-size:12px;font-family:inherit;box-sizing:border-box;" placeholder="Es:&#10;1) PREVENTIVI DA FARE&#10;2) DA AUTORIZZARE&#10;3) MATERIALE IN ARRIVO"></textarea>
+                    <p style="font-size:11px;color:#888;margin-top:4px;">Lascia vuoto per usare l'ordine naturale dei dati.</p>
+                </div>
+            </div>
+
+            <!-- ===== FORMATI DATA/ORA ===== -->
+            <hr style="border:0;border-top:1px solid #ccc;margin:15px 0;">
+            <div>
+                <label style="font-weight:bold;color:var(--dark-blue);font-size:14px;display:block;margin-bottom:6px;">📅 Formato Data/Ora per Colonna</label>
+                <p style="font-size:11px;color:#666;margin:0 0 10px;">Il form di modifica userà un calendario/orario se impostato.</p>
+                <div id="formati-colonne-list"></div>
+            </div>
+            <hr style="border:0;border-top:1px solid #ccc;margin:15px 0;">
+            <div>
+                <label style="font-weight:bold;color:var(--dark-blue);font-size:14px;display:block;margin-bottom:6px;">🎨 Regole di Formattazione</label>
+                <p style="font-size:11px;color:#666;margin:0 0 8px;">La prima regola che corrisponde vince. <b>Solo cella</b> colora solo il valore della colonna scelta, <b>Riga intera</b> colora tutta la riga.</p>
+                <div style="display:grid;grid-template-columns:1fr 110px 1fr 46px 76px;gap:4px;margin-bottom:4px;font-size:11px;color:#666;font-weight:bold;padding:0 2px;">
+                    <span>Colonna</span><span>Operatore</span><span>Valore</span><span>Col.</span><span>Target</span>
+                </div>
+                <div id="format-rules-list"></div>
+            </div>
+
+            <!-- ===== COLORI COLONNE ===== -->
+            <hr style="border:0;border-top:1px solid #ccc;margin:15px 0;">
+            <div>
+                <label style="font-weight:bold;color:var(--dark-blue);font-size:14px;display:block;margin-bottom:6px;">🟦 Colore Sfondo per Colonna</label>
+                <p style="font-size:11px;color:#666;margin:0 0 10px;">Assegna un colore tenue di sfondo a ogni colonna (intestazione + celle). Lascia bianco per nessun colore.</p>
+                <div id="colori-colonne-list"></div>
+            </div>
+
+            <div class="modal-buttons">
+                <button class="btn btn-cancel" onclick="chiudiModal('modal-settings')">Annulla</button>
+                <button class="btn btn-save" onclick="salvaImpostazioni()" id="btn-save-settings">Salva Impostazioni</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-order" class="modal-overlay">
+        <div class="modal-content">
+            <h3 style="color: var(--primary-blue);">↕️ Ordina Menu Fogli</h3>
+            <p style="font-size: 13px;">Sposta i fogli per cambiare l'ordine nel menu laterale.</p>
+            <div id="order-list"></div>
+            <div class="modal-buttons">
+                <button class="btn btn-save" onclick="chiudiModal('modal-order')" style="width: 100%;">Fatto</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // ⚙️ CONFIGURAZIONE SUPABASE — modifica questi due valori
+        // Trovi entrambi su: supabase.com → tuo progetto → Settings → API
+        // ============================================================
+        const SUPABASE_URL = "https://tnrjdowksorqdcujmfuo.supabase.co";  // ← Project URL
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRucmpkb3drc29ycWRjdWptZnVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MDQ1NjcsImV4cCI6MjA4ODk4MDU2N30.mMfTJMvSbvYiNcfoVXwppLhWK16H-n0IQQON_kfmxN0"; // ← anon/public key
+
+        // ============================================================
+        // LAYER SUPABASE — non modificare sotto questa riga
+        // ============================================================
+        const SB_HDR = () => ({
+            "apikey":        SUPABASE_KEY,
+            "Authorization": "Bearer " + SUPABASE_KEY,
+            "Content-Type":  "application/json"
+        });
+
+        const SB = {
+            async get(table, qs = "") {
+                const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}${qs}`, { headers: SB_HDR() });
+                if (!r.ok) throw new Error(await r.text());
+                return r.json();
+            },
+            async post(table, body, upsertOn = null) {
+                const prefer = upsertOn
+                    ? "resolution=merge-duplicates,return=representation"
+                    : "return=representation";
+                const qs = upsertOn ? `?on_conflict=${encodeURIComponent(upsertOn)}` : "";
+                const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}${qs}`, {
+                    method: "POST",
+                    headers: { ...SB_HDR(), "Prefer": prefer },
+                    body: JSON.stringify(body)
+                });
+                if (!r.ok) throw new Error(await r.text());
+                return r.json();
+            },
+            async patch(table, qs, body) {
+                const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}${qs}`, {
+                    method: "PATCH",
+                    headers: { ...SB_HDR(), "Prefer": "return=representation" },
+                    body: JSON.stringify(body)
+                });
+                if (!r.ok) throw new Error(await r.text());
+                return r.json();
+            },
+            async del(table, qs) {
+                const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}${qs}`, {
+                    method: "DELETE", headers: SB_HDR()
+                });
+                if (!r.ok) throw new Error(await r.text());
+                return true;
+            }
+        };
+
+        // Costruisce DATABASE dal formato Supabase → formato app
+        function buildDatabase(rows, headersMap) {
+            const db = {};
+            rows.forEach(row => {
+                const s = row.sheet_name;
+                if (!db[s]) db[s] = { intestazioni: headersMap[s] || [], righe: [] };
+                db[s].righe.push({ ...row.data, _rowIndex: row.id });
+            });
+            // Aggiunge fogli vuoti presenti negli headers ma senza righe
+            Object.keys(headersMap).forEach(s => {
+                if (!db[s]) db[s] = { intestazioni: headersMap[s], righe: [] };
+            });
+            return db;
+        }
+
+        // ============================================================
+        // CONFIGURAZIONE APP
+        // ============================================================
+        const FOGLI_CON_DATE = ["SAT", "APP PNM", "FLOTTE"]; 
+        const NOME_COLONNA_DATA = "DATA e ORA"; 
+
+        let DATABASE = {};
+        let APP_CONFIG = {};
+        let FOGLIO_ATTIVO = "";
+        let RIGA_ORIGINALE_IN_MODIFICA = null;
+        let ORDINAMENTO = { colonna: null, direzione: 1 }; 
+        let autoSyncTimer = null;
+
+        if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(e => console.log(e));
+
+        window.onload = function() {
+            const sessione = JSON.parse(localStorage.getItem('appSession'));
+            if (sessione && (new Date().getTime() - sessione.timestamp) / 3600000 < 24) {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('app-screen').style.display = 'flex';
+                sincronizza();
+                setTimeout(() => caricaCale(), 2000);
+            }
+        };
+
+        // ============================================================
+        // LOGIN
+        // ============================================================
+        async function faiLogin() {
+            const pass = document.getElementById('pass-input').value.trim();
+            const btn  = document.getElementById('btn-login');
+            btn.innerHTML = "⏳ Accesso..."; btn.disabled = true;
+            try {
+                const rows = await SB.get('app_config', `?key=eq.password&select=value`);
+                const storedPass = rows[0]?.value;
+                if (storedPass === pass || storedPass === `"${pass}"`) {
+                    localStorage.setItem('appSession', JSON.stringify({ timestamp: new Date().getTime() }));
+                    window.location.reload();
+                } else {
+                    alert("Password errata");
+                    btn.innerHTML = "Entra"; btn.disabled = false;
+                }
+            } catch(e) {
+                alert("Errore connessione: " + e.message);
+                btn.innerHTML = "Entra"; btn.disabled = false;
+            }
+        }
+
+        // ============================================================
+        // SISTEMA CALE NATIVO
+        // ============================================================
+        let datiCaleGlobale = null;
+        let orariCaleGlobal = [];
+        let datiModificaCale = {};
+
+        // Genera la lista orari uguale all'originale
+        function generaOrariCale() {
+            const orari = [];
+            for (let h = 8; h <= 12; h++) {
+                for (let m = 0; m < 60; m += 10) {
+                    orari.push(`${h < 10 ? '0' + h : h}:${m === 0 ? '00' : m}`);
+                    if (h === 12 && m === 0) break;
+                }
+            }
+            orari.push("13:50");
+            for (let h = 14; h <= 18; h++) {
+                for (let m = 0; m < 60; m += 10) {
+                    orari.push(`${h < 10 ? '0' + h : h}:${m === 0 ? '00' : m}`);
+                    if (h === 18 && m === 30) break;
+                }
+            }
+            return orari;
+        }
+
+        // Zoom CALE
+        let _caleZoom = parseFloat(localStorage.getItem('caleZoom') || '0');
+        let _caleAutoSync = null;
+
+        function cambiaCaleZoom(delta) {
+            _caleZoom = Math.min(0.5, Math.max(-0.5, _caleZoom + delta));
+            localStorage.setItem('caleZoom', _caleZoom);
+            applicaZoomCale();
+        }
+        function applicaZoomCale() {
+            const table = document.getElementById('cale-table');
+            if (!table) return;
+            // Reset per misurare, poi applica zoom base + offset utente
+            table.style.zoom = '1';
+            const scroll = document.getElementById('cale-scroll');
+            const tableW = table.scrollWidth;
+            const viewW = scroll.clientWidth;
+            let baseZoom = tableW > viewW ? Math.max(0.3, viewW / tableW) : 1;
+            let finalZoom = Math.min(2, Math.max(0.3, baseZoom + _caleZoom));
+            table.style.zoom = finalZoom;
+        }
+        // alias usato da costruisciTabellaCale
+        function adattaZoomCale() { applicaZoomCale(); }
+
+        function apriCale() {
+            document.getElementById('cale-container').style.display = 'flex';
+            if (!datiCaleGlobale) {
+                caricaCale();
+            }
+            avviaCaleAutoSync();
+        }
+
+        function chiudiCale() {
+            document.getElementById('cale-container').style.display = 'none';
+            if (_caleAutoSync) { clearInterval(_caleAutoSync); _caleAutoSync = null; }
+        }
+
+        function avviaCaleAutoSync() {
+            if (_caleAutoSync) clearInterval(_caleAutoSync);
+            _caleAutoSync = setInterval(sincronizzaCale, 30 * 60 * 1000);
+        }
+
+        function aggiornaOraSyncCale() {
+            const ora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('cale-btn-refresh').innerText = `🔄 Sync (${ora})`;
+        }
+
+        // Caricamento iniziale completo (mostra schermata loading)
+        function caricaCale() {
+            const sessione = JSON.parse(localStorage.getItem('appSession'));
+            if (!sessione) return;
+            document.getElementById('cale-loading').style.display = 'block';
+            document.getElementById('cale-scroll').innerHTML = '';
+            fetchCaleData(sessione, true);
+        }
+
+        // Sincronizzazione silenziosa: aggiorna i dati senza toccare la grafica
+        function sincronizzaCale() {
+            const sessione = JSON.parse(localStorage.getItem('appSession'));
+            if (!sessione) return;
+            const btn = document.getElementById('cale-btn-refresh');
+            btn.innerText = '⏳ Sync...'; btn.disabled = true;
+            fetchCaleData(sessione, false);
+        }
+
+        async function fetchCaleData(sessione, mostraLoading) {
+            const btn = document.getElementById('cale-btn-refresh');
+            try {
+                const rows = await SB.get('cale_data', '?select=*&order=data_giorno.asc,ora.asc');
+                document.getElementById('cale-loading').style.display = 'none';
+                btn.disabled = false;
+                // Ricostruisce struttura {mappa, date} come si aspetta costruisciTabellaCale
+                const mappa = {};
+                const dateSet = new Set();
+                rows.forEach(r => {
+                    dateSet.add(r.data_giorno);
+                    if (!mappa[r.data_giorno]) mappa[r.data_giorno] = {};
+                    if (!mappa[r.data_giorno][r.ora]) mappa[r.data_giorno][r.ora] = {};
+                    mappa[r.data_giorno][r.ora][r.tecnico] = r.valore;
+                });
+                const data = { success: true, mappa, date: Array.from(dateSet).sort() };
+                if (mostraLoading) costruisciTabellaCale(data);
+                else aggiornaCelleCale(data);
+                aggiornaOraSyncCale();
+            } catch(e) {
+                document.getElementById('cale-loading').style.display = 'none';
+                btn.disabled = false; btn.innerText = '🔄 Errore';
+                if (mostraLoading) document.getElementById('cale-scroll').innerHTML =
+                    `<p style="padding:20px;color:red;">Errore: ${e.message}</p>`;
+                console.error("Cale fetch error:", e);
+            }
+        }
+
+        // Aggiornamento silenzioso: sovrascrive datiCaleGlobale e aggiorna solo il testo delle celle
+        function aggiornaCelleCale(nuoviDati) {
+            datiCaleGlobale = nuoviDati;
+            // Rigenera la tabella mantenendo la posizione di scroll
+            const scroll = document.getElementById('cale-scroll');
+            const scrollTop = scroll.scrollTop;
+            const scrollLeft = scroll.scrollLeft;
+            costruisciTabellaCale(nuoviDati);
+            // Ripristina posizione
+            requestAnimationFrame(() => {
+                scroll.scrollTop = scrollTop;
+                scroll.scrollLeft = scrollLeft;
+            });
+        }
+
+        function costruisciTabellaCale(dati) {
+            datiCaleGlobale = dati;
+            const nomi = ["ANDREA", "MATTEO", "SARA"];
+            const orari = generaOrariCale();
+            orariCaleGlobal = orari;
+
+            let html = '<table id="cale-table"><thead><tr>';
+            html += "<th class='cale-sticky cale-col-1'>DATA</th>";
+            html += "<th class='cale-sticky cale-col-2'>CLIO SCURA</th>";
+            html += "<th class='cale-sticky cale-col-3'>CLIO BIANCA</th>";
+            html += "<th class='cale-sticky cale-col-4'>TEC</th>";
+            orari.forEach(ora => {
+                html += `<th class='cale-col-time ${ora === "12:00" ? "cale-bordo-pausa" : ""}'>${ora}</th>`;
+            });
+            html += "</tr></thead><tbody>";
+
+            dati.date.forEach(data => {
+                let valPanda = (dati.mappa[data]?.["08:00"]?.["PANDA"] || "").trim();
+                let valClio  = (dati.mappa[data]?.["08:00"]?.["CLIO"]  || "").trim();
+
+                nomi.forEach((nome, index) => {
+                    let visualNome = nome === "ANDREA" ? "A" : nome === "MATTEO" ? "M" : "S";
+                    let bordoClasse = nome === "ANDREA" ? "cale-bordo-sup" : nome === "SARA" ? "cale-bordo-inf" : "";
+
+                    html += "<tr>";
+                    if (index === 0) {
+                        html += `<td rowspan="3" class='cale-sticky cale-col-1 cale-bordo-sup cale-bordo-inf'><div class="cale-testo">${data}</div></td>`;
+                        const pandaColore = valPanda && valPanda !== '/' && valPanda !== '.' ? 'bg-panda' : '';
+                        const clioColore  = valClio  && valClio  !== '/' && valClio  !== '.' ? 'bg-clio'  : '';
+                        html += `<td rowspan="3" class='cale-sticky cale-col-2 cale-bordo-sup cale-bordo-inf ${pandaColore}' onclick="apriModalCale('${data}','08:00','PANDA','${valPanda.replace(/'/g,"\\'")}')"><div class="cale-testo">${valPanda === '/' || valPanda === '.' ? '' : valPanda}</div></td>`;
+                        html += `<td rowspan="3" class='cale-sticky cale-col-3 cale-bordo-sup cale-bordo-inf ${clioColore}'  onclick="apriModalCale('${data}','08:00','CLIO','${valClio.replace(/'/g,"\\'")}')"><div class="cale-testo">${valClio  === '/' || valClio  === '.' ? '' : valClio }</div></td>`;
+                    }
+                    html += `<td class='cale-sticky cale-col-4 ${bordoClasse}'><div class="cale-testo" style="color:#555">${visualNome}</div></td>`;
+
+                    let skip = 0;
+                    orari.forEach(ora => {
+                        if (skip > 0) { skip--; return; }
+                        let valRaw = (dati.mappa[data]?.[ora]?.[nome] || "").trim();
+                        let isPausa = (ora === "12:00");
+                        let classiCella = `${bordoClasse} ${isPausa ? "cale-bordo-pausa" : ""}`;
+                        const dataEnc = data.replace(/'/g, "\\'");
+                        const nomeEnc = nome.replace(/'/g, "\\'");
+
+                        if (valRaw && valRaw !== "/" && valRaw !== ".") {
+                            let n = contaDurataCale(dati, data, nome, ora, orari);
+                            let t_val = valRaw.toUpperCase().trim();
+                            let clsStato = "";
+                            if      (t_val.startsWith("MF"))                            clsStato = "bg-mf-special";
+                            else if (t_val.startsWith("MP"))                            clsStato = "bg-mp-special";
+                            else if (t_val === "PNM 1H" || t_val === "PNM 3H")         clsStato = "bg-pnm-special";
+                            else if (t_val.startsWith("ATT"))                           clsStato = "bg-att";
+                            else if (t_val.startsWith("PNM"))                           clsStato = "bg-pnm";
+                            else if (t_val.startsWith("SAT"))                           clsStato = "bg-sat";
+                            else if (t_val.startsWith("M"))                             clsStato = "bg-m";
+                            else                                                         clsStato = "bg-generic";
+                            const valEnc = valRaw.replace(/'/g, "\\'");
+                            html += `<td colspan="${n}" class="${clsStato} ${classiCella}" onclick="clickCellaCale(event,'${dataEnc}','${ora}','${nomeEnc}')"><div class="cale-testo">${valRaw}</div></td>`;
+                            skip = n - 1;
+                        } else {
+                            html += `<td class="${classiCella}" onclick="clickCellaCale(event,'${dataEnc}','${ora}','${nomeEnc}')"></td>`;
+                        }
+                    });
+                    html += "</tr>";
+                });
+            });
+            html += "</tbody></table>";
+            document.getElementById('cale-scroll').innerHTML = html;
+            adattaZoomCale();
+            inizializzaHoverCale();
+        }
+
+        function contaDurataCale(dati, data, nome, oraInizio, lista) {
+            let c = 0, ok = false;
+            for (let o of lista) {
+                if (o === oraInizio) ok = true;
+                if (ok) {
+                    let v = (dati.mappa[data]?.[o]?.[nome] || "").trim();
+                    if (o === oraInizio || v === "/") { c++; if (o === "12:00") break; }
+                    else break;
+                }
+            }
+            return c;
+        }
+
+        function clickCellaCale(event, d, oStart, t) {
+            let rect = event.currentTarget.getBoundingClientRect();
+            let clientX = event.clientX || (event.touches && event.touches[0].clientX);
+            let x = clientX - rect.left;
+            let colspan = parseInt(event.currentTarget.getAttribute('colspan') || 1);
+            let slotW = rect.width / colspan; // larghezza reale di uno slot (include zoom)
+            let idx = orariCaleGlobal.indexOf(oStart);
+            let slotIndex = Math.floor(x / slotW);
+            if (slotIndex >= colspan) slotIndex = colspan - 1;
+            if (slotIndex < 0) slotIndex = 0;
+            let clickedOra = orariCaleGlobal[idx + slotIndex] || oStart;
+            let actualVal = (datiCaleGlobale.mappa[d]?.[clickedOra]?.[t] || "").trim();
+            apriModalCale(d, clickedOra, t, actualVal);
+        }
+
+        function apriModalCale(d, o, t, v) {
+            datiModificaCale = { data: d, ora: o, tecnico: t };
+            document.getElementById('cale-modal-title').innerText = t + " - Ore " + o;
+            document.getElementById('cale-modal-info').innerText = "Data: " + d;
+            const input = document.getElementById('cale-input-lavoro');
+            input.value = v;
+            document.getElementById('cale-modal-overlay').style.display = 'flex';
+            setTimeout(() => { input.focus(); const len = input.value.length; input.setSelectionRange(len, len); }, 100);
+        }
+
+        function chiudiModalCale() {
+            document.getElementById('cale-modal-overlay').style.display = 'none';
+        }
+
+        async function salvaLavoroCale() {
+            const v   = document.getElementById('cale-input-lavoro').value.trim().toUpperCase();
+            const btn = document.getElementById('cale-btn-save');
+            btn.innerText = "SALVATAGGIO..."; btn.disabled = true;
+            try {
+                await SB.post('cale_data', {
+                    data_giorno: datiModificaCale.data,
+                    ora:         datiModificaCale.ora,
+                    tecnico:     datiModificaCale.tecnico,
+                    valore:      v
+                }, 'data_giorno,ora,tecnico');
+                btn.innerText = "SALVA"; btn.disabled = false;
+                chiudiModalCale();
+                sincronizzaCale();
+            } catch(e) {
+                btn.innerText = "SALVA"; btn.disabled = false;
+                alert("Errore salvataggio: " + e.message);
+            }
+        }
+
+        function adattaZoomCale() {
+            // Calcola lo zoom necessario per far stare la tabella nella larghezza dello schermo
+            const scroll = document.getElementById('cale-scroll');
+            const table = document.getElementById('cale-table');
+            if (!table) return;
+            // Reset zoom per misurare la larghezza reale
+            table.style.zoom = '1';
+            const tableW = table.scrollWidth;
+            const viewW = scroll.clientWidth;
+            if (tableW > viewW) {
+                const zoom = Math.max(0.4, viewW / tableW); // minimo 40% per leggibilità
+                table.style.zoom = zoom;
+            }
+        }
+
+        function inizializzaHoverCale() {
+            const scroll = document.getElementById('cale-scroll');
+            let hoverBox = document.createElement('div');
+            hoverBox.className = 'cale-hover-slot';
+
+            scroll.addEventListener('mousemove', function(e) {
+                const td = e.target.closest('td');
+                if (!td || td.classList.contains('cale-sticky')) {
+                    if (hoverBox.parentNode) hoverBox.parentNode.removeChild(hoverBox);
+                    return;
+                }
+                const rect = td.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const colspan = parseInt(td.getAttribute('colspan') || 1);
+                const slotW = rect.width / colspan; // larghezza reale già scalata dallo zoom
+                let slotIndex = Math.floor(x / slotW);
+                if (slotIndex >= colspan) slotIndex = colspan - 1;
+                if (slotIndex < 0) slotIndex = 0;
+                if (hoverBox.parentNode !== td) td.appendChild(hoverBox);
+                // Usa percentuale rispetto alla td così lo zoom non sfasa
+                hoverBox.style.width = (100 / colspan) + '%';
+                hoverBox.style.left = (slotIndex * 100 / colspan) + '%';
+            });
+
+            scroll.addEventListener('mouseleave', function() {
+                if (hoverBox.parentNode) hoverBox.parentNode.removeChild(hoverBox);
+            });
+        }
+
+        // ============================================================
+        // FONT SIZE GLOBALE TABELLA
+        // ============================================================
+        let _fontSize = parseInt(localStorage.getItem('tableFontSize') || '13');
+        function aggiornaFont() {
+            const fs = _fontSize + 'px';
+            document.getElementById('tabella-container').style.setProperty('--table-font', fs);
+            // applica anche alle card
+            document.querySelectorAll('.card-body').forEach(el => el.style.fontSize = fs);
+            document.querySelectorAll('.card-data').forEach(el => el.style.fontSize = (Math.max(12, _fontSize + 1)) + 'px');
+        }
+        function cambiaFont(delta) {
+            _fontSize = Math.min(22, Math.max(9, _fontSize + delta));
+            localStorage.setItem('tableFontSize', _fontSize);
+            aggiornaFont();
+        }
+        window.addEventListener('load', aggiornaFont);
+
+        // Vista card: gestita dalle impostazioni foglio (vistaCardAttiva)
+        let _vistaCard = false;
+        let _vistaKanban = false;
+
+        // Converte una stringa data (dd/mm/yyyy HH:MM o ISO) in timestamp per confronto
+        function parsaData(str) {
+            if (!str) return null;
+            // dd/mm/yyyy o dd/mm/yyyy HH:MM
+            const m = String(str).match(/^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}))?/);
+            if (m) return new Date(`${m[3]}-${m[2]}-${m[1]}T${m[4]||'00'}:${m[5]||'00'}`).getTime();
+            // ISO
+            const d = new Date(str); return isNaN(d) ? null : d.getTime();
+        }
+
+        // Valuta le format rules configurate. Restituisce { colore, target } o null
+        function valutaFormatRules(riga, config) {
+            const regole = config.formatRules || [];
+            for (const r of regole) {
+                if (!r.colonna || !r.colore) continue;
+                const valCella = String(riga[r.colonna] || '').trim();
+                let match = false;
+                switch (r.operatore) {
+                    case 'uguale':          match = valCella === r.valore; break;
+                    case 'non uguale':      match = valCella !== r.valore; break;
+                    case 'contiene':        match = valCella.toLowerCase().includes((r.valore||'').toLowerCase()); break;
+                    case 'inizia con':      match = valCella.toLowerCase().startsWith((r.valore||'').toLowerCase()); break;
+                    case 'non vuoto':       match = valCella !== ''; break;
+                    case 'vuoto':           match = valCella === ''; break;
+                    case 'data > (dopo)': {
+                        const tsCella = parsaData(formattaValoreCella(valCella) || valCella);
+                        const tsConf  = parsaData(r.valore);
+                        match = tsCella !== null && tsConf !== null && tsCella > tsConf; break;
+                    }
+                    case 'data < (prima)': {
+                        const tsCella = parsaData(formattaValoreCella(valCella) || valCella);
+                        const tsConf  = parsaData(r.valore);
+                        match = tsCella !== null && tsConf !== null && tsCella < tsConf; break;
+                    }
+                    default: break;
+                }
+                if (match) return { colore: r.colore, target: r.target || 'riga', colonna: r.colonna };
+            }
+            return null;
+        }
+
+        function renderCard(righe, config, colonneDaMostrare) {
+            const cardCfg = config.cardConfig || {};
+            const colData  = cardCfg.data  || "";
+            const colBadge = cardCfg.badge || "";
+            const colCorpo = cardCfg.corpo || [];
+
+            if (righe.length === 0) return "<p>Nessuna riga trovata.</p>";
+
+            let html = '<div class="cards-grid">';
+            righe.forEach(riga => {
+                const fmt = valutaFormatRules(riga, config);
+                const borderColor = fmt ? fmt.colore : 'var(--primary-blue)';
+
+                const valData  = colData  ? formattaValoreCella(riga[colData])  : '';
+                const valBadge = colBadge ? formattaValoreCella(riga[colBadge]) : '';
+                const valCorpo = colCorpo.map(c => formattaValoreCella(riga[c])).filter(Boolean).join(' – ');
+                const rigaEnc  = encodeURIComponent(JSON.stringify(riga));
+
+                const bodyColor = fmt ? fmt.colore : '#2c3e50';
+
+                html += `<div class="card" style="border-left-color:${borderColor};" onclick="apriForm('${rigaEnc}')">
+                    <div class="card-top">
+                        <div class="card-data">${valData}</div>
+                        <div class="card-badge">${valBadge}</div>
+                    </div>
+                    <div class="card-body" style="color:${bodyColor}; font-weight:${fmt ? '600' : 'normal'};">${valCorpo}</div>`;
+
+                if (config.puoModificare || config.puoEliminare) {
+                    html += `<div class="card-actions" onclick="event.stopPropagation()">
+                        ${config.puoModificare ? `<button class="card-btn-edit" onclick="apriForm('${rigaEnc}')">✏️</button>` : ''}
+                        ${config.puoEliminare  ? `<button class="card-btn-delete" onclick="eliminaRiga(${riga._rowIndex})">🗑️</button>` : ''}
+                    </div>`;
+                }
+                html += `</div>`;
+            });
+            html += '</div>';
+            // Aggiorna font dopo render
+            setTimeout(aggiornaFont, 0);
+            return html;
+        }
+
+        // ============================================================
+        // DRAWER MOBILE
+        // ============================================================
+        function apriDrawer() {
+            document.getElementById('drawer').classList.add('open');
+            document.getElementById('drawer-overlay').classList.add('open');
+        }
+        function chiudiDrawer() {
+            document.getElementById('drawer').classList.remove('open');
+            document.getElementById('drawer-overlay').classList.remove('open');
+        }
+
+        // ============================================================
+        // SYNC PRINCIPALE
+        // ============================================================
+        async function sincronizza() {
+            const sessione = JSON.parse(localStorage.getItem('appSession'));
+            if (!sessione) return;
+            const btnSync = document.getElementById('btn-sync');
+            btnSync.innerText = "⏳ Sincronizzazione...";
+            try {
+                // Carica righe + config + headers in parallelo
+                const [rows, configRows] = await Promise.all([
+                    SB.get('sheet_data', '?select=*&order=id.asc'),
+                    SB.get('app_config', '?select=key,value')
+                ]);
+                const cfgMap = {};
+                configRows.forEach(r => { cfgMap[r.key] = r.value; });
+                APP_CONFIG   = cfgMap.main_config || {};
+                const headers = cfgMap.sheet_headers || {};
+                DATABASE     = buildDatabase(rows, headers);
+                renderMenu();
+                if (FOGLIO_ATTIVO && DATABASE[FOGLIO_ATTIVO]) caricaDati(FOGLIO_ATTIVO);
+                document.getElementById('status-message').style.display = "none";
+                const ora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                btnSync.innerText = `🔄 Sync (${ora})`;
+                if (autoSyncTimer) clearTimeout(autoSyncTimer);
+                autoSyncTimer = setTimeout(sincronizza, 30 * 60 * 1000);
+            } catch(e) {
+                btnSync.innerText = "🔄 Errore Sync";
+                console.error("Sync error:", e);
+            }
+        }
+
+        // ============================================================
+        // MENU E NOMI DINAMICI
+        // ============================================================
+        function getNomeDinamico(nomeFoglio) {
+            let config = APP_CONFIG[nomeFoglio] || {};
+            let template = config.displayName;
+            if (!template) return nomeFoglio;
+            let righe = DATABASE[nomeFoglio].righe || [];
+            template = template.replace(/\{\{COUNT\}\}/g, righe.length);
+            template = template.replace(/\{\{COUNT:(.*?)=(.*?)\}\}/g, (match, col, val) => {
+                return righe.filter(r => String(r[col]).trim() == String(val).trim()).length;
+            });
+            return template;
+        }
+
+        function renderMenu() {
+            const container = document.getElementById('buttons-container');
+            const drawerContainer = document.getElementById('drawer-buttons');
+            container.innerHTML = "";
+            drawerContainer.innerHTML = "";
+            let fogliDisponibili = Object.keys(DATABASE);
+            let fogliOrdinati = (APP_CONFIG._sheetOrder || []).filter(f => fogliDisponibili.includes(f));
+            fogliDisponibili.forEach(f => { if (!fogliOrdinati.includes(f)) fogliOrdinati.push(f); });
+            APP_CONFIG._sheetOrder = fogliOrdinati;
+            fogliOrdinati.forEach(nome => {
+                // Sidebar desktop
+                const btn = document.createElement('button');
+                btn.innerText = getNomeDinamico(nome);
+                btn.setAttribute('data-foglio', nome);
+                btn.onclick = () => caricaDati(nome);
+                if (nome === FOGLIO_ATTIVO) btn.classList.add('active');
+                container.appendChild(btn);
+                // Drawer mobile
+                const btnD = document.createElement('button');
+                btnD.innerText = getNomeDinamico(nome);
+                btnD.setAttribute('data-foglio-drawer', nome);
+                btnD.onclick = () => { caricaDati(nome); chiudiDrawer(); };
+                if (nome === FOGLIO_ATTIVO) btnD.classList.add('active');
+                drawerContainer.appendChild(btnD);
+            });
+        }
+
+        // ============================================================
+        // ORDINAMENTO FOGLI
+        // ============================================================
+        function apriOrdinamento() { aggiornaListaOrdinamento(); document.getElementById('modal-order').style.display = 'flex'; }
+
+        function aggiornaListaOrdinamento() {
+            let html = '';
+            APP_CONFIG._sheetOrder.forEach((foglio, index) => {
+                html += `<div class="order-item"><span>${foglio}</span><div class="order-btns">
+                    <button onclick="spostaFoglio(${index}, -1)" ${index === 0 ? 'disabled' : ''}>⬆️</button>
+                    <button onclick="spostaFoglio(${index}, 1)" ${index === APP_CONFIG._sheetOrder.length - 1 ? 'disabled' : ''}>⬇️</button>
+                </div></div>`;
+            });
+            document.getElementById('order-list').innerHTML = html;
+        }
+
+        async function spostaFoglio(index, direzione) {
+            let arr = APP_CONFIG._sheetOrder;
+            let temp = arr[index]; arr[index] = arr[index + direzione]; arr[index + direzione] = temp;
+            aggiornaListaOrdinamento(); renderMenu();
+            await salvaConfig();
+        }
+
+        // ============================================================
+        // TABELLA DATI
+        // ============================================================
+        function caricaDati(nomeFoglio) {
+            FOGLIO_ATTIVO = nomeFoglio;
+            document.getElementById('titolo-foglio').innerText = getNomeDinamico(nomeFoglio);
+            document.querySelectorAll('#sidebar button[data-foglio]').forEach(b => {
+                b.classList.remove('active');
+                if (b.getAttribute('data-foglio') === nomeFoglio) b.classList.add('active');
+            });
+            const config = APP_CONFIG[nomeFoglio] || { puoAggiungere: false, puoModificare: false, colonneVisibili: [] };
+            document.getElementById('btn-add-record').style.display = config.puoAggiungere ? "block" : "none";
+            const intestazioni = DATABASE[nomeFoglio].intestazioni;
+            if (intestazioni.length === 0) {
+                document.getElementById('toolbar').style.display = "none";
+                document.getElementById('tabella-container').innerHTML = "<p>Foglio vuoto.</p>";
+                return;
+            }
+            let colonneDaMostrare = intestazioni;
+            if (config.colonneVisibili && config.colonneVisibili.length > 0) colonneDaMostrare = intestazioni.filter(h => config.colonneVisibili.includes(h));
+            document.getElementById('toolbar').style.display = "flex";
+            document.getElementById('search-input').value = "";
+            const sortSelect = document.getElementById('sort-column');
+            sortSelect.innerHTML = `<option value="">-- Ordina per --</option>`;
+            colonneDaMostrare.forEach(col => { sortSelect.innerHTML += `<option value="${col}">${col}</option>`; });
+
+            // Applica ordinamento predefinito da config, altrimenti fallback su FOGLI_CON_DATE
+            if (config.sortColonna && colonneDaMostrare.includes(config.sortColonna)) {
+                ORDINAMENTO.colonna = config.sortColonna;
+                ORDINAMENTO.direzione = config.sortDirezione || 1;
+                sortSelect.value = config.sortColonna;
+                document.getElementById('btn-sort-dir').innerText = ORDINAMENTO.direzione === 1 ? "⬇️ A-Z" : "⬆️ Z-A";
+            } else if (FOGLI_CON_DATE.includes(nomeFoglio) && intestazioni.includes(NOME_COLONNA_DATA)) {
+                ORDINAMENTO.colonna = NOME_COLONNA_DATA; ORDINAMENTO.direzione = 1;
+                document.getElementById('btn-sort-dir').innerText = "⬆️ Z-A"; sortSelect.value = NOME_COLONNA_DATA;
+            } else {
+                ORDINAMENTO.colonna = null; ORDINAMENTO.direzione = 1;
+                document.getElementById('btn-sort-dir').innerText = "⬇️ A-Z"; sortSelect.value = "";
+            }
+            // Vista card o kanban: da config
+            _vistaCard = !!(config.vistaCardAttiva && config.cardConfig && config.cardConfig.data);
+            _vistaKanban = !!(config.vistaKanbanAttiva && config.kanbanGruppo);
+            renderTabella();
+        }
+
+        function convertiDataItaliana(dataStr) {
+            if (!dataStr) return 0;
+            const mesi = {"gennaio":0,"febbraio":1,"marzo":2,"aprile":3,"maggio":4,"giugno":5,"luglio":6,"agosto":7,"settembre":8,"ottobre":9,"novembre":10,"dicembre":11};
+            const parts = dataStr.toLowerCase().split(' ');
+            let meseIndex = -1, giorno = 1, timeStr = "00:00";
+            for (let i = 0; i < parts.length; i++) {
+                if (mesi[parts[i]] !== undefined) { meseIndex = mesi[parts[i]]; giorno = parseInt(parts[i-1]) || 1; }
+                if (parts[i].includes(':')) timeStr = parts[i];
+            }
+            if (meseIndex === -1) return 0;
+            const tParts = timeStr.split(':');
+            return new Date(new Date().getFullYear(), meseIndex, giorno, parseInt(tParts[0]) || 0, parseInt(tParts[1]) || 0).getTime();
+        }
+
+        function cambiaOrdinamento() { ORDINAMENTO.colonna = document.getElementById('sort-column').value || null; renderTabella(); }
+        function cambiaDirezioneOrdinamento() { ORDINAMENTO.direzione *= -1; document.getElementById('btn-sort-dir').innerText = ORDINAMENTO.direzione === 1 ? "⬇️ A-Z" : "⬆️ Z-A"; renderTabella(); }
+
+        // Converte date ISO (2026-03-07T08:56:13.160Z) in formato leggibile (07/03/2026 08:56)
+        function formattaValoreCella(val) {
+            if (!val) return "";
+            const s = String(val);
+            const isoMatch = s.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
+            if (isoMatch) return `${isoMatch[3]}/${isoMatch[2]}/${isoMatch[1]} ${isoMatch[4]}:${isoMatch[5]}`;
+            return s;
+        }
+
+        // Estrae solo HH:MM da stringhe con data fittizia 1899 o ISO (converte UTC→locale)
+        function formattaOrario(val) {
+            if (!val) return "";
+            const s = String(val);
+            // Formato ISO — usa Date per conversione UTC→locale corretta
+            if (s.includes('T') && s.includes('-')) {
+                const d = new Date(s);
+                if (!isNaN(d)) return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+            }
+            // Formato "31/12/1899 08:30:00" o simili con 1899 — già ora locale, estrai direttamente
+            const m1899 = s.match(/1899[^\d]*(\d{1,2}):(\d{2})/);
+            if (m1899) return `${m1899[1].padStart(2,'0')}:${m1899[2]}`;
+            // Già solo HH:MM
+            const mOra = s.match(/^(\d{1,2}):(\d{2})/);
+            if (mOra) return `${mOra[1].padStart(2,'0')}:${mOra[2]}`;
+            return s;
+        }
+
+        // Converte una data (ISO o italiana) in timestamp per ordinamento
+        function convertiDataAssoluta(val) {
+            if (!val) return 0;
+            const s = String(val);
+            // ISO
+            const iso = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+            if (iso) return new Date(iso[1], iso[2]-1, iso[3]).getTime();
+            // Italiana "venerdì 6 marzo" o "6 marzo"
+            return convertiDataItaliana(s);
+        }
+
+        // Formatta data in "Venerdì 6 Marzo" per l'etichetta di gruppo
+        function formattaDataGruppo(val) {
+            if (!val) return "";
+            const s = String(val);
+            const giorni = ["Domenica","Lunedì","Martedì","Mercoledì","Giovedì","Venerdì","Sabato"];
+            const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
+            // ISO
+            const iso = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+            if (iso) {
+                const d = new Date(iso[1], iso[2]-1, iso[3]);
+                return `${giorni[d.getDay()]} ${d.getDate()} ${mesi[d.getMonth()]}`;
+            }
+            // Già italiana: capitalizza e restituisce
+            return s.replace(/^\w/, c => c.toUpperCase());
+        }
+
+        function renderTabella() {
+            const config = APP_CONFIG[FOGLIO_ATTIVO] || { puoAggiungere: false, puoModificare: false, colonneVisibili: [] };
+            const intestazioni = DATABASE[FOGLIO_ATTIVO].intestazioni;
+            const isCalendario = FOGLIO_ATTIVO === 'CALENDARIO';
+            const COL_DATA_CAL = intestazioni[0];
+            const COL_ORA_CAL  = intestazioni[1];
+
+            let righe = [...DATABASE[FOGLIO_ATTIVO].righe];
+            let colonneDaMostrare = intestazioni;
+            if (config.colonneVisibili && config.colonneVisibili.length > 0) colonneDaMostrare = intestazioni.filter(h => config.colonneVisibili.includes(h));
+
+            let colonneTabella = colonneDaMostrare;
+            if (isCalendario) colonneTabella = colonneDaMostrare.filter(c => c !== COL_DATA_CAL && c !== COL_ORA_CAL);
+
+            const query = document.getElementById('search-input').value.toLowerCase();
+            if (query) righe = righe.filter(riga => colonneDaMostrare.some(col => String(riga[col] || "").toLowerCase().includes(query)));
+
+            // Ordinamento
+            if (ORDINAMENTO.colonna) {
+                const col = ORDINAMENTO.colonna, dir = ORDINAMENTO.direzione;
+                righe.sort((a, b) => {
+                    let valA = String(a[col] || ""), valB = String(b[col] || "");
+                    if (col === NOME_COLONNA_DATA || col === COL_DATA_CAL) {
+                        let tA = convertiDataAssoluta(valA), tB = convertiDataAssoluta(valB);
+                        if (tA !== 0 && tB !== 0) return (tA - tB) * dir;
+                    }
+                    if (!isNaN(valA) && !isNaN(valB) && valA !== "" && valB !== "") return (Number(valA) - Number(valB)) * dir;
+                    return valA.toLowerCase().localeCompare(valB.toLowerCase()) * dir;
+                });
+            }
+            if (isCalendario && !ORDINAMENTO.colonna) {
+                righe.sort((a, b) => {
+                    let tA = convertiDataAssoluta(String(a[COL_DATA_CAL] || ""));
+                    let tB = convertiDataAssoluta(String(b[COL_DATA_CAL] || ""));
+                    if (tA !== tB) return tA - tB;
+                    return formattaOrario(String(a[COL_ORA_CAL]||"")).localeCompare(formattaOrario(String(b[COL_ORA_CAL]||"")));
+                });
+            }
+
+            // ===== VISTA KANBAN =====
+            if (_vistaKanban && config.kanbanGruppo) {
+                document.getElementById('tabella-container').innerHTML = renderKanban(righe, config, colonneDaMostrare);
+                return;
+            }
+
+            // ===== VISTA CARD =====
+            if (_vistaCard && config.cardConfig && config.cardConfig.data) {
+                document.getElementById('tabella-container').innerHTML = righe.length === 0 ? "<p>Nessuna riga trovata.</p>" : renderCard(righe, config, colonneDaMostrare);
+                return;
+            }
+
+            let html = '';
+            if (isCalendario) {
+                // Rendering con raggruppamento per data
+                html = `<table><thead><tr>`;
+                html += `<th style="width:70px">Orario</th>`;
+                colonneTabella.forEach(col => html += `<th>${col}</th>`);
+                if (config.puoModificare || config.puoEliminare) html += `<th style="width:70px">Azioni</th>`;
+                html += `</tr></thead><tbody>`;
+
+                let ultimaData = null;
+                righe.forEach(riga => {
+                    const dataRiga = String(riga[COL_DATA_CAL] || "");
+                    if (dataRiga !== ultimaData) {
+                        ultimaData = dataRiga;
+                        const ncol = colonneTabella.length + 1 + ((config.puoModificare || config.puoEliminare) ? 1 : 0);
+                        html += `<tr><td colspan="${ncol}" style="background:#3b6d9c; color:white; font-weight:bold; padding:8px 12px; font-size:14px; letter-spacing:0.5px;">
+                            📅 ${formattaDataGruppo(dataRiga)}
+                        </td></tr>`;
+                    }
+                    // Coloring SAT riutilizzato se serve
+                    html += `<tr>`;
+                    html += `<td><b>${formattaOrario(riga[COL_ORA_CAL])}</b></td>`;
+                    colonneTabella.forEach(col => html += `<td>${formattaValoreCella(riga[col])}</td>`);
+                    if (config.puoModificare || config.puoEliminare) {
+                        html += `<td style="white-space:nowrap;">
+                            ${config.puoModificare ? `<button class="btn btn-edit" title="Modifica" onclick="apriForm('${encodeURIComponent(JSON.stringify(riga))}')">✏️</button>` : ''}
+                            ${config.puoEliminare  ? `<button class="btn btn-delete" title="Elimina" onclick="eliminaRiga(${riga._rowIndex})">🗑️</button>` : ''}
+                        </td>`;
+                    }
+                    html += `</tr>`;
+                });
+                html += `</tbody></table>`;
+            } else {
+                // Rendering normale
+                html = '<table><thead><tr>';
+                const coloriCol = config.coloriColonne || {};
+                if (config.puoEliminare) html += `<th style="width:32px;"><input type="checkbox" id="chk-all" onclick="selezionaTutti(this)"></th>`;
+                colonneTabella.forEach(col => {
+                    const bg = coloriCol[col] || '';
+                    const thStyle = bg ? `style="background:${bg}; color:#1a1a1a;"` : '';
+                    html += `<th ${thStyle}>${col}</th>`;
+                });
+                if (config.puoModificare || config.puoEliminare) html += `<th style="width:70px">Azioni</th>`;
+                html += '</tr></thead><tbody>';
+                righe.forEach(riga => {
+                    const fmt = valutaFormatRules(riga, config);
+                    const rowColor     = (fmt && fmt.target !== 'cella') ? fmt.colore : null;
+                    const cellaTarget  = (fmt && fmt.target === 'cella') ? fmt.colonna : null;
+                    const chk = config.puoEliminare ? `<td class="sel-td"><input type="checkbox" class="row-chk" data-idx="${riga._rowIndex}"></td>` : '';
+                    html += `<tr>` + chk;
+                    colonneTabella.forEach(col => {
+                        const cellBg = coloriCol[col] || '';
+                        let cellStyle = '';
+                        if (col === cellaTarget) {
+                            // Solo cella: colora solo questo td
+                            cellStyle = `color:${fmt.colore}; font-weight:700;${cellBg ? ` background:color-mix(in srgb, ${cellBg} 30%, white 70%);` : ''}`;
+                        } else if (rowColor) {
+                            cellStyle = `color:${rowColor}; font-weight:600;${cellBg ? ` background:color-mix(in srgb, ${cellBg} 30%, white 70%);` : ''}`;
+                        } else if (cellBg) {
+                            cellStyle = `background:color-mix(in srgb, ${cellBg} 18%, white 82%);`;
+                        }
+                        html += `<td${cellStyle ? ` style="${cellStyle}"` : ''}>${formattaValoreCella(riga[col])}</td>`;
+                    });
+                    if (config.puoModificare || config.puoEliminare) {
+                        html += `<td style="white-space:nowrap;">
+                            ${config.puoModificare ? `<button class="btn btn-edit" title="Modifica" onclick="apriForm('${encodeURIComponent(JSON.stringify(riga))}')">✏️</button>` : ''}
+                            ${config.puoEliminare  ? `<button class="btn btn-delete" title="Elimina" onclick="eliminaRiga(${riga._rowIndex})">🗑️</button>` : ''}
+                        </td>`;
+                    }
+                    html += '</tr>';
+                });
+                html += '</tbody></table>';
+            }
+
+            document.getElementById('tabella-container').innerHTML = righe.length === 0 ? "<p>Nessuna riga trovata.</p>" : html;
+        }
+
+        function selezionaTutti(chk) {
+            document.querySelectorAll('.row-chk').forEach(c => {
+                c.checked = chk.checked;
+                c.closest('tr').classList.toggle('selected-row', chk.checked);
+            });
+            aggiornaBarraMulti();
+        }
+        function aggiornaBarraMulti() {
+            const selezionate = document.querySelectorAll('.row-chk:checked');
+            const bar = document.getElementById('multi-delete-bar');
+            bar.style.display = selezionate.length > 0 ? 'flex' : 'none';
+            document.getElementById('multi-count-label').innerText = `${selezionate.length} rig${selezionate.length===1?'a':'he'} selezionat${selezionate.length===1?'a':'e'}`;
+        }
+        function deselezionaTutti() {
+            document.querySelectorAll('.row-chk').forEach(c => { c.checked = false; c.closest('tr').classList.remove('selected-row'); });
+            const all = document.getElementById('chk-all'); if (all) all.checked = false;
+            aggiornaBarraMulti();
+        }
+        async function eliminaSelezionate() {
+            const indici = Array.from(document.querySelectorAll('.row-chk:checked')).map(c => parseInt(c.dataset.idx));
+            if (!indici.length) return;
+            if (!confirm(`Eliminare definitivamente ${indici.length} rig${indici.length===1?'a':'he'}?`)) return;
+            try {
+                await SB.del('sheet_data', `?id=in.(${indici.join(',')})`);
+                deselezionaTutti();
+                sincronizza();
+            } catch(e) {
+                alert("Errore eliminazione: " + e.message);
+            }
+        }
+
+        // Aggiungi listener delegato per checkbox singola
+        document.addEventListener('change', e => {
+            if (e.target.classList.contains('row-chk')) {
+                e.target.closest('tr').classList.toggle('selected-row', e.target.checked);
+                aggiornaBarraMulti();
+            }
+        });
+
+        function renderKanban(righe, config, colonneDaMostrare) {
+            const cardCfg   = config.cardConfig || {};
+            const colGruppo = config.kanbanGruppo;
+            const colData   = cardCfg.data  || "";
+            const colBadge  = cardCfg.badge || "";
+            const colCorpo  = cardCfg.corpo || [];
+            const coloriCol = config.coloriColonne || {};
+            const ordine    = config.kanbanOrdine  || [];   // array di valori nell'ordine voluto
+
+            if (righe.length === 0) return "<p>Nessuna riga trovata.</p>";
+
+            // Raggruppa
+            const gruppi = {};
+            const trovati = new Set();
+            righe.forEach(riga => {
+                const g = String(riga[colGruppo] || '—');
+                if (!gruppi[g]) gruppi[g] = [];
+                gruppi[g].push(riga);
+                trovati.add(g);
+            });
+
+            // Ordine: prima quelli configurati, poi eventuali residui
+            const ordinati = [...ordine.filter(g => trovati.has(g)),
+                              ...Array.from(trovati).filter(g => !ordine.includes(g))];
+
+            let html = '<div class="kanban-board">';
+            ordinati.forEach(g => {
+                const colBg = coloriCol[g] || '';
+                const headerStyle = colBg ? `background:${colBg}; color:#1a1a1a;` : '';
+                html += `<div class="kanban-col">
+                    <div class="kanban-col-header" style="${headerStyle}">
+                        <span>${g}</span>
+                        <span class="kanban-col-count">${gruppi[g].length}</span>
+                    </div>
+                    <div class="kanban-col-body">`;
+
+                gruppi[g].forEach(riga => {
+                    const fmt         = valutaFormatRules(riga, config);
+                    const borderColor = fmt ? fmt.colore : 'var(--primary-blue)';
+                    const fmtRiga     = (fmt && fmt.target !== 'cella') ? fmt : null;
+                    const fmtCella    = (fmt && fmt.target === 'cella') ? fmt : null;
+
+                    const valData  = colData  ? formattaValoreCella(riga[colData])  : '';
+                    const valBadge = colBadge ? formattaValoreCella(riga[colBadge]) : '';
+                    const rigaEnc  = encodeURIComponent(JSON.stringify(riga));
+
+                    html += `<div class="kanban-card" style="border-left-color:${borderColor};" onclick="apriForm('${rigaEnc}')">
+                        <div class="kanban-card-top">
+                            <span class="kanban-card-data" ${fmtRiga?`style="color:${fmtRiga.colore};font-weight:700;"` : ''}>${valData}</span>
+                            <span class="kanban-card-badge">${valBadge}</span>
+                        </div>`;
+
+                    // Corpo: una riga per campo
+                    if (colCorpo.length > 0) {
+                        html += `<div class="kanban-card-body">`;
+                        colCorpo.forEach(col => {
+                            const val = formattaValoreCella(riga[col]);
+                            if (!val) return;
+                            const isCellaTarget = fmtCella && fmtCella.colonna === col;
+                            const style = fmtRiga ? `color:${fmtRiga.colore};font-weight:600;`
+                                        : isCellaTarget ? `color:${fmtCella.colore};font-weight:700;` : '';
+                            html += `<div style="${style}"><span style="color:#888;font-size:11px;">${col}:</span> ${val}</div>`;
+                        });
+                        html += `</div>`;
+                    }
+
+                    if (config.puoModificare || config.puoEliminare) {
+                        html += `<div class="kanban-card-actions" onclick="event.stopPropagation()">
+                            ${config.puoModificare ? `<button style="background:var(--light-blue);" onclick="apriForm('${rigaEnc}')">✏️</button>` : ''}
+                            ${config.puoEliminare  ? `<button style="background:#e74c3c;" onclick="eliminaRiga(${riga._rowIndex})">🗑️</button>` : ''}
+                        </div>`;
+                    }
+                    html += `</div>`;
+                });
+                html += `</div></div>`;
+            });
+            html += '</div>';
+            return html;
+        }
+
+        async function eliminaRiga(rowIndex) {
+            if (!confirm("Eliminare questa riga definitivamente?")) return;
+            try {
+                await SB.del('sheet_data', `?id=eq.${rowIndex}`);
+                sincronizza();
+            } catch(e) {
+                alert("Errore eliminazione: " + e.message);
+            }
+        }
+
+        // ============================================================
+        // IMPOSTAZIONI E MODALI
+        // ============================================================
+        function chiudiModal(id) { document.getElementById(id).style.display = "none"; }
+
+        function apriImpostazioni() {
+            if (!FOGLIO_ATTIVO) return alert("Seleziona un foglio.");
+            const config = APP_CONFIG[FOGLIO_ATTIVO] || {};
+            document.getElementById('settings-nome-foglio').innerText = FOGLIO_ATTIVO;
+            document.getElementById('set-display-name').value = config.displayName || "";
+            document.getElementById('set-add').checked    = config.puoAggiungere  || false;
+            document.getElementById('set-edit').checked   = config.puoModificare  || false;
+            document.getElementById('set-delete').checked = config.puoEliminare   || false;
+
+            // Ordinamento
+            const intestazioni = DATABASE[FOGLIO_ATTIVO].intestazioni;
+            const selCol = document.getElementById('set-sort-col');
+            selCol.innerHTML = `<option value="">-- Nessun ordinamento --</option>` +
+                intestazioni.map(c => `<option value="${c}" ${config.sortColonna===c?'selected':''}>${c}</option>`).join('');
+            document.getElementById('set-sort-dir').value = config.sortDirezione || 1;
+
+            // Colonne visibili
+            let colHtml = '<label><b>Colonne Visibili:</b> (Lascia vuoto per tutte)</label>';
+            intestazioni.forEach(col => {
+                const chk = config.colonneVisibili && config.colonneVisibili.includes(col) ? 'checked' : '';
+                colHtml += `<label class="checkbox-label"><input type="checkbox" class="chk-colonna" value="${col}" ${chk}> ${col}</label>`;
+            });
+            document.getElementById('settings-colonne').innerHTML = colHtml;
+
+            // Vista card
+            const cardCfg = config.cardConfig || {};
+            document.getElementById('set-card-attiva').checked = config.vistaCardAttiva || false;
+            const makeOpts = (sel) => `<option value="">-- Nessuna --</option>` +
+                intestazioni.map(c => `<option value="${c}" ${sel===c?'selected':''}>${c}</option>`).join('');
+            document.getElementById('card-col-data').innerHTML  = makeOpts(cardCfg.data  || "");
+            document.getElementById('card-col-badge').innerHTML = makeOpts(cardCfg.badge || "");
+            let corpoHtml = '';
+            intestazioni.forEach(col => {
+                const chk = (cardCfg.corpo||[]).includes(col) ? 'checked' : '';
+                corpoHtml += `<label class="checkbox-label"><input type="checkbox" class="chk-card-corpo" value="${col}" ${chk}> ${col}</label>`;
+            });
+            document.getElementById('card-col-corpo-list').innerHTML = corpoHtml;
+
+            // Format rules (5 righe)
+            const regole = config.formatRules || [{},{},{},{},{}];
+            while (regole.length < 5) regole.push({});
+            const ops = ['uguale','non uguale','contiene','inizia con','non vuoto','vuoto','data > (dopo)','data < (prima)'];
+            let rulesHtml = '';
+            regole.slice(0,5).forEach((r, i) => {
+                rulesHtml += `<div class="fmt-rule">
+                    <select class="fmt-col" data-i="${i}">
+                        <option value="">-- --</option>
+                        ${intestazioni.map(c=>`<option value="${c}" ${r.colonna===c?'selected':''}>${c}</option>`).join('')}
+                    </select>
+                    <select class="fmt-op" data-i="${i}">
+                        ${ops.map(o=>`<option value="${o}" ${r.operatore===o?'selected':''}>${o}</option>`).join('')}
+                    </select>
+                    <input type="text" class="fmt-val" data-i="${i}" value="${r.valore||''}" placeholder="gg/mm/aaaa o testo">
+                    <input type="color" class="fmt-color" data-i="${i}" value="${r.colore||'#e74c3c'}">
+                    <select class="fmt-target" data-i="${i}" style="padding:4px;border:1px solid #ccc;border-radius:4px;font-size:11px;">
+                        <option value="riga" ${(r.target||'riga')==='riga'?'selected':''}>Riga intera</option>
+                        <option value="cella" ${r.target==='cella'?'selected':''}>Solo cella</option>
+                    </select>
+                </div>`;
+            });
+            document.getElementById('format-rules-list').innerHTML = rulesHtml;
+
+            // Colori colonne
+            const coloriCol = config.coloriColonne || {};
+            let colColHtml = '';
+            intestazioni.forEach(col => {
+                const color = coloriCol[col] || '#ffffff';
+                colColHtml += `<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+                    <input type="color" class="chk-col-color" data-col="${col}" value="${color}" style="width:40px;height:28px;border:1px solid #ccc;border-radius:4px;cursor:pointer;padding:2px;">
+                    <span style="font-size:13px;">${col}</span>
+                </div>`;
+            });
+            document.getElementById('colori-colonne-list').innerHTML = colColHtml;
+
+            // Kanban
+            document.getElementById('set-kanban-attiva').checked = config.vistaKanbanAttiva || false;
+            const selGruppo = document.getElementById('kanban-col-gruppo');
+            selGruppo.innerHTML = `<option value="">-- Nessuna --</option>` +
+                intestazioni.map(c => `<option value="${c}" ${config.kanbanGruppo===c?'selected':''}>${c}</option>`).join('');
+            document.getElementById('kanban-ordine').value = (config.kanbanOrdine || []).join('\n');
+
+            // Formati data/ora
+            const formatiCol = config.formatiColonne || {};
+            const tipiFormato = [
+                { v: '', l: '-- Testo libero --' },
+                { v: 'date', l: '📅 Data (gg/mm/aaaa)' },
+                { v: 'datetime-local', l: '📅🕐 Data e Ora' },
+                { v: 'time', l: '🕐 Solo Orario' },
+            ];
+            let formatiHtml = '';
+            intestazioni.forEach(col => {
+                const sel = formatiCol[col] || '';
+                formatiHtml += `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                    <span style="flex:1;font-size:13px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${col}">${col}</span>
+                    <select class="chk-col-format" data-col="${col}" style="width:160px;padding:5px;border:1px solid #ccc;border-radius:4px;font-size:12px;">
+                        ${tipiFormato.map(t => `<option value="${t.v}" ${sel===t.v?'selected':''}>${t.l}</option>`).join('')}
+                    </select>
+                </div>`;
+            });
+            document.getElementById('formati-colonne-list').innerHTML = formatiHtml;
+
+            document.getElementById('modal-settings').style.display = "flex";
+        }
+
+        function salvaImpostazioni() {
+            const btn = document.getElementById('btn-save-settings');
+            btn.innerText = "⏳ Salvataggio..."; btn.disabled = true;
+
+            // Legge le 5 format rules
+            const formatRules = [];
+            for (let i = 0; i < 5; i++) {
+                const col    = document.querySelector(`.fmt-col[data-i="${i}"]`)?.value || '';
+                const op     = document.querySelector(`.fmt-op[data-i="${i}"]`)?.value  || 'uguale';
+                const val    = document.querySelector(`.fmt-val[data-i="${i}"]`)?.value || '';
+                const color  = document.querySelector(`.fmt-color[data-i="${i}"]`)?.value || '#e74c3c';
+                const target = document.querySelector(`.fmt-target[data-i="${i}"]`)?.value || 'riga';
+                if (col) formatRules.push({ colonna: col, operatore: op, valore: val, colore: color, target });
+            }
+
+            // Kanban ordine colonne
+            const kanbanOrdine = (document.getElementById('kanban-ordine').value || '')
+                .split('\n').map(s => s.trim()).filter(Boolean);
+
+            // Colori colonne
+            const coloriColonne = {};
+            document.querySelectorAll('.chk-col-color').forEach(el => {
+                if (el.value && el.value !== '#ffffff') coloriColonne[el.dataset.col] = el.value;
+            });
+
+            // Formati data/ora
+            const formatiColonne = {};
+            document.querySelectorAll('.chk-col-format').forEach(el => {
+                if (el.value) formatiColonne[el.dataset.col] = el.value;
+            });
+
+            APP_CONFIG[FOGLIO_ATTIVO] = {
+                displayName:       document.getElementById('set-display-name').value,
+                puoAggiungere:     document.getElementById('set-add').checked,
+                puoModificare:     document.getElementById('set-edit').checked,
+                puoEliminare:      document.getElementById('set-delete').checked,
+                sortColonna:       document.getElementById('set-sort-col').value || null,
+                sortDirezione:     parseInt(document.getElementById('set-sort-dir').value) || 1,
+                colonneVisibili:   Array.from(document.querySelectorAll('.chk-colonna:checked')).map(c => c.value),
+                vistaCardAttiva:   document.getElementById('set-card-attiva').checked,
+                vistaKanbanAttiva: document.getElementById('set-kanban-attiva').checked,
+                kanbanGruppo:      document.getElementById('kanban-col-gruppo').value || null,
+                kanbanOrdine,
+                cardConfig: {
+                    data:  document.getElementById('card-col-data').value  || null,
+                    badge: document.getElementById('card-col-badge').value || null,
+                    corpo: Array.from(document.querySelectorAll('.chk-card-corpo:checked')).map(c => c.value),
+                },
+                formatRules,
+                coloriColonne,
+                formatiColonne
+            };
+            const sessione = JSON.parse(localStorage.getItem('appSession'));
+            salvaConfig().then(() => {
+                chiudiModal('modal-settings'); renderMenu(); caricaDati(FOGLIO_ATTIVO);
+            }).catch(e => {
+                alert("Errore salvataggio: " + e.message);
+            }).finally(() => { btn.innerText = "Salva Impostazioni"; btn.disabled = false; });
+        }
+
+        // Helper condiviso per salvare APP_CONFIG su Supabase
+        async function salvaConfig() {
+            await SB.post('app_config', { key: 'main_config', value: APP_CONFIG }, 'key');
+        }
+
+        function apriForm(rigaJSON) {
+            const config = APP_CONFIG[FOGLIO_ATTIVO] || {}, intestazioni = DATABASE[FOGLIO_ATTIVO].intestazioni;
+            const formatiCol = config.formatiColonne || {};
+            let cols = config.colonneVisibili && config.colonneVisibili.length > 0 ? intestazioni.filter(h => config.colonneVisibili.includes(h)) : intestazioni;
+            const container = document.getElementById('modal-form-fields'); container.innerHTML = "";
+            RIGA_ORIGINALE_IN_MODIFICA = rigaJSON ? JSON.parse(decodeURIComponent(rigaJSON)) : null;
+            document.getElementById('modal-title').innerText = rigaJSON ? "Modifica Record" : "Nuovo Record";
+            cols.forEach(col => {
+                let val = RIGA_ORIGINALE_IN_MODIFICA && RIGA_ORIGINALE_IN_MODIFICA[col] !== undefined ? RIGA_ORIGINALE_IN_MODIFICA[col] : "";
+                const tipo = formatiCol[col] || 'text';
+                // Converti valore esistente nel formato atteso dall'input HTML
+                let inputVal = String(val);
+                if (tipo === 'date' || tipo === 'datetime-local') {
+                    // Se è ISO, usa direttamente; se è dd/mm/yyyy HH:MM, converti
+                    const m = inputVal.match(/^(\d{2})\/(\d{2})\/(\d{4})(?: (\d{2}):(\d{2}))?/);
+                    if (m) inputVal = tipo === 'date' ? `${m[3]}-${m[2]}-${m[1]}` : `${m[3]}-${m[2]}-${m[1]}T${m[4]||'00'}:${m[5]||'00'}`;
+                    else if (inputVal.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/)) inputVal = tipo === 'date' ? inputVal.slice(0,10) : inputVal.slice(0,16);
+                } else if (tipo === 'time') {
+                    // Estrai HH:MM se c'è una data davanti
+                    const mt = inputVal.match(/(\d{2}:\d{2})/);
+                    if (mt) inputVal = mt[1];
+                }
+                container.innerHTML += `<div class="form-group"><label>${col}</label><input type="${tipo}" id="input-${col}" value="${inputVal}" style="width:100%;padding:10px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;"></div>`;
+            });
+            document.getElementById('modal-form').style.display = "flex";
+        }
+
+        async function salvaDati() {
+            const intestazioni = DATABASE[FOGLIO_ATTIVO].intestazioni, config = APP_CONFIG[FOGLIO_ATTIVO] || {};
+            let cols = config.colonneVisibili && config.colonneVisibili.length > 0
+                ? intestazioni.filter(h => config.colonneVisibili.includes(h)) : intestazioni;
+            const btn = document.getElementById('btn-save-modal');
+            let nuoviDati = {};
+            intestazioni.forEach(col => {
+                nuoviDati[col] = cols.includes(col)
+                    ? (document.getElementById(`input-${col}`)?.value ?? "")
+                    : (RIGA_ORIGINALE_IN_MODIFICA ? RIGA_ORIGINALE_IN_MODIFICA[col] || "" : "");
+            });
+            const rigaId = RIGA_ORIGINALE_IN_MODIFICA?._rowIndex ?? null;
+            btn.innerText = "⏳ Salvataggio..."; btn.disabled = true;
+            try {
+                if (rigaId) {
+                    await SB.patch('sheet_data', `?id=eq.${rigaId}`, { data: nuoviDati });
+                } else {
+                    // Aggiorna headers se ci sono colonne nuove
+                    await aggiornaHeaders(FOGLIO_ATTIVO, intestazioni);
+                    await SB.post('sheet_data', { sheet_name: FOGLIO_ATTIVO, data: nuoviDati });
+                }
+                chiudiModal('modal-form');
+                sincronizza();
+            } catch(e) {
+                alert("Errore: " + e.message);
+            } finally {
+                btn.innerText = "Salva Dati"; btn.disabled = false;
+            }
+        }
+
+        // Assicura che gli headers del foglio siano salvati in app_config
+        async function aggiornaHeaders(foglio, cols) {
+            const rows = await SB.get('app_config', '?key=eq.sheet_headers&select=value');
+            const current = rows[0]?.value || {};
+            if (!current[foglio] || JSON.stringify(current[foglio]) !== JSON.stringify(cols)) {
+                current[foglio] = cols;
+                await SB.post('app_config', { key: 'sheet_headers', value: current }, 'key');
+            }
+        }
+    </script>
+</body>
+</html>
