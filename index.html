@@ -520,6 +520,18 @@
             return db;
         }
 
+        // Mappa nomeFoglio → nomeTabella Supabase (popolata al sync)
+        let TABLE_MAP = {};
+
+        // Stessa funzione usata dallo script di migrazione — converte nomi colonne
+        function sanitizzaNome(nome) {
+            return nome.toLowerCase().trim()
+                .replace(/\s+/g, '_')
+                .replace(/[^a-z0-9_]/g, '_')
+                .replace(/_+/g, '_')
+                .replace(/^_|_$/g, '');
+        }
+
         // ============================================================
         // CONFIGURAZIONE APP
         // ============================================================
@@ -1004,16 +1016,37 @@
             const btnSync = document.getElementById('btn-sync');
             btnSync.innerText = "⏳ Sincronizzazione...";
             try {
-                // Carica righe + config + headers in parallelo
-                const [rows, configRows] = await Promise.all([
-                    SB.get('sheet_data', '?select=*&order=id.asc'),
-                    SB.get('app_config', '?select=key,value')
-                ]);
+                // Carica configurazione
+                const configRows = await SB.get('app_config', '?select=key,value');
                 const cfgMap = {};
                 configRows.forEach(r => { cfgMap[r.key] = r.value; });
-                APP_CONFIG   = cfgMap.main_config || {};
-                const headers = cfgMap.sheet_headers || {};
-                DATABASE     = buildDatabase(rows, headers);
+                APP_CONFIG = cfgMap.main_config || {};
+                TABLE_MAP  = cfgMap.sheet_table_map || {};   // {"SAT":"sat","SCHEDE":"schede",...}
+                const headersMap = cfgMap.sheet_headers || {}; // {"SAT":["DATA e ORA","TARGA AUTO",...]}
+
+                // Carica tutte le tabelle in parallelo
+                const db = {};
+                await Promise.all(Object.entries(TABLE_MAP).map(async ([nomeFoglio, nomeTabella]) => {
+                    try {
+                        const rows = await SB.get(nomeTabella, '?select=*&order=_id.asc');
+                        const intestazioni = headersMap[nomeFoglio] || [];
+                        db[nomeFoglio] = {
+                            intestazioni,
+                            righe: rows.map(row => {
+                                const riga = { _rowIndex: row._id };
+                                intestazioni.forEach(col => {
+                                    riga[col] = row[sanitizzaNome(col)] ?? '';
+                                });
+                                return riga;
+                            })
+                        };
+                    } catch(e) {
+                        console.warn(`Errore caricamento foglio ${nomeFoglio}:`, e);
+                        db[nomeFoglio] = { intestazioni: headersMap[nomeFoglio] || [], righe: [] };
+                    }
+                }));
+                DATABASE = db;
+
                 renderMenu();
                 if (FOGLIO_ATTIVO && DATABASE[FOGLIO_ATTIVO]) caricaDati(FOGLIO_ATTIVO);
                 document.getElementById('status-message').style.display = "none";
@@ -1358,8 +1391,10 @@
             const indici = Array.from(document.querySelectorAll('.row-chk:checked')).map(c => parseInt(c.dataset.idx));
             if (!indici.length) return;
             if (!confirm(`Eliminare definitivamente ${indici.length} rig${indici.length===1?'a':'he'}?`)) return;
+            const nomeTabella = TABLE_MAP[FOGLIO_ATTIVO];
+            if (!nomeTabella) { alert("Tabella non trovata."); return; }
             try {
-                await SB.del('sheet_data', `?id=in.(${indici.join(',')})`);
+                await SB.del(nomeTabella, `?_id=in.(${indici.join(',')})`);
                 deselezionaTutti();
                 sincronizza();
             } catch(e) {
@@ -1457,8 +1492,10 @@
 
         async function eliminaRiga(rowIndex) {
             if (!confirm("Eliminare questa riga definitivamente?")) return;
+            const nomeTabella = TABLE_MAP[FOGLIO_ATTIVO];
+            if (!nomeTabella) { alert("Tabella non trovata."); return; }
             try {
-                await SB.del('sheet_data', `?id=eq.${rowIndex}`);
+                await SB.del(nomeTabella, `?_id=eq.${rowIndex}`);
                 sincronizza();
             } catch(e) {
                 alert("Errore eliminazione: " + e.message);
@@ -1671,21 +1708,25 @@
             let cols = config.colonneVisibili && config.colonneVisibili.length > 0
                 ? intestazioni.filter(h => config.colonneVisibili.includes(h)) : intestazioni;
             const btn = document.getElementById('btn-save-modal');
-            let nuoviDati = {};
+            const nomeTabella = TABLE_MAP[FOGLIO_ATTIVO];
+            if (!nomeTabella) { alert("Tabella non trovata per " + FOGLIO_ATTIVO); return; }
+
+            // Costruisce payload con nomi colonne sanitizzati
+            const payload = {};
             intestazioni.forEach(col => {
-                nuoviDati[col] = cols.includes(col)
+                const val = cols.includes(col)
                     ? (document.getElementById(`input-${col}`)?.value ?? "")
                     : (RIGA_ORIGINALE_IN_MODIFICA ? RIGA_ORIGINALE_IN_MODIFICA[col] || "" : "");
+                payload[sanitizzaNome(col)] = val;
             });
+
             const rigaId = RIGA_ORIGINALE_IN_MODIFICA?._rowIndex ?? null;
             btn.innerText = "⏳ Salvataggio..."; btn.disabled = true;
             try {
                 if (rigaId) {
-                    await SB.patch('sheet_data', `?id=eq.${rigaId}`, { data: nuoviDati });
+                    await SB.patch(nomeTabella, `?_id=eq.${rigaId}`, payload);
                 } else {
-                    // Aggiorna headers se ci sono colonne nuove
-                    await aggiornaHeaders(FOGLIO_ATTIVO, intestazioni);
-                    await SB.post('sheet_data', { sheet_name: FOGLIO_ATTIVO, data: nuoviDati });
+                    await SB.post(nomeTabella, payload);
                 }
                 chiudiModal('modal-form');
                 sincronizza();
@@ -1693,16 +1734,6 @@
                 alert("Errore: " + e.message);
             } finally {
                 btn.innerText = "Salva Dati"; btn.disabled = false;
-            }
-        }
-
-        // Assicura che gli headers del foglio siano salvati in app_config
-        async function aggiornaHeaders(foglio, cols) {
-            const rows = await SB.get('app_config', '?key=eq.sheet_headers&select=value');
-            const current = rows[0]?.value || {};
-            if (!current[foglio] || JSON.stringify(current[foglio]) !== JSON.stringify(cols)) {
-                current[foglio] = cols;
-                await SB.post('app_config', { key: 'sheet_headers', value: current }, 'key');
             }
         }
     </script>
