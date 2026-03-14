@@ -608,62 +608,38 @@
                 configRows.forEach(r => { cfgMap[r.key] = r.value; });
                 APP_CONFIG = cfgMap.main_config || {};
 
-                // 2. Scopre tutte le tabelle disponibili in Supabase
-                //    usando information_schema — nessuna mappa hardcoded
-                const tabelleInfo = await SB.get(
-                    'information_schema.tables',
-                    `?select=table_name&table_schema=eq.public&table_type=eq.BASE TABLE&order=table_name.asc`
-                );
-                const tabelle = tabelleInfo
-                    .map(t => t.table_name)
-                    .filter(t => !TABELLE_SISTEMA.includes(t));
-
-                // 3. Per ogni tabella scopre le colonne e carica i dati
+                // 2. Legge la mappa tabelle da app_config (salvata dallo script di migrazione)
+                //    formato: {"SAT":"sat","SCHEDE":"schede",...}
+                const tableMap = cfgMap.sheet_table_map || {};
                 const headersMap = cfgMap.sheet_headers || {};
-                const tableMapInv = {}; // nomeTabella → nomeFoglio originale
-                if (cfgMap.sheet_table_map) {
-                    Object.entries(cfgMap.sheet_table_map).forEach(([foglio, tab]) => {
-                        tableMapInv[tab] = foglio;
-                    });
+
+                if (Object.keys(tableMap).length === 0) {
+                    alert("Nessuna tabella trovata in app_config.sheet_table_map.\nRiesegui lo script di migrazione GAS.");
+                    btnSync.innerText = "🔄 Errore Sync";
+                    return;
                 }
 
+                // 3. Carica tutte le tabelle in parallelo
                 const db = {};
-                await Promise.all(tabelle.map(async nomeTabella => {
+                await Promise.all(Object.entries(tableMap).map(async ([nomeFoglio, nomeTabella]) => {
                     try {
-                        // Nome display: usa nome originale se disponibile, altrimenti uppercase tabella
-                        const nomeFoglio = tableMapInv[nomeTabella] || nomeTabella.toUpperCase();
-
-                        // Ottieni colonne dalla tabella
-                        const colonneInfo = await SB.get(
-                            'information_schema.columns',
-                            `?select=column_name&table_schema=eq.public&table_name=eq.${nomeTabella}&column_name=neq.id&order=ordinal_position.asc`
-                        );
-                        const colonneDB = colonneInfo.map(c => c.column_name);
-
-                        // Headers originali (nomi in italiano) se disponibili
-                        const intestazioni = headersMap[nomeFoglio] || colonneDB;
-
-                        // Carica i dati
                         const rows = await SB.get(nomeTabella, '?select=*&order=id.asc');
+                        const intestazioni = headersMap[nomeFoglio] || [];
 
                         db[nomeFoglio] = {
                             intestazioni,
                             righe: rows.map(row => {
                                 const riga = { _rowIndex: row.id };
-                                intestazioni.forEach((col, idx) => {
-                                    // Mappa: nome originale → nome sanitizzato nel DB
-                                    const colDB = colonneDB[idx] || sanitizzaNome(col);
-                                    riga[col] = row[colDB] ?? '';
+                                intestazioni.forEach(col => {
+                                    riga[col] = row[sanitizzaNome(col)] ?? '';
                                 });
                                 return riga;
                             })
                         };
-
-                        // Aggiorna TABLE_MAP in memoria
                         TABLE_MAP[nomeFoglio] = nomeTabella;
-
                     } catch(e) {
-                        console.warn(`Errore caricamento ${nomeTabella}:`, e.message);
+                        console.warn(`Errore caricamento ${nomeFoglio}:`, e.message);
+                        db[nomeFoglio] = { intestazioni: headersMap[nomeFoglio] || [], righe: [] };
                     }
                 }));
 
