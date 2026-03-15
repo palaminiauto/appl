@@ -20,7 +20,7 @@ const BASEROW_TABLES = {
     "SAT":        885660,
     "CALENDARIO": 885659,
     // Aggiungi le altre tabelle man mano che le importi:
-    // "SCHEDE":   000000,
+    "APP_CONFIG": 886190,
     // "PNM":      000000,
     // "NOLEGGIO": 000000,
 };
