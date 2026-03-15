@@ -1354,7 +1354,7 @@
                 // ── LOGICA APP CERCA ──────────────────────────────────────
                 // Solo se siamo in SAT e APP CERCA ha un valore
                 if (FOGLIO_ATTIVO === 'SAT') {
-                    const appCerca = payload['APP CERCA'] || '';
+                    const appCerca = payload['GENERA APP'] || '';
                     const targa   = payload['TARGA AUTO'] || '';
                     if (appCerca && appCerca.trim() !== '' && targa) {
                         await eseguiAppCerca(appCerca.trim(), targa);
