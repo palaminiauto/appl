@@ -10,7 +10,7 @@
 // ============================================================
 
 const BASEROW_URL      = "https://api.baserow.io";
-const BASEROW_TOKEN    = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
+const BASEROW_TOKEN    = "CoWju8QeRzlV5or7HSoz6y1Zc8FhYSFm";
 const BASEROW_PASSWORD = "segreto2026";
 
 // Mappa nome foglio → ID tabella Baserow
