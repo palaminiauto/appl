@@ -1352,11 +1352,12 @@
                 }
 
                 // ── LOGICA APP CERCA ──────────────────────────────────────
-                // Solo se siamo in SAT e APP CERCA ha un valore
+                // Solo se siamo in SAT e GENERA APP è diventato YES
                 if (FOGLIO_ATTIVO === 'SAT') {
-                    const appCerca = payload['GENERA APP'] || '';
-                    const targa   = payload['TARGA AUTO'] || '';
-                    if (appCerca && appCerca.trim() !== '' && targa) {
+                    const generaApp = payload['GENERA APP'] || '';
+                    const appCerca  = payload['APP CERCA']  || '';
+                    const targa     = payload['TARGA AUTO']  || '';
+                    if (generaApp.trim().toUpperCase() === 'YES' && appCerca.trim() !== '' && targa) {
                         await eseguiAppCerca(appCerca.trim(), targa);
                     }
                 }
