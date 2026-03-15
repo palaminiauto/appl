@@ -1350,12 +1350,74 @@
                 } else {
                     await BR.post(tableId, payload);
                 }
+
+                // ── LOGICA APP CERCA ──────────────────────────────────────
+                // Solo se siamo in SAT e APP CERCA ha un valore
+                if (FOGLIO_ATTIVO === 'SAT') {
+                    const appCerca = payload['APP CERCA'] || '';
+                    const targa   = payload['TARGA AUTO'] || '';
+                    if (appCerca && appCerca.trim() !== '' && targa) {
+                        await eseguiAppCerca(appCerca.trim(), targa);
+                    }
+                }
+                // ─────────────────────────────────────────────────────────
+
                 chiudiModal('modal-form');
                 sincronizza();
             } catch(e) {
                 alert("Errore: " + e.message);
             } finally {
                 btn.innerText = "Salva Dati"; btn.disabled = false;
+            }
+        }
+
+        // ============================================================
+        // LOGICA APP CERCA
+        // Cerca in CALENDARIO (LIB A → LIB M → LIB S) il valore appCerca
+        // e scrive la targa nella colonna del tecnico (ANDREA / MATTEO / SARA)
+        // Priorità: ANDREA prima, poi MATTEO, poi SARA — scrive solo una volta
+        // ============================================================
+        async function eseguiAppCerca(appCerca, targa) {
+            const tableIdCal = BASEROW_TABLES['CALENDARIO'];
+            if (!tableIdCal) {
+                console.warn('APP CERCA: tabella CALENDARIO non trovata in BASEROW_TABLES');
+                return;
+            }
+
+            try {
+                // Legge tutte le righe del CALENDARIO
+                const righe = await BR.getAll(tableIdCal);
+
+                // Mappa colonna di ricerca → colonna tecnico da scrivere
+                const mappa = [
+                    { cerca: 'LIB A', scrivi: 'ANDREA' },
+                    { cerca: 'LIB M', scrivi: 'MATTEO' },
+                    { cerca: 'LIB S', scrivi: 'SARA'   },
+                ];
+
+                let trovato = false;
+                for (const { cerca, scrivi } of mappa) {
+                    if (trovato) break;
+
+                    // Cerca la riga in CALENDARIO dove la colonna LIB X == appCerca
+                    const rigaTarget = righe.find(r =>
+                        String(r[cerca] || '').trim() === appCerca
+                    );
+
+                    if (rigaTarget) {
+                        // Scrive la targa nella colonna del tecnico
+                        await BR.patch(tableIdCal, rigaTarget.id, { [scrivi]: targa });
+                        console.log(`APP CERCA: trovato in ${cerca} → scritto ${targa} in ${scrivi} (riga ${rigaTarget.id})`);
+                        trovato = true;
+                    }
+                }
+
+                if (!trovato) {
+                    console.warn(`APP CERCA: nessuna corrispondenza trovata per "${appCerca}" in LIB A, LIB M, LIB S`);
+                }
+            } catch(e) {
+                console.error('Errore APP CERCA:', e.message);
+                // Non blocca il salvataggio — avviso silenzioso
             }
         }
     </script>
