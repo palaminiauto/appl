@@ -1,8 +1,15 @@
 // ============================================================
-// PALAMINI AUTO — Configurazione Supabase
-// Modifica questi due valori con i tuoi dati
-// Trovi entrambi su: supabase.com → tuo progetto → Settings → API
+// PALAMINI AUTO — Configurazione Baserow
+// ============================================================
+// Dove trovare questi valori:
+// - BASEROW_URL: di solito https://api.baserow.io (cloud ufficiale)
+// - BASEROW_TOKEN: baserow.io → il tuo profilo → Settings → API tokens → crea uno nuovo
+// - BASEROW_DATABASE_ID: apri il tuo database su Baserow → guarda l'URL
+//   es. baserow.io/database/123/ → il numero è il DATABASE ID
+// - BASEROW_PASSWORD: la password che vuoi usare per entrare nell'app
 // ============================================================
 
-const SUPABASE_URL = "https://tnrjdowksorqdcujmfuo.supabase.co";  // ← il tuo Project URL
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRucmpkb3drc29ycWRjdWptZnVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MDQ1NjcsImV4cCI6MjA4ODk4MDU2N30.mMfTJMvSbvYiNcfoVXwppLhWK16H-n0IQQON_kfmxN0";  // ← la tua anon/public key
+const BASEROW_URL         = "https://api.baserow.io";
+const BASEROW_TOKEN       = "3ruPK3P9Eu5RTaB1z7lQRY10Iz3gNTK1";  // ← il tuo API token
+const BASEROW_DATABASE_ID = 393688;   // ← il numero ID del tuo database
+const BASEROW_PASSWORD    = "segreto2026";  // ← la password di accesso all'app
