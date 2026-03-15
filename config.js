@@ -11,5 +11,5 @@
 
 const BASEROW_URL         = "https://api.baserow.io";
 const BASEROW_TOKEN       = "3ruPK3P9Eu5RTaB1z7lQRY10Iz3gNTK1";  // ← il tuo API token
-const BASEROW_DATABASE_ID = 393688;   // ← il numero ID del tuo database
+const BASEROW_DATABASE_ID = "393688";   // ← il numero ID del tuo database
 const BASEROW_PASSWORD    = "segreto2026";  // ← la password di accesso all'app
