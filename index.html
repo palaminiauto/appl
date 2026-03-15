@@ -584,7 +584,7 @@
         }
 
         // ============================================================
-        // SYNC PRINCIPALE — legge tutte le tabelle dal database Baserow
+        // SYNC PRINCIPALE — legge le tabelle da BASEROW_TABLES in config.js
         // ============================================================
         async function sincronizza() {
             const sessione = JSON.parse(localStorage.getItem('appSession'));
@@ -592,25 +592,25 @@
             const btnSync = document.getElementById('btn-sync');
             btnSync.innerText = "⏳ Sincronizzazione...";
             try {
-                // 1. Carica APP_CONFIG da localStorage
                 APP_CONFIG = JSON.parse(localStorage.getItem('appConfig') || '{}');
 
-                // 2. Scopre automaticamente tutte le tabelle del database Baserow
-                const tabelle = await BR.getTables(BASEROW_DATABASE_ID);
+                if (!BASEROW_TABLES || Object.keys(BASEROW_TABLES).length === 0) {
+                    alert("Nessuna tabella configurata in config.js — aggiungi le tabelle in BASEROW_TABLES.");
+                    btnSync.innerText = "🔄 Errore Sync";
+                    return;
+                }
 
-                // 3. Carica i dati di ogni tabella in parallelo
+                // Carica tutte le tabelle in parallelo
                 const db = {};
-                await Promise.all(tabelle.map(async tabella => {
+                await Promise.all(Object.entries(BASEROW_TABLES).map(async ([nomeFoglio, tableId]) => {
                     try {
-                        const rows = await BR.getAll(tabella.id);
-                        // Baserow con user_field_names=true restituisce già i nomi originali
-                        // Ricava le intestazioni dalle chiavi della prima riga (escluso "id" e "order")
+                        const rows = await BR.getAll(tableId);
                         const campiDaEscludere = new Set(['id', 'order']);
                         const intestazioni = rows.length > 0
                             ? Object.keys(rows[0]).filter(k => !campiDaEscludere.has(k))
                             : [];
 
-                        db[tabella.name] = {
+                        db[nomeFoglio] = {
                             intestazioni,
                             righe: rows.map(row => {
                                 const riga = { _rowIndex: row.id };
@@ -618,10 +618,10 @@
                                 return riga;
                             })
                         };
-                        TABLE_MAP[tabella.name] = tabella.id;
+                        TABLE_MAP[nomeFoglio] = tableId;
                     } catch(e) {
-                        console.warn(`Errore caricamento ${tabella.name}:`, e.message);
-                        db[tabella.name] = { intestazioni: [], righe: [] };
+                        console.warn(`Errore caricamento ${nomeFoglio}:`, e.message);
+                        db[nomeFoglio] = { intestazioni: [], righe: [] };
                     }
                 }));
 
