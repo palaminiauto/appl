@@ -363,6 +363,15 @@
         });
 
         const BR = {
+            // Legge i tipi di campo di una tabella (serve per escludere i formula fields)
+            async getFields(tableId) {
+                const r = await fetch(
+                    `${BASEROW_URL}/api/database/fields/table/${tableId}/`,
+                    { headers: BR_HDR() }
+                );
+                if (!r.ok) throw new Error(await r.text());
+                return r.json();
+            },
             // Legge tutte le righe di una tabella (gestisce paginazione automatica)
             async getAll(tableId) {
                 let results = [];
@@ -583,6 +592,9 @@
             document.getElementById('drawer-overlay').classList.remove('open');
         }
 
+        // Mappa nomeFoglio → set di colonne formula (read-only)
+        let FORMULA_FIELDS = {};  // { "SAT": Set(["col1","col2"]), ... }
+
         // ============================================================
         // SYNC PRINCIPALE — legge le tabelle da BASEROW_TABLES in config.js
         // ============================================================
@@ -604,7 +616,25 @@
                 const db = {};
                 await Promise.all(Object.entries(BASEROW_TABLES).map(async ([nomeFoglio, tableId]) => {
                     try {
-                        const rows = await BR.getAll(tableId);
+                        // Carica righe e tipi di campo in parallelo
+                        const [rows, fields] = await Promise.all([
+                            BR.getAll(tableId),
+                            BR.getFields(tableId).catch(() => [])
+                        ]);
+
+                        // Salva i campi read-only (formula, lookup, count ecc.)
+                        const tipiReadOnly = new Set([
+                            'formula', 'lookup', 'count', 'rollup',
+                            'link_row', 'created_on', 'last_modified',
+                            'created_by', 'last_modified_by', 'autonumber',
+                            'uuid', 'multiple_collaborators'
+                        ]);
+                        FORMULA_FIELDS[nomeFoglio] = new Set(
+                            fields
+                                .filter(f => tipiReadOnly.has(f.type))
+                                .map(f => f.name)
+                        );
+
                         const campiDaEscludere = new Set(['id', 'order']);
                         const intestazioni = rows.length > 0
                             ? Object.keys(rows[0]).filter(k => !campiDaEscludere.has(k))
@@ -622,6 +652,7 @@
                     } catch(e) {
                         console.warn(`Errore caricamento ${nomeFoglio}:`, e.message);
                         db[nomeFoglio] = { intestazioni: [], righe: [] };
+                        FORMULA_FIELDS[nomeFoglio] = new Set();
                     }
                 }));
 
@@ -1259,41 +1290,53 @@
         function apriForm(rigaJSON) {
             const config = APP_CONFIG[FOGLIO_ATTIVO] || {}, intestazioni = DATABASE[FOGLIO_ATTIVO].intestazioni;
             const formatiCol = config.formatiColonne || {};
+            const formulaCols = FORMULA_FIELDS[FOGLIO_ATTIVO] || new Set();
             let cols = config.colonneVisibili && config.colonneVisibili.length > 0 ? intestazioni.filter(h => config.colonneVisibili.includes(h)) : intestazioni;
             const container = document.getElementById('modal-form-fields'); container.innerHTML = "";
             RIGA_ORIGINALE_IN_MODIFICA = rigaJSON ? JSON.parse(decodeURIComponent(rigaJSON)) : null;
             document.getElementById('modal-title').innerText = rigaJSON ? "Modifica Record" : "Nuovo Record";
             cols.forEach(col => {
                 let val = RIGA_ORIGINALE_IN_MODIFICA && RIGA_ORIGINALE_IN_MODIFICA[col] !== undefined ? RIGA_ORIGINALE_IN_MODIFICA[col] : "";
-                const tipo = formatiCol[col] || 'text';
-                // Converti valore esistente nel formato atteso dall'input HTML
+                const isFormula = formulaCols.has(col);
+                const tipo = isFormula ? 'text' : (formatiCol[col] || 'text');
                 let inputVal = String(val);
-                if (tipo === 'date' || tipo === 'datetime-local') {
-                    // Se è ISO, usa direttamente; se è dd/mm/yyyy HH:MM, converti
-                    const m = inputVal.match(/^(\d{2})\/(\d{2})\/(\d{4})(?: (\d{2}):(\d{2}))?/);
-                    if (m) inputVal = tipo === 'date' ? `${m[3]}-${m[2]}-${m[1]}` : `${m[3]}-${m[2]}-${m[1]}T${m[4]||'00'}:${m[5]||'00'}`;
-                    else if (inputVal.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/)) inputVal = tipo === 'date' ? inputVal.slice(0,10) : inputVal.slice(0,16);
-                } else if (tipo === 'time') {
-                    // Estrai HH:MM se c'è una data davanti
-                    const mt = inputVal.match(/(\d{2}:\d{2})/);
-                    if (mt) inputVal = mt[1];
+                if (!isFormula) {
+                    if (tipo === 'date' || tipo === 'datetime-local') {
+                        const m = inputVal.match(/^(\d{2})\/(\d{2})\/(\d{4})(?: (\d{2}):(\d{2}))?/);
+                        if (m) inputVal = tipo === 'date' ? `${m[3]}-${m[2]}-${m[1]}` : `${m[3]}-${m[2]}-${m[1]}T${m[4]||'00'}:${m[5]||'00'}`;
+                        else if (inputVal.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/)) inputVal = tipo === 'date' ? inputVal.slice(0,10) : inputVal.slice(0,16);
+                    } else if (tipo === 'time') {
+                        const mt = inputVal.match(/(\d{2}:\d{2})/);
+                        if (mt) inputVal = mt[1];
+                    }
                 }
-                container.innerHTML += `<div class="form-group"><label>${col}</label><input type="${tipo}" id="input-${col}" value="${inputVal}" style="width:100%;padding:10px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;"></div>`;
+                const formulaStyle = isFormula
+                    ? 'background:#f0f0f0; color:#999; cursor:not-allowed; border:1px dashed #ccc;'
+                    : 'border:1px solid #ccc;';
+                const formulaLabel = isFormula ? ' <span style="font-size:10px;color:#aaa;font-style:italic;">(formula)</span>' : '';
+                container.innerHTML += `<div class="form-group">
+                    <label>${col}${formulaLabel}</label>
+                    <input type="${tipo}" id="input-${col}" value="${inputVal}"
+                        ${isFormula ? 'disabled readonly' : ''}
+                        style="width:100%;padding:10px;border-radius:4px;box-sizing:border-box;${formulaStyle}">
+                </div>`;
             });
             document.getElementById('modal-form').style.display = "flex";
         }
 
         async function salvaDati() {
             const intestazioni = DATABASE[FOGLIO_ATTIVO].intestazioni, config = APP_CONFIG[FOGLIO_ATTIVO] || {};
+            const formulaCols = FORMULA_FIELDS[FOGLIO_ATTIVO] || new Set();
             let cols = config.colonneVisibili && config.colonneVisibili.length > 0
                 ? intestazioni.filter(h => config.colonneVisibili.includes(h)) : intestazioni;
             const btn = document.getElementById('btn-save-modal');
             const tableId = TABLE_MAP[FOGLIO_ATTIVO];
             if (!tableId) { alert("Tabella non trovata per " + FOGLIO_ATTIVO); return; }
 
-            // Baserow usa i nomi originali delle colonne — nessuna sanitizzazione
+            // Esclude i campi formula — sono read-only e Baserow rifiuta se li mandi
             const payload = {};
             intestazioni.forEach(col => {
+                if (formulaCols.has(col)) return; // salta campi formula
                 payload[col] = cols.includes(col)
                     ? (document.getElementById(`input-${col}`)?.value ?? "")
                     : (RIGA_ORIGINALE_IN_MODIFICA ? RIGA_ORIGINALE_IN_MODIFICA[col] || "" : "");
