@@ -6,7 +6,7 @@
     <title>PALAMINI AUTO</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#4f8bc4">
-    <!-- Supabase config — modifica config.js con i tuoi dati -->
+    <!-- Baserow config — modifica config.js con i tuoi dati -->
     <script src="config.js"></script>
 
     <style>
@@ -350,82 +350,82 @@
         // ============================================================
         // ⚙️ CONFIGURAZIONE — i valori vengono da config.js
         // ============================================================
-        if (typeof SUPABASE_URL === 'undefined' || typeof SUPABASE_KEY === 'undefined') {
-            alert("Manca config.js o le variabili SUPABASE_URL / SUPABASE_KEY non sono definite!");
+        if (typeof BASEROW_URL === 'undefined' || typeof BASEROW_TOKEN === 'undefined') {
+            alert("Manca config.js o le variabili BASEROW_URL / BASEROW_TOKEN non sono definite!");
         }
 
         // ============================================================
-        // LAYER SUPABASE — non modificare sotto questa riga
+        // LAYER BASEROW
         // ============================================================
-        const SB_HDR = () => ({
-            "apikey":        SUPABASE_KEY,
-            "Authorization": "Bearer " + SUPABASE_KEY,
+        const BR_HDR = () => ({
+            "Authorization": "Token " + BASEROW_TOKEN,
             "Content-Type":  "application/json"
         });
 
-        const SB = {
-            async get(table, qs = "") {
-                const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}${qs}`, { headers: SB_HDR() });
+        const BR = {
+            // Legge tutte le righe di una tabella (gestisce paginazione automatica)
+            async getAll(tableId) {
+                let results = [];
+                let page = 1;
+                while (true) {
+                    const r = await fetch(
+                        `${BASEROW_URL}/api/database/rows/table/${tableId}/?user_field_names=true&size=200&page=${page}`,
+                        { headers: BR_HDR() }
+                    );
+                    if (!r.ok) throw new Error(await r.text());
+                    const data = await r.json();
+                    results = results.concat(data.results);
+                    if (!data.next) break;
+                    page++;
+                }
+                return results;
+            },
+            // Lista tabelle di un database
+            async getTables(databaseId) {
+                const r = await fetch(`${BASEROW_URL}/api/database/tables/database/${databaseId}/`, { headers: BR_HDR() });
                 if (!r.ok) throw new Error(await r.text());
                 return r.json();
             },
-            async post(table, body, upsertOn = null) {
-                const prefer = upsertOn
-                    ? "resolution=merge-duplicates,return=representation"
-                    : "return=representation";
-                const qs = upsertOn ? `?on_conflict=${encodeURIComponent(upsertOn)}` : "";
-                const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}${qs}`, {
-                    method: "POST",
-                    headers: { ...SB_HDR(), "Prefer": prefer },
-                    body: JSON.stringify(body)
-                });
+            // Crea riga
+            async post(tableId, body) {
+                const r = await fetch(
+                    `${BASEROW_URL}/api/database/rows/table/${tableId}/?user_field_names=true`,
+                    { method: "POST", headers: BR_HDR(), body: JSON.stringify(body) }
+                );
                 if (!r.ok) throw new Error(await r.text());
                 return r.json();
             },
-            async patch(table, qs, body) {
-                const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}${qs}`, {
-                    method: "PATCH",
-                    headers: { ...SB_HDR(), "Prefer": "return=representation" },
-                    body: JSON.stringify(body)
-                });
+            // Modifica riga
+            async patch(tableId, rowId, body) {
+                const r = await fetch(
+                    `${BASEROW_URL}/api/database/rows/table/${tableId}/${rowId}/?user_field_names=true`,
+                    { method: "PATCH", headers: BR_HDR(), body: JSON.stringify(body) }
+                );
                 if (!r.ok) throw new Error(await r.text());
                 return r.json();
             },
-            async del(table, qs) {
-                const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}${qs}`, {
-                    method: "DELETE", headers: SB_HDR()
-                });
+            // Elimina riga singola
+            async del(tableId, rowId) {
+                const r = await fetch(
+                    `${BASEROW_URL}/api/database/rows/table/${tableId}/${rowId}/`,
+                    { method: "DELETE", headers: BR_HDR() }
+                );
+                if (!r.ok) throw new Error(await r.text());
+                return true;
+            },
+            // Elimina più righe insieme
+            async delBatch(tableId, rowIds) {
+                const r = await fetch(
+                    `${BASEROW_URL}/api/database/rows/table/${tableId}/batch-delete/`,
+                    { method: "DELETE", headers: BR_HDR(), body: JSON.stringify({ items: rowIds }) }
+                );
                 if (!r.ok) throw new Error(await r.text());
                 return true;
             }
         };
 
-        // Costruisce DATABASE dal formato Supabase → formato app
-        function buildDatabase(rows, headersMap) {
-            const db = {};
-            rows.forEach(row => {
-                const s = row.sheet_name;
-                if (!db[s]) db[s] = { intestazioni: headersMap[s] || [], righe: [] };
-                db[s].righe.push({ ...row.data, _rowIndex: row.id });
-            });
-            // Aggiunge fogli vuoti presenti negli headers ma senza righe
-            Object.keys(headersMap).forEach(s => {
-                if (!db[s]) db[s] = { intestazioni: headersMap[s], righe: [] };
-            });
-            return db;
-        }
-
-        // Mappa nomeFoglio → nomeTabella Supabase (popolata al sync)
-        let TABLE_MAP = {};
-
-        // Stessa funzione usata dallo script di migrazione — converte nomi colonne
-        function sanitizzaNome(nome) {
-            return nome.toLowerCase().trim()
-                .replace(/\s+/g, '_')
-                .replace(/[^a-z0-9_]/g, '_')
-                .replace(/_+/g, '_')
-                .replace(/^_|_$/g, '');
-        }
+        // Mappa nomeFoglio → tableId Baserow (popolata al sync)
+        let TABLE_MAP = {};  // { "SAT": 12345, "SCHEDE": 12346, ... }
 
         // ============================================================
         // CONFIGURAZIONE APP
@@ -452,24 +452,17 @@
         };
 
         // ============================================================
-        // LOGIN
+        // LOGIN — password definita in config.js come BASEROW_PASSWORD
         // ============================================================
         async function faiLogin() {
             const pass = document.getElementById('pass-input').value.trim();
             const btn  = document.getElementById('btn-login');
             btn.innerHTML = "⏳ Accesso..."; btn.disabled = true;
-            try {
-                const rows = await SB.get('app_config', `?key=eq.password&select=value`);
-                const storedPass = rows[0]?.value;
-                if (storedPass === pass || storedPass === `"${pass}"`) {
-                    localStorage.setItem('appSession', JSON.stringify({ timestamp: new Date().getTime() }));
-                    window.location.reload();
-                } else {
-                    alert("Password errata");
-                    btn.innerHTML = "Entra"; btn.disabled = false;
-                }
-            } catch(e) {
-                alert("Errore connessione: " + e.message);
+            if (pass === BASEROW_PASSWORD) {
+                localStorage.setItem('appSession', JSON.stringify({ timestamp: new Date().getTime() }));
+                window.location.reload();
+            } else {
+                alert("Password errata");
                 btn.innerHTML = "Entra"; btn.disabled = false;
             }
         }
@@ -591,55 +584,44 @@
         }
 
         // ============================================================
-        // SYNC PRINCIPALE — auto-discovery tabelle da Supabase
+        // SYNC PRINCIPALE — legge tutte le tabelle dal database Baserow
         // ============================================================
-        // Tabelle di sistema da ignorare sempre
-        const TABELLE_SISTEMA = ['app_config', 'cale_data'];
-
         async function sincronizza() {
             const sessione = JSON.parse(localStorage.getItem('appSession'));
             if (!sessione) return;
             const btnSync = document.getElementById('btn-sync');
             btnSync.innerText = "⏳ Sincronizzazione...";
             try {
-                // 1. Carica configurazione app
-                const configRows = await SB.get('app_config', '?select=key,value');
-                const cfgMap = {};
-                configRows.forEach(r => { cfgMap[r.key] = r.value; });
-                APP_CONFIG = cfgMap.main_config || {};
+                // 1. Carica APP_CONFIG da localStorage
+                APP_CONFIG = JSON.parse(localStorage.getItem('appConfig') || '{}');
 
-                // 2. Legge la mappa tabelle da app_config (salvata dallo script di migrazione)
-                //    formato: {"SAT":"sat","SCHEDE":"schede",...}
-                const tableMap = cfgMap.sheet_table_map || {};
-                const headersMap = cfgMap.sheet_headers || {};
+                // 2. Scopre automaticamente tutte le tabelle del database Baserow
+                const tabelle = await BR.getTables(BASEROW_DATABASE_ID);
 
-                if (Object.keys(tableMap).length === 0) {
-                    alert("Nessuna tabella trovata in app_config.sheet_table_map.\nRiesegui lo script di migrazione GAS.");
-                    btnSync.innerText = "🔄 Errore Sync";
-                    return;
-                }
-
-                // 3. Carica tutte le tabelle in parallelo
+                // 3. Carica i dati di ogni tabella in parallelo
                 const db = {};
-                await Promise.all(Object.entries(tableMap).map(async ([nomeFoglio, nomeTabella]) => {
+                await Promise.all(tabelle.map(async tabella => {
                     try {
-                        const rows = await SB.get(nomeTabella, '?select=*&order=id.asc');
-                        const intestazioni = headersMap[nomeFoglio] || [];
+                        const rows = await BR.getAll(tabella.id);
+                        // Baserow con user_field_names=true restituisce già i nomi originali
+                        // Ricava le intestazioni dalle chiavi della prima riga (escluso "id" e "order")
+                        const campiDaEscludere = new Set(['id', 'order']);
+                        const intestazioni = rows.length > 0
+                            ? Object.keys(rows[0]).filter(k => !campiDaEscludere.has(k))
+                            : [];
 
-                        db[nomeFoglio] = {
+                        db[tabella.name] = {
                             intestazioni,
                             righe: rows.map(row => {
                                 const riga = { _rowIndex: row.id };
-                                intestazioni.forEach(col => {
-                                    riga[col] = row[sanitizzaNome(col)] ?? '';
-                                });
+                                intestazioni.forEach(col => { riga[col] = row[col] ?? ''; });
                                 return riga;
                             })
                         };
-                        TABLE_MAP[nomeFoglio] = nomeTabella;
+                        TABLE_MAP[tabella.name] = tabella.id;
                     } catch(e) {
-                        console.warn(`Errore caricamento ${nomeFoglio}:`, e.message);
-                        db[nomeFoglio] = { intestazioni: headersMap[nomeFoglio] || [], righe: [] };
+                        console.warn(`Errore caricamento ${tabella.name}:`, e.message);
+                        db[tabella.name] = { intestazioni: [], righe: [] };
                     }
                 }));
 
@@ -989,10 +971,10 @@
             const indici = Array.from(document.querySelectorAll('.row-chk:checked')).map(c => parseInt(c.dataset.idx));
             if (!indici.length) return;
             if (!confirm(`Eliminare definitivamente ${indici.length} rig${indici.length===1?'a':'he'}?`)) return;
-            const nomeTabella = TABLE_MAP[FOGLIO_ATTIVO];
-            if (!nomeTabella) { alert("Tabella non trovata."); return; }
+            const tableId = TABLE_MAP[FOGLIO_ATTIVO];
+            if (!tableId) { alert("Tabella non trovata."); return; }
             try {
-                await SB.del(nomeTabella, `?id=in.(${indici.join(',')})`);
+                await BR.delBatch(tableId, indici);
                 deselezionaTutti();
                 sincronizza();
             } catch(e) {
@@ -1090,10 +1072,10 @@
 
         async function eliminaRiga(rowIndex) {
             if (!confirm("Eliminare questa riga definitivamente?")) return;
-            const nomeTabella = TABLE_MAP[FOGLIO_ATTIVO];
-            if (!nomeTabella) { alert("Tabella non trovata."); return; }
+            const tableId = TABLE_MAP[FOGLIO_ATTIVO];
+            if (!tableId) { alert("Tabella non trovata."); return; }
             try {
-                await SB.del(nomeTabella, `?id=eq.${rowIndex}`);
+                await BR.del(tableId, rowIndex);
                 sincronizza();
             } catch(e) {
                 alert("Errore eliminazione: " + e.message);
@@ -1269,9 +1251,9 @@
             }).finally(() => { btn.innerText = "Salva Impostazioni"; btn.disabled = false; });
         }
 
-        // Helper condiviso per salvare APP_CONFIG su Supabase
+        // APP_CONFIG salvato in localStorage — nessun backend necessario
         async function salvaConfig() {
-            await SB.post('app_config', { key: 'main_config', value: APP_CONFIG }, 'key');
+            localStorage.setItem('appConfig', JSON.stringify(APP_CONFIG));
         }
 
         function apriForm(rigaJSON) {
@@ -1306,25 +1288,24 @@
             let cols = config.colonneVisibili && config.colonneVisibili.length > 0
                 ? intestazioni.filter(h => config.colonneVisibili.includes(h)) : intestazioni;
             const btn = document.getElementById('btn-save-modal');
-            const nomeTabella = TABLE_MAP[FOGLIO_ATTIVO];
-            if (!nomeTabella) { alert("Tabella non trovata per " + FOGLIO_ATTIVO); return; }
+            const tableId = TABLE_MAP[FOGLIO_ATTIVO];
+            if (!tableId) { alert("Tabella non trovata per " + FOGLIO_ATTIVO); return; }
 
-            // Costruisce payload con nomi colonne sanitizzati
+            // Baserow usa i nomi originali delle colonne — nessuna sanitizzazione
             const payload = {};
             intestazioni.forEach(col => {
-                const val = cols.includes(col)
+                payload[col] = cols.includes(col)
                     ? (document.getElementById(`input-${col}`)?.value ?? "")
                     : (RIGA_ORIGINALE_IN_MODIFICA ? RIGA_ORIGINALE_IN_MODIFICA[col] || "" : "");
-                payload[sanitizzaNome(col)] = val;
             });
 
             const rigaId = RIGA_ORIGINALE_IN_MODIFICA?._rowIndex ?? null;
             btn.innerText = "⏳ Salvataggio..."; btn.disabled = true;
             try {
                 if (rigaId) {
-                    await SB.patch(nomeTabella, `?id=eq.${rigaId}`, payload);
+                    await BR.patch(tableId, rigaId, payload);
                 } else {
-                    await SB.post(nomeTabella, payload);
+                    await BR.post(tableId, payload);
                 }
                 chiudiModal('modal-form');
                 sincronizza();
