@@ -1005,7 +1005,18 @@
             const tableId = TABLE_MAP[FOGLIO_ATTIVO];
             if (!tableId) { alert("Tabella non trovata."); return; }
             try {
-                await BR.delBatch(tableId, indici);
+                // Elimina in sequenza — il batch delete non è supportato sul piano free
+                for (const idx of indici) {
+                    const r = await fetch(
+                        `${BASEROW_URL}/api/database/rows/table/${tableId}/${idx}/`,
+                        { method: "DELETE", headers: { "Authorization": "Token " + BASEROW_TOKEN } }
+                    );
+                    if (!r.ok) {
+                        const err = await r.text();
+                        alert(`Errore eliminazione riga ${idx} (HTTP ${r.status}):\n${err}`);
+                        return;
+                    }
+                }
                 deselezionaTutti();
                 sincronizza();
             } catch(e) {
@@ -1360,12 +1371,13 @@
                 }
 
                 // ── LOGICA APP CERCA ──────────────────────────────────────
-                // Solo se siamo in SAT e GENERA APP è diventato YES
+                // Trigger: GENERA APP = YES (o true se checkbox Baserow)
                 if (FOGLIO_ATTIVO === 'SAT') {
-                    const generaApp = payload['GENERA APP'] || '';
-                    const appCerca  = payload['APP CERCA']  || '';
-                    const targa     = payload['TARGA AUTO']  || '';
-                    if (generaApp.trim().toUpperCase() === 'YES' && appCerca.trim() !== '' && targa) {
+                    const generaApp = payload['GENERA APP'] ?? payload['GENERA APPUNTAMENTO IN CALENDARIO'] ?? '';
+                    const appCerca  = payload['APP CERCA'] || (RIGA_ORIGINALE_IN_MODIFICA ? RIGA_ORIGINALE_IN_MODIFICA['APP CERCA'] : '') || '';
+                    const targa     = payload['TARGA AUTO'] || (RIGA_ORIGINALE_IN_MODIFICA ? RIGA_ORIGINALE_IN_MODIFICA['TARGA AUTO'] : '') || '';
+                    const isYes     = generaApp === true || String(generaApp).toUpperCase().trim() === 'YES' || generaApp === 1;
+                    if (isYes && appCerca.trim() !== '' && targa) {
                         await eseguiAppCerca(appCerca.trim(), targa);
                     }
                 }
