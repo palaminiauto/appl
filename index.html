@@ -604,7 +604,24 @@
             const btnSync = document.getElementById('btn-sync');
             btnSync.innerText = "⏳ Sincronizzazione...";
             try {
-                APP_CONFIG = JSON.parse(localStorage.getItem('appConfig') || '{}');
+                // 1. Carica APP_CONFIG da Baserow se disponibile, altrimenti localStorage
+                const tableIdConfig = BASEROW_TABLES['_CONFIG'];
+                if (tableIdConfig) {
+                    try {
+                        const configRighe = await BR.getAll(tableIdConfig);
+                        if (configRighe.length > 0 && configRighe[0].valore) {
+                            APP_CONFIG = JSON.parse(configRighe[0].valore);
+                            localStorage.setItem('appConfig', JSON.stringify(APP_CONFIG));
+                        } else {
+                            APP_CONFIG = JSON.parse(localStorage.getItem('appConfig') || '{}');
+                        }
+                    } catch(e) {
+                        console.warn('Errore lettura config da Baserow:', e.message);
+                        APP_CONFIG = JSON.parse(localStorage.getItem('appConfig') || '{}');
+                    }
+                } else {
+                    APP_CONFIG = JSON.parse(localStorage.getItem('appConfig') || '{}');
+                }
 
                 if (!BASEROW_TABLES || Object.keys(BASEROW_TABLES).length === 0) {
                     alert("Nessuna tabella configurata in config.js — aggiungi le tabelle in BASEROW_TABLES.");
@@ -1301,9 +1318,31 @@
             }).finally(() => { btn.innerText = "Salva Impostazioni"; btn.disabled = false; });
         }
 
-        // APP_CONFIG salvato in localStorage — nessun backend necessario
+        // APP_CONFIG salvato su Baserow — condiviso tra tutti i dispositivi
         async function salvaConfig() {
-            localStorage.setItem('appConfig', JSON.stringify(APP_CONFIG));
+            const tableId = BASEROW_TABLES['_CONFIG'];
+            if (!tableId) {
+                // Fallback localStorage se _CONFIG non configurato
+                localStorage.setItem('appConfig', JSON.stringify(APP_CONFIG));
+                return;
+            }
+            try {
+                const righe = await BR.getAll(tableId);
+                const json = JSON.stringify(APP_CONFIG);
+                if (righe.length > 0) {
+                    // Aggiorna la riga esistente
+                    await BR.patch(tableId, righe[0].id, { valore: json });
+                } else {
+                    // Crea la prima riga
+                    await BR.post(tableId, { valore: json });
+                }
+                // Cache locale per accesso rapido
+                localStorage.setItem('appConfig', json);
+            } catch(e) {
+                console.error('Errore salvaConfig:', e.message);
+                // Fallback localStorage
+                localStorage.setItem('appConfig', JSON.stringify(APP_CONFIG));
+            }
         }
 
         function apriForm(rigaJSON) {
