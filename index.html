@@ -1106,7 +1106,15 @@
             const tableId = TABLE_MAP[FOGLIO_ATTIVO];
             if (!tableId) { alert("Tabella non trovata."); return; }
             try {
-                await BR.del(tableId, rowIndex);
+                const r = await fetch(
+                    `${BASEROW_URL}/api/database/rows/table/${tableId}/${rowIndex}/`,
+                    { method: "DELETE", headers: { "Authorization": "Token " + BASEROW_TOKEN } }
+                );
+                if (!r.ok) {
+                    const err = await r.text();
+                    alert(`Errore eliminazione (HTTP ${r.status}):\n${err}`);
+                    return;
+                }
                 sincronizza();
             } catch(e) {
                 alert("Errore eliminazione: " + e.message);
@@ -1381,15 +1389,21 @@
         async function eseguiAppCerca(appCerca, targa) {
             const tableIdCal = BASEROW_TABLES['CALENDARIO'];
             if (!tableIdCal) {
-                console.warn('APP CERCA: tabella CALENDARIO non trovata in BASEROW_TABLES');
+                alert('❌ APP CERCA: tabella CALENDARIO non trovata in config.js\nAggiungi "CALENDARIO": ID_TABELLA in BASEROW_TABLES');
                 return;
             }
 
             try {
-                // Legge tutte le righe del CALENDARIO
-                const righe = await BR.getAll(tableIdCal);
+                // Debug: mostra cosa sta cercando
+                console.log(`APP CERCA: cerco "${appCerca}" in LIB A/M/S, scriverò targa "${targa}"`);
 
-                // Mappa colonna di ricerca → colonna tecnico da scrivere
+                const righe = await BR.getAll(tableIdCal);
+                console.log(`APP CERCA: caricate ${righe.length} righe da CALENDARIO`);
+
+                // Debug: mostra i valori presenti in LIB A per confronto
+                const libAValues = righe.map(r => String(r['LIB A'] || '')).filter(Boolean);
+                console.log(`APP CERCA: valori LIB A trovati:`, libAValues.slice(0,10));
+
                 const mappa = [
                     { cerca: 'LIB A', scrivi: 'ANDREA' },
                     { cerca: 'LIB M', scrivi: 'MATTEO' },
@@ -1399,26 +1413,24 @@
                 let trovato = false;
                 for (const { cerca, scrivi } of mappa) {
                     if (trovato) break;
-
-                    // Cerca la riga in CALENDARIO dove la colonna LIB X == appCerca
                     const rigaTarget = righe.find(r =>
                         String(r[cerca] || '').trim() === appCerca
                     );
-
                     if (rigaTarget) {
-                        // Scrive la targa nella colonna del tecnico
                         await BR.patch(tableIdCal, rigaTarget.id, { [scrivi]: targa });
-                        console.log(`APP CERCA: trovato in ${cerca} → scritto ${targa} in ${scrivi} (riga ${rigaTarget.id})`);
+                        alert(`✅ APP CERCA: trovato "${appCerca}" in ${cerca}\n→ Scritto "${targa}" in colonna ${scrivi} (riga ID ${rigaTarget.id})`);
                         trovato = true;
                     }
                 }
 
                 if (!trovato) {
-                    console.warn(`APP CERCA: nessuna corrispondenza trovata per "${appCerca}" in LIB A, LIB M, LIB S`);
+                    // Mostra i primi valori di ogni colonna per debug
+                    const libMValues = righe.map(r => String(r['LIB M'] || '')).filter(Boolean).slice(0,5);
+                    const libSValues = righe.map(r => String(r['LIB S'] || '')).filter(Boolean).slice(0,5);
+                    alert(`⚠️ APP CERCA: nessuna corrispondenza per "${appCerca}"\n\nValori in LIB A: ${libAValues.slice(0,5).join(', ') || '(vuoto)'}\nValori in LIB M: ${libMValues.join(', ') || '(vuoto)'}\nValori in LIB S: ${libSValues.join(', ') || '(vuoto)'}`);
                 }
             } catch(e) {
-                console.error('Errore APP CERCA:', e.message);
-                // Non blocca il salvataggio — avviso silenzioso
+                alert(`❌ Errore APP CERCA:\n${e.message}`);
             }
         }
     </script>
