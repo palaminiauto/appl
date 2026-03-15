@@ -9,7 +9,18 @@
 // - BASEROW_PASSWORD: la password che vuoi usare per entrare nell'app
 // ============================================================
 
-const BASEROW_URL         = "https://api.baserow.io";
-const BASEROW_TOKEN       = "yLrwWdEdWrC6sqpKKx95ALgof5h11llv";  // ← il tuo API token
-const BASEROW_DATABASE_ID = "393688";   // ← il numero ID del tuo database
-const BASEROW_PASSWORD    = "segreto2026";  // ← la password di accesso all'app
+const BASEROW_URL      = "https://api.baserow.io";
+const BASEROW_TOKEN    = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
+const BASEROW_PASSWORD = "segreto2026";
+
+// Mappa nome foglio → ID tabella Baserow
+// Trovi gli ID in: Settings → Database Token → vedi gli ID accanto ai nomi
+// Oppure dall'URL quando sei dentro la tabella: /database/393688/table/885660/
+const BASEROW_TABLES = {
+    "SAT":        885660,
+    "CALENDARIO": 885659,
+    // Aggiungi le altre tabelle man mano che le importi:
+    // "SCHEDE":   000000,
+    // "PNM":      000000,
+    // "NOLEGGIO": 000000,
+};
