@@ -131,20 +131,45 @@
 
         /* MODALI */
         .modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;z-index:1000;}
-        .modal-content{background:white;padding:24px;border-radius:10px;width:90%;max-width:480px;max-height:90vh;overflow-y:auto;box-shadow:0 16px 48px rgba(0,0,0,0.18);}
-        .modal-content h3{margin:0 0 18px;font-size:14px;font-weight:600;color:var(--ink);}
+        .modal-content{background:white;padding:24px;border-radius:10px;width:90%;max-width:520px;max-height:92vh;overflow-y:auto;box-shadow:0 16px 48px rgba(0,0,0,0.18);}
+        .modal-content h3{margin:0 0 14px;font-size:14px;font-weight:600;color:var(--ink);}
+        /* Modal form — largo, 2 colonne */
+        #modal-form .modal-content{max-width:860px;width:95%;display:flex;flex-direction:column;}
+        #modal-form-fields{display:grid;grid-template-columns:1fr 1fr;gap:4px 20px;}
+        .form-field-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #f6f6f6;}
+        .form-field-row label{min-width:120px;max-width:120px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-3);flex-shrink:0;line-height:1.3;}
+        .form-field-row input,.form-field-row select{flex:1;min-width:0;padding:6px 9px;border:1px solid var(--line);border-radius:var(--radius);font-size:12px;outline:none;color:var(--ink);}
+        .form-field-row input:focus{border-color:var(--accent);}
+        .form-field-row input[disabled]{background:#f4f4f4;color:#bbb;cursor:not-allowed;border:1px dashed #ddd;}
+        /* settings form-group (verticale) */
         .form-group{margin-bottom:13px;}
         .form-group label{display:block;font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--ink-3);margin-bottom:5px;}
         .form-group input,.form-group select{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:var(--radius);font-size:13px;outline:none;color:var(--ink);}
         .form-group input:focus,.form-group select:focus{border-color:var(--accent);}
         .checkbox-label{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:5px 0;color:var(--ink);}
         .checkbox-label input{width:auto!important;margin:0!important;cursor:pointer;}
-        .modal-buttons{display:flex;justify-content:flex-end;gap:8px;margin-top:20px;}
+        .modal-buttons{display:flex;justify-content:flex-end;gap:8px;margin-top:14px;flex-shrink:0;}
         .btn{padding:8px 16px;border:none;border-radius:var(--radius);cursor:pointer;font-size:12px;font-weight:500;}
         .btn-save{background:var(--sidebar);color:white;}
         .btn-cancel{background:var(--bg);color:var(--ink);border:1px solid var(--line);}
         hr{border:0;border-top:1px solid var(--line);margin:16px 0;}
         p{font-size:12px;color:var(--ink-2);margin:0;}
+
+        /* TOGGLE SELEZIONE MULTIPLA */
+        #btn-toggle-selezione{width:30px;height:30px;border:1px solid var(--line);background:white;border-radius:var(--radius);cursor:pointer;display:none;align-items:center;justify-content:center;font-size:14px;color:var(--ink-3);transition:background .12s,color .12s,border-color .12s;}
+        #btn-toggle-selezione:hover{background:var(--bg);}
+        #btn-toggle-selezione.attivo{background:#fdecea;border-color:#e74c3c;color:#e74c3c;}
+
+        /* BOTTONI AZIONE RIGA — stile screenshot, icone outline grigie */
+        .row-actions{white-space:nowrap;text-align:right;vertical-align:middle;}
+        .ra{border:none;background:transparent;cursor:pointer;width:28px;height:28px;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;transition:color .12s,background .12s;vertical-align:middle;padding:0;}
+        .ra svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
+        .ra{color:#bbb;}
+        .ra:hover{background:var(--bg);color:var(--ink-2);}
+        .ra-green:hover{color:#27ae60;}
+        .ra-blue:hover{color:#2980b9;}
+        .ra-orange:hover{color:#e67e22;}
+        .ra-red:hover{color:#e74c3c;}
 
         /* SETTINGS */
         .fmt-rule{display:grid;grid-template-columns:1fr 110px 1fr 46px 76px;gap:4px;align-items:center;padding:5px;background:var(--bg);border-radius:var(--radius);margin-bottom:5px;border:1px solid var(--line);}
@@ -218,6 +243,15 @@
             <div id="toolbar">
                 <input type="text" id="search-input" placeholder="🔍 Cerca..." oninput="renderTabella()">
                 <button id="btn-add-toolbar" onclick="apriForm(null)">+ Nuovo</button>
+                <button id="btn-toggle-selezione" onclick="toggleSelezione()" title="Seleziona più righe">
+                    <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3,8 6,11 13,4"/>
+                        <rect x="1" y="1" width="6" height="6" rx="1"/>
+                        <line x1="9" y1="4" x2="15" y2="4"/>
+                        <line x1="9" y1="8" x2="15" y2="8"/>
+                        <line x1="9" y1="12" x2="15" y2="12"/>
+                    </svg>
+                </button>
                 <select id="sort-column" onchange="cambiaOrdinamento()"></select>
                 <button id="btn-sort-dir" class="btn-sort" onclick="cambiaDirezioneOrdinamento()">⬇ A–Z</button>
             </div>
@@ -325,8 +359,19 @@ const BR={
 
 let TABLE_MAP={},DATABASE={},APP_CONFIG={},FOGLIO_ATTIVO="",RIGA_ORIGINALE_IN_MODIFICA=null;
 let ORDINAMENTO={colonna:null,direzione:1},_sortFixed=false,autoSyncTimer=null,FORMULA_FIELDS={};
+let _selezioneAttiva=false;
 const FOGLI_CON_DATE=["SAT","APP PNM","FLOTTE"],NOME_COLONNA_DATA="DATA e ORA";
 let _vistaCard=false,_vistaKanban=false;
+
+/* SVG icons per bottoni riga */
+const ICON = {
+    edit:    `<svg viewBox="0 0 16 16"><path d="M11.5 2.5l2 2L5 13H3v-2L11.5 2.5z"/></svg>`,
+    trash:   `<svg viewBox="0 0 16 16"><polyline points="3,5 13,5"/><path d="M6,5V3h4v2"/><path d="M4,5l1,9h6l1-9"/></svg>`,
+    mail:    `<svg viewBox="0 0 16 16"><rect x="2" y="4" width="12" height="9" rx="1"/><polyline points="2,4 8,9.5 14,4"/></svg>`,
+    chat:    `<svg viewBox="0 0 16 16"><path d="M14,9a2,2,0,0,1-2,2H5l-3,3V4a2,2,0,0,1,2-2h8a2,2,0,0,1,2,2Z"/></svg>`,
+    thumb:   `<svg viewBox="0 0 16 16"><path d="M5,14H3a1,1,0,0,1-1-1V8A1,1,0,0,1,3,7H5M5,14V7M5,14H12a1,1,0,0,0,1-1V9a1,1,0,0,0-1-1H10V5a2,2,0,0,0-4,0V7H5"/></svg>`,
+    whatsapp:`<svg viewBox="0 0 16 16"><path d="M8,1.5A6.5,6.5,0,0,0,2.2,11.3L1.5,14.5l3.3-.7A6.5,6.5,0,1,0,8,1.5Z"/><path d="M10.5,9.5c-.3-.1-1.7-.8-2-.9s-.5-.1-.7.1-.8,1-.9,1.1-.3.1-.7-.1A5,5,0,0,1,5.2,8.4c-.3-.5.3-.5.8-1.5a.6.6,0,0,0,0-.6C6,6.1,5.5,4.7,5.2,4.1S4.7,4,4.5,4A2.6,2.6,0,0,0,3.7,4C3.5,4,3,4.2,2.7,4.7A3.2,3.2,0,0,0,2,7c.4,1.5,1.4,3,2.4,3.9S7.2,12.5,8,12.6a3.3,3.3,0,0,0,2.3-.7,2.1,2.1,0,0,0,.7-1.4C11,10,10.8,9.6,10.5,9.5Z" fill="currentColor" stroke="none"/></svg>`
+};
 
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 
@@ -379,6 +424,45 @@ function valutaFormatRules(riga,config){
 
 function apriDrawer(){document.getElementById('drawer').classList.add('open');document.getElementById('drawer-overlay').classList.add('open');}
 function chiudiDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('drawer-overlay').classList.remove('open');}
+
+/* ── SELEZIONE MULTIPLA TOGGLE ─── */
+function toggleSelezione() {
+    _selezioneAttiva = !_selezioneAttiva;
+    const btn = document.getElementById('btn-toggle-selezione');
+    btn.classList.toggle('attivo', _selezioneAttiva);
+    if (!_selezioneAttiva) {
+        deselezionaTutti();
+        document.getElementById('multi-delete-bar').style.display = 'none';
+    }
+    renderTabella();
+}
+
+/* ── GENERA APP (solo SAT) ─── */
+async function generaApp(rowId) {
+    const tableId = TABLE_MAP[FOGLIO_ATTIVO];
+    if (!tableId) return;
+    try {
+        await BR.patch(tableId, rowId, { 'GENERA APP': 'YES' });
+        // aggiorna localmente
+        const riga = DATABASE[FOGLIO_ATTIVO].righe.find(r => r._rowIndex === rowId);
+        if (riga) riga['GENERA APP'] = 'YES';
+        // esegui logica APP CERCA
+        if (riga) {
+            const appCerca = String(riga['APP CERCA'] || '').trim();
+            const targa    = String(riga['TARGA AUTO'] || '').trim();
+            if (appCerca && targa) await eseguiAppCerca(appCerca, targa);
+        }
+        renderTabella();
+    } catch(e) { alert('Errore: ' + e.message); }
+}
+
+/* ── WHATSAPP (solo SAT) ─── */
+function apriWhatsApp(telefono) {
+    if (!telefono) { alert('Nessun numero telefonico in questa riga.'); return; }
+    const num = String(telefono).replace(/\D/g, '');
+    const url = `https://api.whatsapp.com/send/?phone=%2B39${num}&text&type=phone_number&app_absent=0`;
+    window.open(url, '_blank');
+}
 
 async function sincronizza(){
     const s=JSON.parse(localStorage.getItem('appSession'));if(!s)return;
@@ -450,9 +534,15 @@ function caricaDati(nome){
     FOGLIO_ATTIVO=nome;
     document.getElementById('titolo-foglio').innerText=getNomeDinamico(nome);
     document.querySelectorAll('#sidebar button[data-foglio]').forEach(b=>b.classList.toggle('active',b.getAttribute('data-foglio')===nome));
+    // reset selezione multipla quando si cambia foglio
+    _selezioneAttiva=false;
+    document.getElementById('btn-toggle-selezione').classList.remove('attivo');
+    document.getElementById('multi-delete-bar').style.display='none';
     const config=APP_CONFIG[nome]||{};
     // + Nuovo button
     document.getElementById('btn-add-toolbar').style.display=config.puoAggiungere?'inline-block':'none';
+    // toggle selezione — visibile solo se eliminazione permessa
+    document.getElementById('btn-toggle-selezione').style.display=config.puoEliminare?'flex':'none';
     const intestazioni=DATABASE[nome].intestazioni;
     if(!intestazioni.length){document.getElementById('toolbar').style.display="none";document.getElementById('tabella-container').innerHTML=`<p style="padding:32px;color:var(--ink-3);">Foglio vuoto.</p>`;return;}
     let colVis=intestazioni;
@@ -461,7 +551,7 @@ function caricaDati(nome){
     document.getElementById('search-input').value="";
     const sortSel=document.getElementById('sort-column');
     sortSel.innerHTML=`<option value="">– Ordina –</option>`+colVis.map(c=>`<option value="${c}">${c}</option>`).join('');
-    // Sort fisso = nascondi controlli
+    // Sort fisso = nascondi controlli ordinamento nella toolbar
     if(config.sortColonna&&colVis.includes(config.sortColonna)){
         ORDINAMENTO.colonna=config.sortColonna;ORDINAMENTO.direzione=config.sortDirezione||1;
         sortSel.value=config.sortColonna;_sortFixed=true;
@@ -603,15 +693,23 @@ function renderTabella(){
     if(_vistaCard&&config.cardConfig?.data){document.getElementById('tabella-container').innerHTML=renderCard(righe,config);return;}
     if(!righe.length){document.getElementById('tabella-container').innerHTML=`<p style="padding:32px;color:var(--ink-3);">Nessuna riga trovata.</p>`;return;}
 
+    const isSAT = FOGLIO_ATTIVO === 'SAT';
     const coloriCol=config.coloriColonne||{};
+    const mostraChk = _selezioneAttiva && config.puoEliminare;
     // ncol per colspan date header
-    const nColBase=colonneTabella.length+(isCalendario?1:0)+(config.puoEliminare?1:0)+((config.puoModificare||config.puoEliminare)?1:0);
+    const nColBase=colonneTabella.length+(isCalendario?1:0)+(mostraChk?1:0)+1; // +1 sempre per actions
 
     let html='<table><thead><tr>';
-    if(config.puoEliminare)html+=`<th style="width:32px;"><input type="checkbox" id="chk-all" onclick="selezionaTutti(this)"></th>`;
+    if(mostraChk)html+=`<th style="width:32px;"><input type="checkbox" id="chk-all" onclick="selezionaTutti(this)"></th>`;
     if(isCalendario)html+=`<th style="width:62px;">Orario</th>`;
     colonneTabella.forEach(c=>html+=`<th>${c}</th>`);
-    if(config.puoModificare||config.puoEliminare)html+=`<th style="width:60px;"></th>`;
+    // colonna azioni — sempre presente se ci sono pulsanti
+    const haActions = config.puoModificare || config.puoEliminare || isSAT;
+    if(haActions) {
+        // calcola larghezza: edit+delete=2, SAT aggiunge thumb+whatsapp=2
+        const btnCount = (config.puoModificare?1:0)+(config.puoEliminare?1:0)+(isSAT?2:0);
+        html+=`<th style="width:${btnCount*30+8}px;"></th>`;
+    }
     html+='</tr></thead><tbody>';
 
     let ultimaData=null;
@@ -628,7 +726,7 @@ function renderTabella(){
         const rowColor=(fmt&&fmt.target!=='cella')?fmt.colore:null;
         const cellaTarget=(fmt&&fmt.target==='cella')?fmt.colonna:null;
         const enc=encodeURIComponent(JSON.stringify(riga));
-        const chk=config.puoEliminare?`<td class="sel-td"><input type="checkbox" class="row-chk" data-idx="${riga._rowIndex}"></td>`:'';
+        const chk=mostraChk?`<td class="sel-td"><input type="checkbox" class="row-chk" data-idx="${riga._rowIndex}"></td>`:'';
         html+=`<tr>${chk}`;
         if(isCalendario)html+=`<td class="cal-orario"${rowColor?` style="color:${rowColor};"`:''} >${formattaOrario(riga[COL_ORA_CAL])}</td>`;
         colonneTabella.forEach(c=>{
@@ -640,10 +738,18 @@ function renderTabella(){
             const tipo=formatiCol[c]||'text';
             html+=`<td${s?` style="${s}"`:''}${isEdit?` class="editable-cell" data-rowid="${riga._rowIndex}" data-col="${c.replace(/"/g,'&quot;')}" data-tipo="${tipo}"`:''} onclick="handleCellClick(event,this)">${formattaValoreCella(riga[c])}</td>`;
         });
-        if(config.puoModificare||config.puoEliminare)html+=`<td style="white-space:nowrap;text-align:right;">
-            ${config.puoModificare?`<button class="tbl-btn" onclick="event.stopPropagation();apriForm('${enc}')">✏️</button>`:''}
-            ${config.puoEliminare?`<button class="tbl-btn" onclick="event.stopPropagation();eliminaRiga(${riga._rowIndex})">🗑️</button>`:''}
-        </td>`;
+        if(haActions){
+            // bottoni azione — stile screenshot: icone outline grigie
+            const telefono = riga['CONTATTO TELEFONICO'] || riga['TELEFONO'] || '';
+            html+=`<td class="row-actions" onclick="event.stopPropagation()">`;
+            if(isSAT) {
+                html+=`<button class="ra ra-green" onclick="generaApp(${riga._rowIndex})" title="Genera Appuntamento (YES)">${ICON.thumb}</button>`;
+                html+=`<button class="ra ra-blue" onclick="apriWhatsApp('${String(telefono).replace(/'/g,"&#39;")}')" title="Apri WhatsApp">${ICON.whatsapp}</button>`;
+            }
+            if(config.puoModificare) html+=`<button class="ra" onclick="apriForm('${enc}')" title="Modifica">${ICON.edit}</button>`;
+            if(config.puoEliminare)  html+=`<button class="ra ra-red" onclick="eliminaRiga(${riga._rowIndex})" title="Elimina">${ICON.trash}</button>`;
+            html+=`</td>`;
+        }
         html+='</tr>';
     });
     html+='</tbody></table>';
@@ -752,11 +858,12 @@ function apriForm(rigaJSON){
             if(tipo==='date'||tipo==='datetime-local'){const m=inputVal.match(/^(\d{2})\/(\d{2})\/(\d{4})(?: (\d{2}):(\d{2}))?/);if(m)inputVal=tipo==='date'?`${m[3]}-${m[2]}-${m[1]}`:`${m[3]}-${m[2]}-${m[1]}T${m[4]||'00'}:${m[5]||'00'}`;else if(inputVal.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/))inputVal=tipo==='date'?inputVal.slice(0,10):inputVal.slice(0,16);}
             else if(tipo==='time'){const mt=inputVal.match(/(\d{2}:\d{2})/);if(mt)inputVal=mt[1];}
         }
-        cont.innerHTML+=`<div class="form-group">
-            <label>${col}${isFormula?' <span style="font-size:9px;color:#bbb;">(formula)</span>':''}</label>
+        const labelText = col+(isFormula?' <span style="font-size:9px;color:#ccc;">(f)</span>':'');
+        cont.innerHTML+=`<div class="form-field-row">
+            <label>${labelText}</label>
             <input type="${tipo}" id="input-${col}" value="${inputVal.replace(/"/g,'&quot;')}"
                 ${isFormula?'disabled readonly':''}
-                style="${isFormula?'background:#f4f4f4;color:#aaa;cursor:not-allowed;border:1px dashed #ddd;':''}">
+                ${isFormula?'style="background:#f4f4f4;color:#bbb;cursor:not-allowed;border:1px dashed #ddd;"':''}>
         </div>`;
     });
     document.getElementById('modal-form').style.display="flex";
