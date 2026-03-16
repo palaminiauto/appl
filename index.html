@@ -5,10 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PALAMINI AUTO</title>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#111111">
+    <meta name="theme-color" content="#4f8bc4">
     <script src="config.js"></script>
     <style>
-        /* ─── DESIGN SYSTEM ──────────────────────────────── */
         :root {
             --ink:     #111111;
             --ink-2:   #555555;
@@ -16,789 +15,215 @@
             --sheet:   #ffffff;
             --bg:      #f4f4f4;
             --line:    #e5e5e5;
-            --sidebar: #111111;
-            --sid-txt: rgba(255,255,255,0.82);
-            --sid-act: rgba(255,255,255,0.10);
-            --accent:  #4f8bc4; /* usato SOLO dove strettamente serve */
+            --sidebar: #4f8bc4;
+            --sid-dark:#3b6d9c;
+            --sid-txt: rgba(255,255,255,0.92);
+            --sid-act: rgba(0,0,0,0.18);
+            --accent:  #4f8bc4;
             --radius:  6px;
-            --sh:      0 1px 2px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04);
-            --sh2:     0 2px 8px rgba(0,0,0,0.10), 0 1px 3px rgba(0,0,0,0.06);
+            --sh:  0 1px 2px rgba(0,0,0,0.06),0 1px 4px rgba(0,0,0,0.04);
+            --sh2: 0 2px 8px rgba(0,0,0,0.10),0 1px 3px rgba(0,0,0,0.06);
         }
-        *, *::before, *::after { box-sizing: border-box; }
-        body {
-            font-family: 'SF Pro Text', -apple-system, 'Segoe UI', sans-serif;
-            margin: 0;
-            background: var(--bg);
-            height: 100vh;
-            overflow: hidden;
-            font-size: 13px;
-            color: var(--ink);
-            -webkit-font-smoothing: antialiased;
-        }
+        *,*::before,*::after{box-sizing:border-box;}
+        body{font-family:'SF Pro Text',-apple-system,'Segoe UI',sans-serif;margin:0;background:var(--bg);height:100vh;overflow:hidden;font-size:13px;color:var(--ink);-webkit-font-smoothing:antialiased;}
 
-        /* ─── LOGIN ──────────────────────────────────────── */
-        #login-screen {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background: var(--sidebar);
-        }
-        .login-box {
-            background: #1a1a1a;
-            border: 1px solid #2a2a2a;
-            padding: 36px 32px;
-            border-radius: 10px;
-            text-align: center;
-            width: 90%;
-            max-width: 300px;
-        }
-        .login-box h2 {
-            font-size: 15px;
-            font-weight: 600;
-            letter-spacing: 0.8px;
-            text-transform: uppercase;
-            color: white;
-            margin: 0 0 24px;
-        }
-        .login-box input {
-            width: 100%;
-            padding: 10px 12px;
-            margin-bottom: 12px;
-            border: 1px solid #333;
-            border-radius: var(--radius);
-            font-size: 14px;
-            background: #222;
-            color: white;
-            outline: none;
-        }
-        .login-box input:focus { border-color: #555; }
-        .login-box button {
-            width: 100%;
-            padding: 10px;
-            background: white;
-            color: #111;
-            border: none;
-            border-radius: var(--radius);
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            letter-spacing: 0.3px;
-        }
-        .login-box button:disabled { opacity: 0.5; cursor: not-allowed; }
+        /* LOGIN */
+        #login-screen{display:flex;align-items:center;justify-content:center;height:100vh;background:var(--sid-dark);}
+        .login-box{background:white;border:1px solid var(--line);padding:36px 32px;border-radius:10px;text-align:center;width:90%;max-width:300px;box-shadow:var(--sh2);}
+        .login-box h2{font-size:15px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:var(--sidebar);margin:0 0 24px;}
+        .login-box input{width:100%;padding:10px 12px;margin-bottom:12px;border:1px solid var(--line);border-radius:var(--radius);font-size:14px;color:var(--ink);outline:none;}
+        .login-box input:focus{border-color:var(--accent);}
+        .login-box button{width:100%;padding:10px;background:var(--sidebar);color:white;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;}
+        .login-box button:disabled{opacity:.5;cursor:not-allowed;}
 
-        /* ─── APP LAYOUT ─────────────────────────────────── */
-        #app-screen {
-            display: none;
-            height: 100vh;
-            flex-direction: row;
-        }
+        /* APP */
+        #app-screen{display:none;height:100vh;flex-direction:row;}
 
-        /* ─── SIDEBAR ────────────────────────────────────── */
-        #sidebar {
-            width: 164px;
-            min-width: 164px;
-            background: var(--sidebar);
-            padding: 10px 6px;
-            overflow-y: auto;
-            flex-shrink: 0;
-            display: flex;
-            flex-direction: column;
-        }
-        #sidebar h3 {
-            font-size: 9px;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: rgba(255,255,255,0.28);
-            padding: 6px 8px 8px;
-            margin: 0;
-        }
-        #buttons-container { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 1px; }
-        #sidebar button {
-            display: block;
-            width: 100%;
-            padding: 7px 10px;
-            cursor: pointer;
-            background: transparent;
-            color: var(--sid-txt);
-            border: none;
-            text-align: left;
-            border-radius: var(--radius);
-            font-size: 12px;
-            font-weight: 400;
-            transition: background 0.12s;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            line-height: 1.4;
-        }
-        #sidebar button:hover  { background: rgba(255,255,255,0.07); }
-        #sidebar button.active { background: var(--sid-act); color: white; font-weight: 500; }
+        /* SIDEBAR */
+        #sidebar{width:160px;min-width:160px;background:var(--sidebar);padding:10px 6px;overflow-y:auto;flex-shrink:0;display:flex;flex-direction:column;}
+        #sidebar h3{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.42);padding:6px 8px 8px;margin:0;}
+        #buttons-container{flex-grow:1;overflow-y:auto;display:flex;flex-direction:column;gap:1px;}
+        #sidebar button{display:block;width:100%;padding:7px 10px;cursor:pointer;background:transparent;color:var(--sid-txt);border:none;text-align:left;border-radius:var(--radius);font-size:12px;font-weight:400;transition:background .12s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.4;}
+        #sidebar button:hover{background:rgba(0,0,0,0.10);}
+        #sidebar button.active{background:var(--sid-act);color:white;font-weight:600;}
 
-        /* ─── MAIN ───────────────────────────────────────── */
-        #main-container {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            background: var(--sheet);
-        }
+        /* MAIN */
+        #main-container{flex-grow:1;display:flex;flex-direction:column;overflow:hidden;background:var(--sheet);}
 
-        /* ─── HEADER ─────────────────────────────────────── */
-        #header {
-            background: var(--sheet);
-            padding: 0 14px;
-            height: 52px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid var(--line);
-            gap: 10px;
-            flex-shrink: 0;
-        }
-        .header-left { display: flex; flex-direction: column; min-width: 0; gap: 2px; }
-        #titolo-foglio {
-            margin: 0;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--ink);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            letter-spacing: -0.1px;
-        }
-        #btn-add-record {
-            display: none;
-            padding: 4px 12px;
-            background: var(--sidebar);
-            color: white;
-            border: none;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 500;
-            cursor: pointer;
-            width: fit-content;
-            letter-spacing: 0.2px;
-        }
-        .header-right { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+        /* HEADER */
+        #header{background:var(--sheet);padding:0 14px;height:48px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);gap:10px;flex-shrink:0;}
+        #titolo-foglio{margin:0;font-size:14px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        .header-right{display:flex;align-items:center;gap:4px;flex-shrink:0;}
+        .hb{width:34px;height:34px;border:none;background:transparent;cursor:pointer;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--ink-2);transition:background .12s;flex-shrink:0;}
+        .hb:hover{background:var(--bg);}
+        #btn-sync{padding:0 12px;width:auto;font-size:11px;font-weight:600;letter-spacing:.3px;color:var(--ink-2);border:1px solid var(--line);border-radius:20px;height:30px;}
+        #hamburger-btn{display:none;}
 
-        /* Icon-only header buttons */
-        .hb {
-            width: 34px;
-            height: 34px;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            border-radius: var(--radius);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 15px;
-            color: var(--ink-2);
-            transition: background 0.12s;
-            flex-shrink: 0;
-        }
-        .hb:hover { background: var(--bg); }
-        #btn-sync {
-            padding: 0 12px;
-            width: auto;
-            font-size: 11px;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-            color: var(--ink-2);
-            border: 1px solid var(--line);
-            gap: 5px;
-            border-radius: 20px;
-            height: 30px;
-        }
-        #hamburger-btn { display: none; }
+        /* TOOLBAR */
+        #toolbar{display:none;align-items:center;gap:6px;padding:7px 12px;background:var(--sheet);border-bottom:1px solid var(--line);flex-shrink:0;flex-wrap:wrap;}
+        #search-input{flex:1;min-width:120px;max-width:240px;padding:6px 11px;border:1px solid var(--line);border-radius:20px;font-size:12px;outline:none;background:var(--bg);color:var(--ink);}
+        #search-input:focus{border-color:#bbb;background:white;}
+        #btn-add-toolbar{padding:5px 14px;background:var(--sidebar);color:white;border:none;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;display:none;white-space:nowrap;}
+        #sort-column{padding:5px 8px;border:1px solid var(--line);border-radius:var(--radius);font-size:11px;background:white;color:var(--ink);cursor:pointer;}
+        .btn-sort{padding:5px 9px;border:1px solid var(--line);border-radius:var(--radius);background:white;font-size:11px;cursor:pointer;color:var(--ink-2);}
 
-        /* ─── CONTENT ────────────────────────────────────── */
-        #content {
-            overflow-y: auto;
-            flex-grow: 1;
-            background: var(--sheet);
-        }
-        #status-message {
-            padding: 48px 20px;
-            text-align: center;
-            color: var(--ink-3);
-            font-size: 13px;
-        }
+        /* CONTENT */
+        #content{overflow-y:auto;flex-grow:1;background:var(--sheet);display:flex;flex-direction:column;}
+        #status-message{padding:48px 20px;text-align:center;color:var(--ink-3);font-size:13px;}
 
-        /* ─── TOOLBAR ────────────────────────────────────── */
-        #toolbar {
-            display: none;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 14px;
-            background: var(--sheet);
-            border-bottom: 1px solid var(--line);
-            flex-shrink: 0;
-        }
-        #search-input {
-            flex: 1;
-            max-width: 260px;
-            padding: 6px 11px;
-            border: 1px solid var(--line);
-            border-radius: 20px;
-            font-size: 12px;
-            outline: none;
-            background: var(--bg);
-            color: var(--ink);
-        }
-        #search-input:focus { border-color: #bbb; background: white; }
-        #sort-column {
-            padding: 5px 8px;
-            border: 1px solid var(--line);
-            border-radius: var(--radius);
-            font-size: 11px;
-            background: white;
-            color: var(--ink);
-            cursor: pointer;
-        }
-        .btn-sort {
-            padding: 5px 9px;
-            border: 1px solid var(--line);
-            border-radius: var(--radius);
-            background: white;
-            font-size: 11px;
-            cursor: pointer;
-            color: var(--ink-2);
-        }
+        /* TABLE */
+        .table-wrapper{overflow-x:auto;}
+        table{border-collapse:collapse;width:100%;}
+        @media(min-width:769px){table{table-layout:fixed;}}
+        th{padding:8px 12px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--ink-3);background:var(--sheet);border-bottom:2px solid var(--line);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:sticky;top:0;z-index:2;}
+        td{padding:9px 12px;border-bottom:1px solid var(--line);font-size:12.5px;text-align:left;word-wrap:break-word;overflow-wrap:break-word;color:var(--ink);vertical-align:top;}
+        tr:last-child td{border-bottom:none;}
+        tbody tr:hover td{background:#f8f8f8;}
+        .sel-td{width:32px;text-align:center;padding:9px 8px;}
+        tr.selected-row td{background:#ddeaf5!important;}
 
-        /* ─── CARD VIEW ──────────────────────────────────── */
-        .cards-grid {
-            display: flex;
-            flex-direction: column;
-        }
-        .card {
-            background: var(--sheet);
-            padding: 13px 16px 11px;
-            cursor: pointer;
-            border-bottom: 1px solid var(--line);
-            transition: background 0.10s;
-        }
-        .card:hover { background: var(--bg); }
-        .card-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 3px; }
-        .card-label {
-            font-size: 10.5px;
-            font-weight: 700;
-            letter-spacing: 0.6px;
-            text-transform: uppercase;
-        }
-        .card-badge-right {
-            font-size: 11px;
-            color: var(--ink-3);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 160px;
-        }
-        .card-title {
-            font-size: 13.5px;
-            font-weight: 500;
-            color: var(--ink);
-            line-height: 1.45;
-        }
-        .card-actions {
-            display: flex;
-            gap: 2px;
-            margin-top: 6px;
-            justify-content: flex-end;
-        }
-        .card-action-btn {
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            width: 26px;
-            height: 26px;
-            border-radius: 4px;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--ink-3);
-            transition: background 0.10s;
-        }
-        .card-action-btn:hover { background: var(--bg); }
+        /* INLINE EDIT */
+        td.editable-cell{cursor:text;}
+        td.editable-cell:hover{outline:1px solid var(--line);outline-offset:-1px;}
+        td.editing{padding:2px 4px!important;}
+        td.editing input{width:100%;padding:6px 8px;border:2px solid var(--accent);border-radius:4px;font-size:12.5px;font-family:inherit;background:white;color:var(--ink);outline:none;}
 
-        /* ─── TABLE VIEW ─────────────────────────────────── */
-        .table-wrapper { overflow-x: auto; }
-        table { border-collapse: collapse; width: 100%; }
-        @media (min-width: 769px) { table { table-layout: fixed; } }
-        th {
-            padding: 8px 12px;
-            text-align: left;
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 0.7px;
-            text-transform: uppercase;
-            color: var(--ink-3);
-            background: var(--sheet);
-            border-bottom: 2px solid var(--line);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        td {
-            padding: 9px 12px;
-            border-bottom: 1px solid var(--line);
-            font-size: 12.5px;
-            text-align: left;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            color: var(--ink);
-            vertical-align: top;
-        }
-        tr:last-child td { border-bottom: none; }
-        tbody tr:hover td { background: var(--bg); }
-        .sel-td { width: 32px; text-align: center; padding: 9px 8px; }
-        tr.selected-row td { background: #f0f0f0 !important; }
+        /* TABLE ACTION BTNS */
+        .tbl-btn{border:none;background:transparent;cursor:pointer;width:26px;height:26px;border-radius:4px;font-size:13px;color:var(--ink-3);transition:background .10s;display:inline-flex;align-items:center;justify-content:center;}
+        .tbl-btn:hover{background:var(--bg);}
 
-        /* Table action buttons */
-        .tbl-btn {
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            width: 26px;
-            height: 26px;
-            border-radius: 4px;
-            font-size: 13px;
-            color: var(--ink-3);
-            transition: background 0.10s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .tbl-btn:hover { background: var(--bg); }
+        /* CALENDARIO DATE ROW */
+        .cal-date-row td{background:var(--bg)!important;padding:9px 12px 7px!important;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-2);border-bottom:1px solid var(--line)!important;}
+        .cal-orario{font-weight:600;color:var(--ink-2);width:62px;white-space:nowrap;}
 
-        /* ─── CALENDARIO GROUPED LIST ────────────────────── */
-        .cal-date-header {
-            padding: 10px 16px 8px;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            color: var(--ink-2);
-            background: var(--bg);
-            border-bottom: 1px solid var(--line);
-            text-transform: uppercase;
-        }
-        .cal-row {
-            display: flex;
-            align-items: baseline;
-            gap: 0;
-            padding: 0;
-            border-bottom: 1px solid var(--line);
-            transition: background 0.10s;
-        }
-        .cal-row:hover { background: var(--bg); }
-        .cal-time {
-            min-width: 52px;
-            padding: 10px 8px 10px 16px;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--ink-2);
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-        .cal-body {
-            flex: 1;
-            padding: 10px 8px;
-            font-size: 12.5px;
-            color: var(--ink);
-            line-height: 1.4;
-        }
-        .cal-actions {
-            padding: 6px 12px;
-            display: flex;
-            align-items: center;
-            gap: 2px;
-            flex-shrink: 0;
-        }
+        /* CARDS */
+        .cards-grid{display:flex;flex-direction:column;}
+        .card{background:var(--sheet);padding:12px 16px 10px;cursor:pointer;border-bottom:1px solid var(--line);transition:background .10s;}
+        .card:hover{background:var(--bg);}
+        .card-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:3px;}
+        .card-label{font-size:10.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;}
+        .card-badge-right{font-size:11px;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;}
+        .card-title{font-size:13.5px;font-weight:500;color:var(--ink);line-height:1.45;}
+        .card-actions{display:flex;gap:2px;margin-top:6px;justify-content:flex-end;}
+        .card-action-btn{border:none;background:transparent;cursor:pointer;width:26px;height:26px;border-radius:4px;font-size:13px;display:flex;align-items:center;justify-content:center;color:var(--ink-3);transition:background .10s;}
+        .card-action-btn:hover{background:var(--bg);}
 
-        /* ─── KANBAN ─────────────────────────────────────── */
-        .kanban-board {
-            display: flex;
-            gap: 0;
-            overflow-x: auto;
-            height: 100%;
-            background: var(--bg);
-        }
-        .kanban-col {
-            min-width: 256px;
-            max-width: 290px;
-            flex-shrink: 0;
-            display: flex;
-            flex-direction: column;
-            background: var(--bg);
-            border-right: 1px solid var(--line);
-        }
-        .kanban-col-header {
-            padding: 11px 12px;
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 0.8px;
-            text-transform: uppercase;
-            color: var(--ink-2);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--line);
-            background: var(--bg);
-        }
-        .kanban-col-count {
-            font-size: 10px;
-            color: var(--ink-3);
-            font-weight: 500;
-        }
-        .kanban-col-body {
-            flex: 1;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 0;
-            padding: 6px;
-        }
-        .kanban-card {
-            background: var(--sheet);
-            border-radius: var(--radius);
-            padding: 11px 12px;
-            box-shadow: var(--sh);
-            cursor: pointer;
-            transition: box-shadow 0.12s;
-            margin-bottom: 4px;
-        }
-        .kanban-card:hover { box-shadow: var(--sh2); }
-        .kanban-card-label {
-            font-size: 9.5px;
-            font-weight: 700;
-            letter-spacing: 0.7px;
-            text-transform: uppercase;
-            margin-bottom: 5px;
-        }
-        .kanban-card-title {
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--ink);
-            line-height: 1.4;
-        }
-        .kanban-card-meta {
-            font-size: 11px;
-            color: var(--ink-3);
-            margin-top: 3px;
-        }
-        .kanban-card-body { margin-top: 5px; }
-        .kanban-card-body-line {
-            font-size: 11.5px;
-            color: var(--ink-2);
-            line-height: 1.45;
-        }
-        .kanban-card-actions {
-            display: flex;
-            gap: 2px;
-            margin-top: 6px;
-            justify-content: flex-end;
-        }
-        .kanban-card-actions button {
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            width: 24px;
-            height: 24px;
-            border-radius: 4px;
-            font-size: 12px;
-            color: var(--ink-3);
-            transition: background 0.10s;
-        }
-        .kanban-card-actions button:hover { background: var(--bg); }
+        /* KANBAN */
+        .kanban-board{display:flex;gap:0;overflow-x:auto;height:100%;background:var(--bg);}
+        .kanban-col{min-width:250px;max-width:285px;flex-shrink:0;display:flex;flex-direction:column;background:var(--bg);border-right:1px solid var(--line);}
+        .kanban-col-header{padding:11px 12px;font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--ink-2);display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);background:var(--bg);}
+        .kanban-col-count{font-size:10px;color:var(--ink-3);font-weight:500;}
+        .kanban-col-body{flex:1;overflow-y:auto;display:flex;flex-direction:column;padding:6px;}
+        .kanban-card{background:var(--sheet);border-radius:var(--radius);padding:11px 12px;box-shadow:var(--sh);cursor:pointer;transition:box-shadow .12s;margin-bottom:4px;}
+        .kanban-card:hover{box-shadow:var(--sh2);}
+        .kanban-card-label{font-size:9.5px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;margin-bottom:5px;}
+        .kanban-card-body-line{font-size:11.5px;color:var(--ink-2);line-height:1.45;}
+        .kanban-card-meta{font-size:11px;color:var(--ink-3);margin-top:3px;}
+        .kanban-card-actions{display:flex;gap:2px;margin-top:6px;justify-content:flex-end;}
+        .kanban-card-actions button{border:none;background:transparent;cursor:pointer;width:24px;height:24px;border-radius:4px;font-size:12px;color:var(--ink-3);transition:background .10s;}
+        .kanban-card-actions button:hover{background:var(--bg);}
 
-        /* ─── MULTI-DELETE BAR ───────────────────────────── */
-        #multi-delete-bar {
-            display: none;
-            position: sticky;
-            bottom: 0;
-            background: var(--sidebar);
-            color: white;
-            padding: 10px 16px;
-            z-index: 200;
-            align-items: center;
-            gap: 12px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-        #multi-delete-bar button {
-            background: rgba(255,255,255,0.12);
-            color: white;
-            border: none;
-            border-radius: var(--radius);
-            padding: 6px 14px;
-            font-size: 11px;
-            font-weight: 500;
-            cursor: pointer;
-        }
-        #multi-delete-bar button:hover { background: rgba(255,255,255,0.20); }
-        #multi-delete-bar button.annulla {
-            background: transparent;
-            border: 1px solid rgba(255,255,255,0.25);
-        }
+        /* MULTI DELETE */
+        #multi-delete-bar{display:none;position:sticky;bottom:0;background:var(--sid-dark);color:white;padding:10px 16px;z-index:200;align-items:center;gap:12px;font-size:12px;font-weight:500;flex-shrink:0;}
+        #multi-delete-bar button{background:rgba(255,255,255,0.15);color:white;border:none;border-radius:var(--radius);padding:6px 14px;font-size:11px;font-weight:500;cursor:pointer;}
+        #multi-delete-bar button:hover{background:rgba(255,255,255,0.25);}
+        #multi-delete-bar button.annulla{background:transparent;border:1px solid rgba(255,255,255,0.3);}
 
-        /* ─── MODALI ─────────────────────────────────────── */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.45);
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-        .modal-content {
-            background: white;
-            padding: 24px;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 480px;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 16px 48px rgba(0,0,0,0.18);
-        }
-        .modal-content h3 {
-            margin: 0 0 20px;
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--ink);
-        }
-        .form-group { margin-bottom: 14px; }
-        .form-group label {
-            display: block;
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 0.7px;
-            text-transform: uppercase;
-            color: var(--ink-3);
-            margin-bottom: 5px;
-        }
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 9px 11px;
-            border: 1px solid var(--line);
-            border-radius: var(--radius);
-            font-size: 13px;
-            outline: none;
-            color: var(--ink);
-        }
-        .form-group input:focus, .form-group select:focus { border-color: #aaa; }
-        .checkbox-label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            cursor: pointer;
-            padding: 5px 0;
-            color: var(--ink);
-        }
-        .checkbox-label input { width: auto !important; margin: 0 !important; cursor: pointer; }
-        .modal-buttons {
-            display: flex;
-            justify-content: flex-end;
-            gap: 8px;
-            margin-top: 20px;
-        }
-        /* btn compatibility layer */
-        .btn { padding: 8px 16px; border: none; border-radius: var(--radius); cursor: pointer; font-size: 12px; font-weight: 500; }
-        .btn-save { background: var(--sidebar); color: white; }
-        .btn-cancel { background: var(--bg); color: var(--ink); border: 1px solid var(--line); }
-        .btn-add { background: var(--sidebar); color: white; display: none; margin-top: 4px; width: max-content; font-size: 11px; border-radius: 20px; }
-        /* Keep for backward compat - now icon-only visually */
-        .btn-edit   { background: transparent; color: var(--ink-3); padding: 4px 6px; font-size: 13px; }
-        .btn-delete { background: transparent; color: var(--ink-3); padding: 4px 6px; font-size: 13px; margin-left: 2px; }
+        /* MODALI */
+        .modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;z-index:1000;}
+        .modal-content{background:white;padding:24px;border-radius:10px;width:90%;max-width:480px;max-height:90vh;overflow-y:auto;box-shadow:0 16px 48px rgba(0,0,0,0.18);}
+        .modal-content h3{margin:0 0 18px;font-size:14px;font-weight:600;color:var(--ink);}
+        .form-group{margin-bottom:13px;}
+        .form-group label{display:block;font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--ink-3);margin-bottom:5px;}
+        .form-group input,.form-group select{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:var(--radius);font-size:13px;outline:none;color:var(--ink);}
+        .form-group input:focus,.form-group select:focus{border-color:var(--accent);}
+        .checkbox-label{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:5px 0;color:var(--ink);}
+        .checkbox-label input{width:auto!important;margin:0!important;cursor:pointer;}
+        .modal-buttons{display:flex;justify-content:flex-end;gap:8px;margin-top:20px;}
+        .btn{padding:8px 16px;border:none;border-radius:var(--radius);cursor:pointer;font-size:12px;font-weight:500;}
+        .btn-save{background:var(--sidebar);color:white;}
+        .btn-cancel{background:var(--bg);color:var(--ink);border:1px solid var(--line);}
+        hr{border:0;border-top:1px solid var(--line);margin:16px 0;}
+        p{font-size:12px;color:var(--ink-2);margin:0;}
 
-        /* ─── ORDER MODAL ────────────────────────────────── */
-        .order-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 9px 12px;
-            border-radius: var(--radius);
-            background: var(--bg);
-            margin-bottom: 4px;
-            font-size: 13px;
-        }
-        .order-btns button {
-            padding: 4px 8px;
-            border: 1px solid var(--line);
-            border-radius: 4px;
-            background: white;
-            cursor: pointer;
-            margin-left: 4px;
-            font-size: 11px;
-        }
-        .order-btns button:hover { background: var(--bg); }
-        .order-btns button:disabled { opacity: 0.3; cursor: not-allowed; }
+        /* SETTINGS */
+        .fmt-rule{display:grid;grid-template-columns:1fr 110px 1fr 46px 76px;gap:4px;align-items:center;padding:5px;background:var(--bg);border-radius:var(--radius);margin-bottom:5px;border:1px solid var(--line);}
+        .fmt-rule select,.fmt-rule input[type=text]{padding:4px;border:1px solid var(--line);border-radius:4px;font-size:11px;width:100%;}
+        .fmt-rule input[type=color]{width:40px;height:28px;border:1px solid var(--line);border-radius:4px;cursor:pointer;padding:1px;}
+        .order-item{display:flex;justify-content:space-between;align-items:center;padding:9px 12px;border-radius:var(--radius);background:var(--bg);margin-bottom:4px;font-size:13px;}
+        .order-btns button{padding:4px 8px;border:1px solid var(--line);border-radius:4px;background:white;cursor:pointer;margin-left:4px;font-size:11px;}
+        .order-btns button:disabled{opacity:.3;cursor:not-allowed;}
 
-        /* ─── FORMAT RULES ───────────────────────────────── */
-        .fmt-rule {
-            display: grid;
-            grid-template-columns: 1fr 110px 1fr 46px 76px;
-            gap: 4px;
-            align-items: center;
-            padding: 5px;
-            background: var(--bg);
-            border-radius: var(--radius);
-            margin-bottom: 5px;
-            border: 1px solid var(--line);
+        /* MOBILE */
+        @media(max-width:768px){
+            #sidebar{display:none!important;}
+            #hamburger-btn{display:flex!important;}
+            .desktop-only{display:none!important;}
+            #titolo-foglio{font-size:13px;}
         }
-        .fmt-rule select, .fmt-rule input[type=text] {
-            padding: 4px;
-            border: 1px solid var(--line);
-            border-radius: 4px;
-            font-size: 11px;
-            width: 100%;
-        }
-        .fmt-rule input[type=color] {
-            width: 40px;
-            height: 28px;
-            border: 1px solid var(--line);
-            border-radius: 4px;
-            cursor: pointer;
-            padding: 1px;
-        }
+        #drawer-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:5000;}
+        #drawer-overlay.open{display:block;}
+        #drawer{position:fixed;top:0;left:-280px;width:256px;height:100%;background:var(--sidebar);z-index:5001;transition:left .22s ease;display:flex;flex-direction:column;padding:16px 8px;overflow-y:auto;}
+        #drawer.open{left:0;}
+        #drawer h3{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.40);padding:0 8px 8px;margin:0;}
+        #drawer-buttons{flex-grow:1;overflow-y:auto;display:flex;flex-direction:column;gap:1px;}
+        #drawer button{display:block;width:100%;padding:9px 12px;cursor:pointer;background:transparent;color:var(--sid-txt);border:none;text-align:left;border-radius:var(--radius);font-size:13px;}
+        #drawer button:hover,#drawer button.active{background:rgba(0,0,0,0.15);}
+        #drawer-footer{margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.15);display:flex;gap:6px;}
+        #drawer-footer button{flex:1;padding:10px;text-align:center;}
 
-        /* ─── MOBILE ─────────────────────────────────────── */
-        @media (max-width: 768px) {
-            #sidebar { display: none !important; }
-            #hamburger-btn { display: flex !important; }
-            .desktop-only { display: none !important; }
-            #titolo-foglio { font-size: 13px; }
-        }
-
-        /* ─── DRAWER MOBILE ──────────────────────────────── */
-        #drawer-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 5000;
-        }
-        #drawer-overlay.open { display: block; }
-        #drawer {
-            position: fixed;
-            top: 0;
-            left: -280px;
-            width: 256px;
-            height: 100%;
-            background: var(--sidebar);
-            z-index: 5001;
-            transition: left 0.22s ease;
-            display: flex;
-            flex-direction: column;
-            padding: 16px 8px;
-            overflow-y: auto;
-        }
-        #drawer.open { left: 0; }
-        #drawer h3 {
-            font-size: 9px;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: rgba(255,255,255,0.28);
-            padding: 0 8px 8px;
-            margin: 0;
-        }
-        #drawer-buttons { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 1px; }
-        #drawer button {
-            display: block;
-            width: 100%;
-            padding: 9px 12px;
-            cursor: pointer;
-            background: transparent;
-            color: var(--sid-txt);
-            border: none;
-            text-align: left;
-            border-radius: var(--radius);
-            font-size: 13px;
-        }
-        #drawer button:hover, #drawer button.active { background: rgba(255,255,255,0.10); }
-        #drawer-footer {
-            margin-top: 12px;
-            padding-top: 10px;
-            border-top: 1px solid rgba(255,255,255,0.08);
-            display: flex;
-            gap: 6px;
-        }
-        #drawer-footer button { flex: 1; padding: 10px; text-align: center; }
-
-        /* ─── SETTINGS PANEL MISC ────────────────────────── */
-        hr { border: 0; border-top: 1px solid var(--line); margin: 16px 0; }
-        #settings-nome-foglio { font-weight: 700; }
-        p { font-size: 12px; color: var(--ink-2); margin: 0; }
-
-        /* ─── TABLE FONT VAR ─────────────────────────────── */
-        #tabella-container { --table-font: 13px; }
-        #tabella-container td { font-size: var(--table-font); }
+        #tabella-container{--table-font:13px;flex-grow:1;}
+        #tabella-container td{font-size:var(--table-font);}
     </style>
 </head>
 <body>
 
-<!-- ── LOGIN ──────────────────────────────────────────── -->
 <div id="login-screen">
     <div class="login-box">
         <h2>Palamini Auto</h2>
-        <input type="password" id="pass-input" placeholder="Password" autocomplete="current-password">
+        <input type="password" id="pass-input" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')faiLogin()">
         <button onclick="faiLogin()" id="btn-login">Accedi</button>
     </div>
 </div>
 
-<!-- ── DRAWER MOBILE ───────────────────────────────────── -->
 <div id="drawer-overlay" onclick="chiudiDrawer()"></div>
 <div id="drawer">
     <h3>Fogli</h3>
     <div id="drawer-buttons"></div>
     <div id="drawer-footer">
-        <button style="background:rgba(255,255,255,0.08);color:white;" onclick="apriOrdinamento();chiudiDrawer()">↕</button>
-        <button style="background:rgba(255,255,255,0.08);color:white;" onclick="apriImpostazioni();chiudiDrawer()">⚙</button>
+        <button style="background:rgba(0,0,0,0.15);color:white;" onclick="apriOrdinamento();chiudiDrawer()">↕</button>
+        <button style="background:rgba(0,0,0,0.15);color:white;" onclick="apriImpostazioni();chiudiDrawer()">⚙</button>
     </div>
 </div>
 
-<!-- ── APP PRINCIPALE ─────────────────────────────────── -->
 <div id="app-screen">
     <div id="sidebar">
         <h3>Fogli</h3>
         <div id="buttons-container"></div>
     </div>
-
     <div id="main-container">
-        <!-- HEADER -->
         <div id="header">
-            <div class="header-left">
-                <h2 id="titolo-foglio">Palamini Auto</h2>
-                <button id="btn-add-record" class="btn btn-add" onclick="apriForm(null)">+ Nuovo</button>
-            </div>
+            <h2 id="titolo-foglio">Palamini Auto</h2>
             <div class="header-right">
                 <button id="hamburger-btn" class="hb" onclick="apriDrawer()">☰</button>
                 <button onclick="sincronizza()" id="btn-sync" class="hb btn-sync">↻ Sync</button>
-                <button onclick="cambiaFont(-1)" class="hb desktop-only" title="Riduci testo" style="font-size:11px;font-weight:700;">A−</button>
-                <button onclick="cambiaFont(1)"  class="hb desktop-only" title="Aumenta testo" style="font-size:11px;font-weight:700;">A+</button>
-                <button onclick="apriOrdinamento()" class="hb desktop-only" title="Ordina Menu" style="font-size:13px;">↕</button>
-                <button onclick="apriImpostazioni()" class="hb desktop-only" title="Impostazioni" style="font-size:13px;">⚙</button>
+                <button onclick="cambiaFont(-1)" class="hb desktop-only" style="font-size:11px;font-weight:700;">A−</button>
+                <button onclick="cambiaFont(1)"  class="hb desktop-only" style="font-size:11px;font-weight:700;">A+</button>
+                <button onclick="apriOrdinamento()" class="hb desktop-only">↕</button>
+                <button onclick="apriImpostazioni()" class="hb desktop-only">⚙</button>
             </div>
         </div>
-
-        <!-- CONTENT -->
         <div id="content">
             <div id="status-message">Seleziona un foglio.</div>
             <div id="toolbar">
                 <input type="text" id="search-input" placeholder="🔍 Cerca..." oninput="renderTabella()">
+                <button id="btn-add-toolbar" onclick="apriForm(null)">+ Nuovo</button>
                 <select id="sort-column" onchange="cambiaOrdinamento()"></select>
                 <button id="btn-sort-dir" class="btn-sort" onclick="cambiaDirezioneOrdinamento()">⬇ A–Z</button>
             </div>
-            <div class="table-wrapper" id="tabella-container"></div>
+            <div id="tabella-container"></div>
             <div id="multi-delete-bar">
-                <span id="multi-count-label">0 selezionate</span>
+                <span id="multi-count-label">0 righe</span>
                 <button onclick="eliminaSelezionate()">🗑 Elimina</button>
                 <button class="annulla" onclick="deselezionaTutti()">✕</button>
             </div>
@@ -806,10 +231,10 @@
     </div>
 </div>
 
-<!-- ── MODAL FORM ──────────────────────────────────────── -->
+<!-- MODAL FORM -->
 <div id="modal-form" class="modal-overlay">
     <div class="modal-content">
-        <h3 id="modal-title">Nuovo Record</h3>
+        <h3 id="modal-title">Nuovo</h3>
         <div id="modal-form-fields"></div>
         <div class="modal-buttons">
             <button class="btn btn-cancel" onclick="chiudiModal('modal-form')">Annulla</button>
@@ -818,95 +243,59 @@
     </div>
 </div>
 
-<!-- ── MODAL SETTINGS ──────────────────────────────────── -->
+<!-- MODAL SETTINGS -->
 <div id="modal-settings" class="modal-overlay">
     <div class="modal-content">
         <h3>⚙ Impostazioni — <span id="settings-nome-foglio"></span></h3>
-
         <div class="form-group">
             <label>Nome nel Menu</label>
             <p style="margin-bottom:6px;">Usa <b>{{COUNT}}</b> o <b>{{COUNT:Colonna=Valore}}</b></p>
             <input type="text" id="set-display-name" placeholder="Es. SAT ({{COUNT}})">
         </div>
-
         <label class="checkbox-label"><input type="checkbox" id="set-add"> Permetti aggiunta righe</label>
         <label class="checkbox-label"><input type="checkbox" id="set-edit"> Permetti modifica righe</label>
         <label class="checkbox-label"><input type="checkbox" id="set-delete"> Permetti eliminazione righe</label>
-
         <div class="form-group" style="margin-top:12px;">
             <label>Ordinamento predefinito</label>
             <div style="display:flex;gap:8px;">
                 <select id="set-sort-col" style="flex:1;padding:8px;border:1px solid var(--line);border-radius:var(--radius);"></select>
                 <select id="set-sort-dir" style="width:90px;padding:8px;border:1px solid var(--line);border-radius:var(--radius);">
-                    <option value="1">A → Z</option>
-                    <option value="-1">Z → A</option>
+                    <option value="1">A → Z</option><option value="-1">Z → A</option>
                 </select>
             </div>
         </div>
-
-        <hr>
-        <div id="settings-colonne"></div>
-
+        <hr><div id="settings-colonne"></div>
         <hr>
         <div>
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
                 <label style="font-weight:700;font-size:13px;margin:0;">📋 Vista Card</label>
                 <label class="checkbox-label" style="margin:0;"><input type="checkbox" id="set-card-attiva"> Attiva</label>
             </div>
-            <div id="card-config-body">
-                <div class="form-group">
-                    <label>Etichetta superiore sinistra</label>
-                    <select id="card-col-data" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:var(--radius);"></select>
-                </div>
-                <div class="form-group">
-                    <label>Etichetta superiore destra</label>
-                    <select id="card-col-badge" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:var(--radius);"></select>
-                </div>
-                <div class="form-group">
-                    <label>Colonne corpo</label>
-                    <div id="card-col-corpo-list"></div>
-                </div>
-            </div>
+            <div class="form-group"><label>Etichetta sup. sinistra</label><select id="card-col-data" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:var(--radius);"></select></div>
+            <div class="form-group"><label>Etichetta sup. destra</label><select id="card-col-badge" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:var(--radius);"></select></div>
+            <div class="form-group"><label>Colonne corpo</label><div id="card-col-corpo-list"></div></div>
         </div>
-
         <hr>
         <div>
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
                 <label style="font-weight:700;font-size:13px;margin:0;">🗂 Vista Kanban</label>
                 <label class="checkbox-label" style="margin:0;"><input type="checkbox" id="set-kanban-attiva"> Attiva</label>
             </div>
-            <div class="form-group">
-                <label>Colonna di raggruppamento</label>
-                <select id="kanban-col-gruppo" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:var(--radius);"></select>
-            </div>
-            <div class="form-group">
-                <label>Ordine colonne kanban (una per riga)</label>
-                <textarea id="kanban-ordine" rows="6" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:var(--radius);font-size:12px;font-family:inherit;" placeholder="Es:&#10;DA FARE&#10;IN CORSO&#10;FATTO"></textarea>
-            </div>
+            <div class="form-group"><label>Colonna di raggruppamento</label><select id="kanban-col-gruppo" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:var(--radius);"></select></div>
+            <div class="form-group"><label>Ordine colonne kanban (una per riga)</label><textarea id="kanban-ordine" rows="5" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:var(--radius);font-size:12px;font-family:inherit;"></textarea></div>
         </div>
-
         <hr>
-        <div>
-            <label style="font-weight:700;font-size:13px;display:block;margin-bottom:6px;">📅 Formato Data/Ora</label>
-            <div id="formati-colonne-list"></div>
-        </div>
-
+        <div><label style="font-weight:700;font-size:13px;display:block;margin-bottom:6px;">📅 Formato Data/Ora</label><div id="formati-colonne-list"></div></div>
         <hr>
         <div>
             <label style="font-weight:700;font-size:13px;display:block;margin-bottom:6px;">🎨 Regole di Formattazione</label>
-            <p style="margin-bottom:8px;">La prima regola che corrisponde vince.</p>
             <div style="display:grid;grid-template-columns:1fr 110px 1fr 46px 76px;gap:4px;margin-bottom:4px;font-size:10px;color:var(--ink-3);font-weight:700;padding:0 2px;">
                 <span>Colonna</span><span>Operatore</span><span>Valore</span><span>Col.</span><span>Target</span>
             </div>
             <div id="format-rules-list"></div>
         </div>
-
         <hr>
-        <div>
-            <label style="font-weight:700;font-size:13px;display:block;margin-bottom:6px;">🟦 Colore Sfondo Colonna</label>
-            <div id="colori-colonne-list"></div>
-        </div>
-
+        <div><label style="font-weight:700;font-size:13px;display:block;margin-bottom:6px;">🟦 Colore Sfondo Colonna</label><div id="colori-colonne-list"></div></div>
         <div class="modal-buttons">
             <button class="btn btn-cancel" onclick="chiudiModal('modal-settings')">Annulla</button>
             <button class="btn btn-save" onclick="salvaImpostazioni()" id="btn-save-settings">Salva</button>
@@ -914,964 +303,596 @@
     </div>
 </div>
 
-<!-- ── MODAL ORDER ─────────────────────────────────────── -->
+<!-- MODAL ORDER -->
 <div id="modal-order" class="modal-overlay">
     <div class="modal-content">
         <h3>↕ Ordina Menu</h3>
         <div id="order-list"></div>
-        <div class="modal-buttons">
-            <button class="btn btn-save" onclick="chiudiModal('modal-order')" style="width:100%;">Fatto</button>
-        </div>
+        <div class="modal-buttons"><button class="btn btn-save" onclick="chiudiModal('modal-order')" style="width:100%;">Fatto</button></div>
     </div>
 </div>
 
-<!-- ════════════════════════════════════════════════════════
-     JAVASCRIPT — logica identica all'originale
-     Solo le funzioni di rendering HTML sono aggiornate
-     ════════════════════════════════════════════════════════ -->
 <script>
-    if (typeof BASEROW_URL === 'undefined' || typeof BASEROW_TOKEN === 'undefined') {
-        alert("Manca config.js o le variabili BASEROW_URL / BASEROW_TOKEN non sono definite!");
+if(typeof BASEROW_URL==='undefined'||typeof BASEROW_TOKEN==='undefined')alert("Manca config.js!");
+const BR_HDR=()=({"Authorization":"Token "+BASEROW_TOKEN,"Content-Type":"application/json"});
+const BR={
+    async getFields(t){const r=await fetch(`${BASEROW_URL}/api/database/fields/table/${t}/`,{headers:BR_HDR()});if(!r.ok)throw new Error(await r.text());return r.json();},
+    async getAll(t){let res=[],p=1;while(true){const r=await fetch(`${BASEROW_URL}/api/database/rows/table/${t}/?user_field_names=true&size=200&page=${p}`,{headers:BR_HDR()});if(!r.ok)throw new Error(await r.text());const d=await r.json();res=res.concat(d.results);if(!d.next)break;p++;}return res;},
+    async post(t,b){const r=await fetch(`${BASEROW_URL}/api/database/rows/table/${t}/?user_field_names=true`,{method:"POST",headers:BR_HDR(),body:JSON.stringify(b)});if(!r.ok)throw new Error(await r.text());return r.json();},
+    async patch(t,id,b){const r=await fetch(`${BASEROW_URL}/api/database/rows/table/${t}/${id}/?user_field_names=true`,{method:"PATCH",headers:BR_HDR(),body:JSON.stringify(b)});if(!r.ok)throw new Error(await r.text());return r.json();},
+    async del(t,id){const r=await fetch(`${BASEROW_URL}/api/database/rows/table/${t}/${id}/`,{method:"DELETE",headers:BR_HDR()});if(!r.ok)throw new Error(await r.text());return true;}
+};
+
+let TABLE_MAP={},DATABASE={},APP_CONFIG={},FOGLIO_ATTIVO="",RIGA_ORIGINALE_IN_MODIFICA=null;
+let ORDINAMENTO={colonna:null,direzione:1},_sortFixed=false,autoSyncTimer=null,FORMULA_FIELDS={};
+const FOGLI_CON_DATE=["SAT","APP PNM","FLOTTE"],NOME_COLONNA_DATA="DATA e ORA";
+let _vistaCard=false,_vistaKanban=false;
+
+if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+
+window.onload=function(){
+    const s=JSON.parse(localStorage.getItem('appSession'));
+    if(s&&(Date.now()-s.timestamp)/3600000<24){
+        document.getElementById('login-screen').style.display='none';
+        document.getElementById('app-screen').style.display='flex';
+        sincronizza();
     }
+};
 
-    const BR_HDR = () => ({
-        "Authorization": "Token " + BASEROW_TOKEN,
-        "Content-Type":  "application/json"
-    });
+async function faiLogin(){
+    const p=document.getElementById('pass-input').value.trim(),btn=document.getElementById('btn-login');
+    btn.innerText="…";btn.disabled=true;
+    if(p===BASEROW_PASSWORD){localStorage.setItem('appSession',JSON.stringify({timestamp:Date.now()}));window.location.reload();}
+    else{alert("Password errata");btn.innerText="Accedi";btn.disabled=false;}
+}
 
-    const BR = {
-        async getFields(tableId) {
-            const r = await fetch(`${BASEROW_URL}/api/database/fields/table/${tableId}/`, { headers: BR_HDR() });
-            if (!r.ok) throw new Error(await r.text());
-            return r.json();
-        },
-        async getAll(tableId) {
-            let results = [], page = 1;
-            while (true) {
-                const r = await fetch(`${BASEROW_URL}/api/database/rows/table/${tableId}/?user_field_names=true&size=200&page=${page}`, { headers: BR_HDR() });
-                if (!r.ok) throw new Error(await r.text());
-                const data = await r.json();
-                results = results.concat(data.results);
-                if (!data.next) break;
-                page++;
-            }
-            return results;
-        },
-        async getTables(databaseId) {
-            const r = await fetch(`${BASEROW_URL}/api/database/tables/database/${databaseId}/`, { headers: BR_HDR() });
-            if (!r.ok) throw new Error(await r.text());
-            return r.json();
-        },
-        async post(tableId, body) {
-            const r = await fetch(`${BASEROW_URL}/api/database/rows/table/${tableId}/?user_field_names=true`, { method: "POST", headers: BR_HDR(), body: JSON.stringify(body) });
-            if (!r.ok) throw new Error(await r.text());
-            return r.json();
-        },
-        async patch(tableId, rowId, body) {
-            const r = await fetch(`${BASEROW_URL}/api/database/rows/table/${tableId}/${rowId}/?user_field_names=true`, { method: "PATCH", headers: BR_HDR(), body: JSON.stringify(body) });
-            if (!r.ok) throw new Error(await r.text());
-            return r.json();
-        },
-        async del(tableId, rowId) {
-            const r = await fetch(`${BASEROW_URL}/api/database/rows/table/${tableId}/${rowId}/`, { method: "DELETE", headers: BR_HDR() });
-            if (!r.ok) throw new Error(await r.text());
-            return true;
-        },
-        async delBatch(tableId, rowIds) {
-            const r = await fetch(`${BASEROW_URL}/api/database/rows/table/${tableId}/batch-delete/`, { method: "DELETE", headers: BR_HDR(), body: JSON.stringify({ items: rowIds }) });
-            if (!r.ok) throw new Error(await r.text());
-            return true;
+let _fontSize=parseInt(localStorage.getItem('tableFontSize')||'13');
+function aggiornaFont(){
+    document.getElementById('tabella-container').style.setProperty('--table-font',_fontSize+'px');
+    document.querySelectorAll('.card-title').forEach(el=>el.style.fontSize=_fontSize+'px');
+}
+function cambiaFont(d){_fontSize=Math.min(22,Math.max(9,_fontSize+d));localStorage.setItem('tableFontSize',_fontSize);aggiornaFont();}
+window.addEventListener('load',aggiornaFont);
+
+function parsaData(str){
+    if(!str)return null;
+    const m=String(str).match(/^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}))?/);
+    if(m)return new Date(`${m[3]}-${m[2]}-${m[1]}T${m[4]||'00'}:${m[5]||'00'}`).getTime();
+    const d=new Date(str);return isNaN(d)?null:d.getTime();
+}
+function valutaFormatRules(riga,config){
+    for(const r of(config.formatRules||[])){
+        if(!r.colonna||!r.colore)continue;
+        const v=String(riga[r.colonna]||'').trim();let match=false;
+        switch(r.operatore){
+            case'uguale':match=v===r.valore;break;case'non uguale':match=v!==r.valore;break;
+            case'contiene':match=v.toLowerCase().includes((r.valore||'').toLowerCase());break;
+            case'inizia con':match=v.toLowerCase().startsWith((r.valore||'').toLowerCase());break;
+            case'non vuoto':match=v!=='';break;case'vuoto':match=v==='';break;
+            case'data > (dopo)':{const tA=parsaData(formattaValoreCella(v)||v),tB=parsaData(r.valore);match=tA!=null&&tB!=null&&tA>tB;break;}
+            case'data < (prima)':{const tA=parsaData(formattaValoreCella(v)||v),tB=parsaData(r.valore);match=tA!=null&&tB!=null&&tA<tB;break;}
         }
-    };
-
-    let TABLE_MAP = {};
-    const FOGLI_CON_DATE = ["SAT", "APP PNM", "FLOTTE"];
-    const NOME_COLONNA_DATA = "DATA e ORA";
-    let DATABASE = {};
-    let APP_CONFIG = {};
-    let FOGLIO_ATTIVO = "";
-    let RIGA_ORIGINALE_IN_MODIFICA = null;
-    let ORDINAMENTO = { colonna: null, direzione: 1 };
-    let autoSyncTimer = null;
-    let FORMULA_FIELDS = {};
-
-    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(e => console.log(e));
-
-    window.onload = function() {
-        const sessione = JSON.parse(localStorage.getItem('appSession'));
-        if (sessione && (new Date().getTime() - sessione.timestamp) / 3600000 < 24) {
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('app-screen').style.display = 'flex';
-            sincronizza();
-        }
-    };
-
-    async function faiLogin() {
-        const pass = document.getElementById('pass-input').value.trim();
-        const btn  = document.getElementById('btn-login');
-        btn.innerText = "…"; btn.disabled = true;
-        if (pass === BASEROW_PASSWORD) {
-            localStorage.setItem('appSession', JSON.stringify({ timestamp: new Date().getTime() }));
-            window.location.reload();
-        } else {
-            alert("Password errata");
-            btn.innerText = "Accedi"; btn.disabled = false;
-        }
+        if(match)return{colore:r.colore,target:r.target||'riga',colonna:r.colonna};
     }
+    return null;
+}
 
-    let _fontSize = parseInt(localStorage.getItem('tableFontSize') || '13');
-    function aggiornaFont() {
-        document.getElementById('tabella-container').style.setProperty('--table-font', _fontSize + 'px');
-        document.querySelectorAll('.card-title').forEach(el => el.style.fontSize = _fontSize + 'px');
-    }
-    function cambiaFont(delta) {
-        _fontSize = Math.min(22, Math.max(9, _fontSize + delta));
-        localStorage.setItem('tableFontSize', _fontSize);
-        aggiornaFont();
-    }
-    window.addEventListener('load', aggiornaFont);
+function apriDrawer(){document.getElementById('drawer').classList.add('open');document.getElementById('drawer-overlay').classList.add('open');}
+function chiudiDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('drawer-overlay').classList.remove('open');}
 
-    let _vistaCard = false;
-    let _vistaKanban = false;
+async function sincronizza(){
+    const s=JSON.parse(localStorage.getItem('appSession'));if(!s)return;
+    const btn=document.getElementById('btn-sync');btn.innerText="…";
+    try{
+        const cfgId=BASEROW_TABLES['_CONFIG'];
+        if(cfgId){try{const cr=await BR.getAll(cfgId);if(cr.length>0&&cr[0].valore){APP_CONFIG=JSON.parse(cr[0].valore);localStorage.setItem('appConfig',JSON.stringify(APP_CONFIG));}else APP_CONFIG=JSON.parse(localStorage.getItem('appConfig')||'{}');}catch(e){APP_CONFIG=JSON.parse(localStorage.getItem('appConfig')||'{}');}}
+        else APP_CONFIG=JSON.parse(localStorage.getItem('appConfig')||'{}');
+        if(!BASEROW_TABLES||!Object.keys(BASEROW_TABLES).length){alert("Nessuna tabella in config.js");btn.innerText="↻ Sync";return;}
+        const db={};
+        await Promise.all(Object.entries(BASEROW_TABLES).map(async([nome,tid])=>{
+            try{
+                const[rows,fields]=await Promise.all([BR.getAll(tid),BR.getFields(tid).catch(()=>[])]);
+                const RO=new Set(['formula','lookup','count','rollup','link_row','created_on','last_modified','created_by','last_modified_by','autonumber','uuid','multiple_collaborators']);
+                FORMULA_FIELDS[nome]=new Set(fields.filter(f=>RO.has(f.type)).map(f=>f.name));
+                const skip=new Set(['id','order']);
+                const intestazioni=rows.length>0?Object.keys(rows[0]).filter(k=>!skip.has(k)):[];
+                db[nome]={intestazioni,righe:rows.map(row=>{const r={_rowIndex:row.id};intestazioni.forEach(c=>{r[c]=row[c]??'';});return r;})};
+                TABLE_MAP[nome]=tid;
+            }catch(e){console.warn(`Errore ${nome}:`,e.message);db[nome]={intestazioni:[],righe:[]};FORMULA_FIELDS[nome]=new Set();}
+        }));
+        DATABASE=db;renderMenu();
+        if(FOGLIO_ATTIVO&&DATABASE[FOGLIO_ATTIVO])caricaDati(FOGLIO_ATTIVO);
+        document.getElementById('status-message').style.display="none";
+        const ora=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+        btn.innerText=`↻ ${ora}`;
+        if(autoSyncTimer)clearTimeout(autoSyncTimer);
+        autoSyncTimer=setTimeout(sincronizza,30*60*1000);
+    }catch(e){btn.innerText="↻ Errore";console.error(e);alert("Errore sync: "+e.message);}
+}
 
-    function parsaData(str) {
-        if (!str) return null;
-        const m = String(str).match(/^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}))?/);
-        if (m) return new Date(`${m[3]}-${m[2]}-${m[1]}T${m[4]||'00'}:${m[5]||'00'}`).getTime();
-        const d = new Date(str); return isNaN(d) ? null : d.getTime();
-    }
+function getNomeDinamico(nome){
+    const c=APP_CONFIG[nome]||{},t=c.displayName;if(!t)return nome;
+    const righe=DATABASE[nome].righe||[];
+    return t.replace(/\{\{COUNT\}\}/g,righe.length).replace(/\{\{COUNT:(.*?)=(.*?)\}\}/g,(_,col,val)=>righe.filter(r=>String(r[col]).trim()==String(val).trim()).length);
+}
 
-    function valutaFormatRules(riga, config) {
-        const regole = config.formatRules || [];
-        for (const r of regole) {
-            if (!r.colonna || !r.colore) continue;
-            const valCella = String(riga[r.colonna] || '').trim();
-            let match = false;
-            switch (r.operatore) {
-                case 'uguale':          match = valCella === r.valore; break;
-                case 'non uguale':      match = valCella !== r.valore; break;
-                case 'contiene':        match = valCella.toLowerCase().includes((r.valore||'').toLowerCase()); break;
-                case 'inizia con':      match = valCella.toLowerCase().startsWith((r.valore||'').toLowerCase()); break;
-                case 'non vuoto':       match = valCella !== ''; break;
-                case 'vuoto':           match = valCella === ''; break;
-                case 'data > (dopo)': {
-                    const tsCella = parsaData(formattaValoreCella(valCella) || valCella);
-                    const tsConf  = parsaData(r.valore);
-                    match = tsCella !== null && tsConf !== null && tsCella > tsConf; break;
-                }
-                case 'data < (prima)': {
-                    const tsCella = parsaData(formattaValoreCella(valCella) || valCella);
-                    const tsConf  = parsaData(r.valore);
-                    match = tsCella !== null && tsConf !== null && tsCella < tsConf; break;
-                }
-                default: break;
-            }
-            if (match) return { colore: r.colore, target: r.target || 'riga', colonna: r.colonna };
-        }
-        return null;
-    }
-
-    /* ─── CARD RENDER ─────────────────────────────────── */
-    function renderCard(righe, config, colonneDaMostrare) {
-        const cardCfg = config.cardConfig || {};
-        const colData  = cardCfg.data  || "";
-        const colBadge = cardCfg.badge || "";
-        const colCorpo = cardCfg.corpo || [];
-
-        if (righe.length === 0) return `<p style="padding:32px 20px;color:var(--ink-3);">Nessuna riga trovata.</p>`;
-
-        let html = '<div class="cards-grid">';
-        righe.forEach(riga => {
-            const fmt = valutaFormatRules(riga, config);
-            const labelColor = fmt ? fmt.colore : 'var(--accent)';
-            const titleColor = (fmt && fmt.target !== 'cella') ? fmt.colore : 'var(--ink)';
-            const titleWeight = fmt ? '600' : '500';
-
-            const valData  = colData  ? formattaValoreCella(riga[colData])  : '';
-            const valBadge = colBadge ? formattaValoreCella(riga[colBadge]) : '';
-            const valCorpo = colCorpo.map(c => formattaValoreCella(riga[c])).filter(Boolean).join(' · ');
-            const rigaEnc  = encodeURIComponent(JSON.stringify(riga));
-
-            html += `<div class="card" onclick="apriForm('${rigaEnc}')">
-                <div class="card-top">
-                    <div class="card-label" style="color:${labelColor};">${valData}</div>
-                    ${valBadge ? `<div class="card-badge-right">${valBadge}</div>` : ''}
-                </div>
-                <div class="card-title" style="color:${titleColor};font-weight:${titleWeight};">${valCorpo}</div>`;
-
-            if (config.puoModificare || config.puoEliminare) {
-                html += `<div class="card-actions" onclick="event.stopPropagation()">
-                    ${config.puoModificare ? `<button class="card-action-btn" onclick="apriForm('${rigaEnc}')" title="Modifica">✏️</button>` : ''}
-                    ${config.puoEliminare  ? `<button class="card-action-btn" onclick="eliminaRiga(${riga._rowIndex})" title="Elimina">🗑️</button>` : ''}
-                </div>`;
-            }
-            html += `</div>`;
+// _CONFIG mai nel menu
+function renderMenu(){
+    const cont=document.getElementById('buttons-container'),drw=document.getElementById('drawer-buttons');
+    cont.innerHTML="";drw.innerHTML="";
+    let disponibili=Object.keys(DATABASE).filter(f=>f!=='_CONFIG');
+    let ordinati=(APP_CONFIG._sheetOrder||[]).filter(f=>disponibili.includes(f));
+    disponibili.forEach(f=>{if(!ordinati.includes(f))ordinati.push(f);});
+    APP_CONFIG._sheetOrder=ordinati;
+    ordinati.forEach(nome=>{
+        [[cont,false],[drw,true]].forEach(([c,isDrawer])=>{
+            const btn=document.createElement('button');
+            btn.innerText=getNomeDinamico(nome);
+            btn.setAttribute('data-foglio',nome);
+            btn.onclick=()=>{caricaDati(nome);if(isDrawer)chiudiDrawer();};
+            if(nome===FOGLIO_ATTIVO)btn.classList.add('active');
+            c.appendChild(btn);
         });
-        html += '</div>';
-        setTimeout(aggiornaFont, 0);
-        return html;
+    });
+}
+
+function apriOrdinamento(){aggiornaListaOrdinamento();document.getElementById('modal-order').style.display='flex';}
+function aggiornaListaOrdinamento(){
+    document.getElementById('order-list').innerHTML=APP_CONFIG._sheetOrder.map((f,i)=>
+        `<div class="order-item"><span>${f}</span><div class="order-btns">
+        <button onclick="spostaFoglio(${i},-1)" ${i===0?'disabled':''}>⬆</button>
+        <button onclick="spostaFoglio(${i},1)" ${i===APP_CONFIG._sheetOrder.length-1?'disabled':''}>⬇</button>
+        </div></div>`).join('');
+}
+async function spostaFoglio(i,d){const a=APP_CONFIG._sheetOrder,t=a[i];a[i]=a[i+d];a[i+d]=t;aggiornaListaOrdinamento();renderMenu();await salvaConfig();}
+
+function caricaDati(nome){
+    FOGLIO_ATTIVO=nome;
+    document.getElementById('titolo-foglio').innerText=getNomeDinamico(nome);
+    document.querySelectorAll('#sidebar button[data-foglio]').forEach(b=>b.classList.toggle('active',b.getAttribute('data-foglio')===nome));
+    const config=APP_CONFIG[nome]||{};
+    // + Nuovo button
+    document.getElementById('btn-add-toolbar').style.display=config.puoAggiungere?'inline-block':'none';
+    const intestazioni=DATABASE[nome].intestazioni;
+    if(!intestazioni.length){document.getElementById('toolbar').style.display="none";document.getElementById('tabella-container').innerHTML=`<p style="padding:32px;color:var(--ink-3);">Foglio vuoto.</p>`;return;}
+    let colVis=intestazioni;
+    if(config.colonneVisibili&&config.colonneVisibili.length>0)colVis=intestazioni.filter(h=>config.colonneVisibili.includes(h));
+    document.getElementById('toolbar').style.display="flex";
+    document.getElementById('search-input').value="";
+    const sortSel=document.getElementById('sort-column');
+    sortSel.innerHTML=`<option value="">– Ordina –</option>`+colVis.map(c=>`<option value="${c}">${c}</option>`).join('');
+    // Sort fisso = nascondi controlli
+    if(config.sortColonna&&colVis.includes(config.sortColonna)){
+        ORDINAMENTO.colonna=config.sortColonna;ORDINAMENTO.direzione=config.sortDirezione||1;
+        sortSel.value=config.sortColonna;_sortFixed=true;
+    }else if(FOGLI_CON_DATE.includes(nome)&&intestazioni.includes(NOME_COLONNA_DATA)){
+        ORDINAMENTO.colonna=NOME_COLONNA_DATA;ORDINAMENTO.direzione=1;_sortFixed=false;
+    }else{ORDINAMENTO.colonna=null;ORDINAMENTO.direzione=1;sortSel.value="";_sortFixed=false;}
+    document.getElementById('sort-column').style.display=_sortFixed?'none':'';
+    document.getElementById('btn-sort-dir').style.display=_sortFixed?'none':'';
+    document.getElementById('btn-sort-dir').innerText=ORDINAMENTO.direzione===1?"⬇ A–Z":"⬆ Z–A";
+    _vistaCard=!!(config.vistaCardAttiva&&config.cardConfig?.data);
+    _vistaKanban=!!(config.vistaKanbanAttiva&&config.kanbanGruppo);
+    renderTabella();
+}
+
+function convertiDataItaliana(s){
+    if(!s)return 0;
+    const mesi={gennaio:0,febbraio:1,marzo:2,aprile:3,maggio:4,giugno:5,luglio:6,agosto:7,settembre:8,ottobre:9,novembre:10,dicembre:11};
+    const parts=s.toLowerCase().split(' ');let mi=-1,g=1,t="00:00";
+    for(let i=0;i<parts.length;i++){if(mesi[parts[i]]!==undefined){mi=mesi[parts[i]];g=parseInt(parts[i-1])||1;}if(parts[i].includes(':'))t=parts[i];}
+    if(mi===-1)return 0;const tp=t.split(':');
+    return new Date(new Date().getFullYear(),mi,g,parseInt(tp[0])||0,parseInt(tp[1])||0).getTime();
+}
+function convertiDataAssoluta(val){
+    if(!val)return 0;const s=String(val);
+    const iso=s.match(/^(\d{4})-(\d{2})-(\d{2})/);if(iso)return new Date(iso[1],iso[2]-1,iso[3]).getTime();
+    return convertiDataItaliana(s);
+}
+function formattaValoreCella(val){
+    if(!val)return"";const s=String(val);
+    const m=s.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);if(m)return`${m[3]}/${m[2]}/${m[1]} ${m[4]}:${m[5]}`;
+    return s;
+}
+function formattaOrario(val){
+    if(!val)return"";const s=String(val);
+    if(s.includes('T')&&s.includes('-')){const d=new Date(s);if(!isNaN(d))return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');}
+    const m1=s.match(/1899[^\d]*(\d{1,2}):(\d{2})/);if(m1)return`${m1[1].padStart(2,'0')}:${m1[2]}`;
+    const m2=s.match(/^(\d{1,2}):(\d{2})/);if(m2)return`${m2[1].padStart(2,'0')}:${m2[2]}`;
+    return s;
+}
+function formattaDataGruppo(val){
+    if(!val)return"";const s=String(val);
+    const giorni=["Domenica","Lunedì","Martedì","Mercoledì","Giovedì","Venerdì","Sabato"];
+    const mesi=["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
+    const iso=s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if(iso){const d=new Date(iso[1],iso[2]-1,iso[3]);return`${giorni[d.getDay()]} ${d.getDate()} ${mesi[d.getMonth()]}`;}
+    return s.replace(/^\w/,c=>c.toUpperCase());
+}
+function cambiaOrdinamento(){if(_sortFixed)return;ORDINAMENTO.colonna=document.getElementById('sort-column').value||null;renderTabella();}
+function cambiaDirezioneOrdinamento(){if(_sortFixed)return;ORDINAMENTO.direzione*=-1;document.getElementById('btn-sort-dir').innerText=ORDINAMENTO.direzione===1?"⬇ A–Z":"⬆ Z–A";renderTabella();}
+
+/* ── CARD ─── */
+function renderCard(righe,config){
+    const cc=config.cardConfig||{};
+    if(!righe.length)return`<p style="padding:32px;color:var(--ink-3);">Nessuna riga trovata.</p>`;
+    let h='<div class="cards-grid">';
+    righe.forEach(riga=>{
+        const fmt=valutaFormatRules(riga,config);
+        const lc=fmt?fmt.colore:'var(--accent)',tc=(fmt&&fmt.target!=='cella')?fmt.colore:'var(--ink)';
+        const valData=cc.data?formattaValoreCella(riga[cc.data]):'',valBadge=cc.badge?formattaValoreCella(riga[cc.badge]):'';
+        const valCorpo=(cc.corpo||[]).map(c=>formattaValoreCella(riga[c])).filter(Boolean).join(' · ');
+        const enc=encodeURIComponent(JSON.stringify(riga));
+        h+=`<div class="card" onclick="apriForm('${enc}')">
+            <div class="card-top"><div class="card-label" style="color:${lc};">${valData}</div>${valBadge?`<div class="card-badge-right">${valBadge}</div>`:''}</div>
+            <div class="card-title" style="color:${tc};font-weight:${fmt?'600':'500'};">${valCorpo}</div>`;
+        if(config.puoModificare||config.puoEliminare)h+=`<div class="card-actions" onclick="event.stopPropagation()">
+            ${config.puoModificare?`<button class="card-action-btn" onclick="apriForm('${enc}')">✏️</button>`:''}
+            ${config.puoEliminare?`<button class="card-action-btn" onclick="eliminaRiga(${riga._rowIndex})">🗑️</button>`:''}
+        </div>`;
+        h+=`</div>`;
+    });
+    h+='</div>';setTimeout(aggiornaFont,0);return h;
+}
+
+/* ── KANBAN ─── */
+function renderKanban(righe,config){
+    const cc=config.cardConfig||{},colGruppo=config.kanbanGruppo,ordine=config.kanbanOrdine||[];
+    if(!righe.length)return`<p style="padding:32px;color:var(--ink-3);">Nessuna riga trovata.</p>`;
+    const gruppi={},trovati=new Set();
+    righe.forEach(r=>{const g=String(r[colGruppo]||'—');if(!gruppi[g])gruppi[g]=[];gruppi[g].push(r);trovati.add(g);});
+    const ordinati=[...ordine.filter(g=>trovati.has(g)),...Array.from(trovati).filter(g=>!ordine.includes(g))];
+    let h='<div class="kanban-board">';
+    ordinati.forEach(g=>{
+        h+=`<div class="kanban-col"><div class="kanban-col-header"><span>${g}</span><span class="kanban-col-count">${gruppi[g].length}</span></div><div class="kanban-col-body">`;
+        gruppi[g].forEach(riga=>{
+            const fmt=valutaFormatRules(riga,config),lc=fmt?fmt.colore:'var(--accent)',tc=(fmt&&fmt.target!=='cella')?fmt.colore:'var(--ink)';
+            const enc=encodeURIComponent(JSON.stringify(riga));
+            h+=`<div class="kanban-card" onclick="apriForm('${enc}')">
+                <div class="kanban-card-label" style="color:${lc};">${cc.data?formattaValoreCella(riga[cc.data]):''}</div>
+                <div class="kanban-card-body">`;
+            (cc.corpo||[]).forEach((col,i)=>{const v=formattaValoreCella(riga[col]);if(!v)return;const isFmt=fmt&&fmt.target==='cella'&&fmt.colonna===col;h+=`<div class="kanban-card-body-line" style="color:${isFmt?fmt.colore:i===0?tc:'var(--ink-2)'};">${v}</div>`;});
+            h+=`</div>`;
+            const valBadge=cc.badge?formattaValoreCella(riga[cc.badge]):'';if(valBadge)h+=`<div class="kanban-card-meta">${valBadge}</div>`;
+            if(config.puoModificare||config.puoEliminare)h+=`<div class="kanban-card-actions" onclick="event.stopPropagation()">
+                ${config.puoModificare?`<button onclick="apriForm('${enc}')">✏️</button>`:''}${config.puoEliminare?`<button onclick="eliminaRiga(${riga._rowIndex})">🗑️</button>`:''}
+            </div>`;
+            h+=`</div>`;
+        });
+        h+=`</div></div>`;
+    });
+    h+='</div>';return h;
+}
+
+/* ── RENDER TABELLA ─── */
+function renderTabella(){
+    const config=APP_CONFIG[FOGLIO_ATTIVO]||{};
+    const intestazioni=DATABASE[FOGLIO_ATTIVO].intestazioni;
+    const isCalendario=FOGLIO_ATTIVO==='CALENDARIO';
+    const COL_DATA_CAL=intestazioni[0],COL_ORA_CAL=intestazioni[1];
+    const formulaCols=FORMULA_FIELDS[FOGLIO_ATTIVO]||new Set();
+    const formatiCol=config.formatiColonne||{};
+
+    let righe=[...DATABASE[FOGLIO_ATTIVO].righe];
+    let colVis=intestazioni;
+    if(config.colonneVisibili&&config.colonneVisibili.length>0)colVis=intestazioni.filter(h=>config.colonneVisibili.includes(h));
+    let colonneTabella=colVis;
+    if(isCalendario)colonneTabella=colVis.filter(c=>c!==COL_DATA_CAL&&c!==COL_ORA_CAL);
+
+    const query=document.getElementById('search-input').value.toLowerCase();
+    if(query)righe=righe.filter(r=>colVis.some(c=>String(r[c]||"").toLowerCase().includes(query)));
+
+    if(ORDINAMENTO.colonna){
+        const col=ORDINAMENTO.colonna,dir=ORDINAMENTO.direzione;
+        righe.sort((a,b)=>{
+            let vA=String(a[col]||""),vB=String(b[col]||"");
+            if(col===NOME_COLONNA_DATA||col===COL_DATA_CAL){let tA=convertiDataAssoluta(vA),tB=convertiDataAssoluta(vB);if(tA!==0&&tB!==0)return(tA-tB)*dir;}
+            if(!isNaN(vA)&&!isNaN(vB)&&vA!==""&&vB!=="")return(Number(vA)-Number(vB))*dir;
+            return vA.toLowerCase().localeCompare(vB.toLowerCase())*dir;
+        });
+    }
+    if(isCalendario&&!ORDINAMENTO.colonna){
+        righe.sort((a,b)=>{
+            let tA=convertiDataAssoluta(String(a[COL_DATA_CAL]||"")),tB=convertiDataAssoluta(String(b[COL_DATA_CAL]||""));
+            if(tA!==tB)return tA-tB;
+            return formattaOrario(String(a[COL_ORA_CAL]||"")).localeCompare(formattaOrario(String(b[COL_ORA_CAL]||"")));
+        });
     }
 
-    /* ─── DRAWER MOBILE ───────────────────────────────── */
-    function apriDrawer() {
-        document.getElementById('drawer').classList.add('open');
-        document.getElementById('drawer-overlay').classList.add('open');
-    }
-    function chiudiDrawer() {
-        document.getElementById('drawer').classList.remove('open');
-        document.getElementById('drawer-overlay').classList.remove('open');
-    }
+    if(_vistaKanban&&config.kanbanGruppo){document.getElementById('tabella-container').innerHTML=renderKanban(righe,config);return;}
+    if(_vistaCard&&config.cardConfig?.data){document.getElementById('tabella-container').innerHTML=renderCard(righe,config);return;}
+    if(!righe.length){document.getElementById('tabella-container').innerHTML=`<p style="padding:32px;color:var(--ink-3);">Nessuna riga trovata.</p>`;return;}
 
-    /* ─── SYNC ────────────────────────────────────────── */
-    async function sincronizza() {
-        const sessione = JSON.parse(localStorage.getItem('appSession'));
-        if (!sessione) return;
-        const btnSync = document.getElementById('btn-sync');
-        btnSync.innerText = "…";
-        try {
-            const tableIdConfig = BASEROW_TABLES['_CONFIG'];
-            if (tableIdConfig) {
-                try {
-                    const configRighe = await BR.getAll(tableIdConfig);
-                    if (configRighe.length > 0 && configRighe[0].valore) {
-                        APP_CONFIG = JSON.parse(configRighe[0].valore);
-                        localStorage.setItem('appConfig', JSON.stringify(APP_CONFIG));
-                    } else {
-                        APP_CONFIG = JSON.parse(localStorage.getItem('appConfig') || '{}');
-                    }
-                } catch(e) {
-                    APP_CONFIG = JSON.parse(localStorage.getItem('appConfig') || '{}');
-                }
-            } else {
-                APP_CONFIG = JSON.parse(localStorage.getItem('appConfig') || '{}');
+    const coloriCol=config.coloriColonne||{};
+    // ncol per colspan date header
+    const nColBase=colonneTabella.length+(isCalendario?1:0)+(config.puoEliminare?1:0)+((config.puoModificare||config.puoEliminare)?1:0);
+
+    let html='<table><thead><tr>';
+    if(config.puoEliminare)html+=`<th style="width:32px;"><input type="checkbox" id="chk-all" onclick="selezionaTutti(this)"></th>`;
+    if(isCalendario)html+=`<th style="width:62px;">Orario</th>`;
+    colonneTabella.forEach(c=>html+=`<th>${c}</th>`);
+    if(config.puoModificare||config.puoEliminare)html+=`<th style="width:60px;"></th>`;
+    html+='</tr></thead><tbody>';
+
+    let ultimaData=null;
+    righe.forEach(riga=>{
+        // Riga data header per CALENDARIO
+        if(isCalendario){
+            const dr=String(riga[COL_DATA_CAL]||"");
+            if(dr!==ultimaData){
+                ultimaData=dr;
+                html+=`<tr class="cal-date-row"><td colspan="${nColBase}">${formattaDataGruppo(dr)}</td></tr>`;
             }
+        }
+        const fmt=valutaFormatRules(riga,config);
+        const rowColor=(fmt&&fmt.target!=='cella')?fmt.colore:null;
+        const cellaTarget=(fmt&&fmt.target==='cella')?fmt.colonna:null;
+        const enc=encodeURIComponent(JSON.stringify(riga));
+        const chk=config.puoEliminare?`<td class="sel-td"><input type="checkbox" class="row-chk" data-idx="${riga._rowIndex}"></td>`:'';
+        html+=`<tr>${chk}`;
+        if(isCalendario)html+=`<td class="cal-orario"${rowColor?` style="color:${rowColor};"`:''} >${formattaOrario(riga[COL_ORA_CAL])}</td>`;
+        colonneTabella.forEach(c=>{
+            const cellBg=coloriCol[c]||'';let s='';
+            if(c===cellaTarget)s=`color:${fmt.colore};font-weight:700;${cellBg?`background:color-mix(in srgb,${cellBg} 25%,white 75%);`:''}`;
+            else if(rowColor)s=`color:${rowColor};font-weight:600;${cellBg?`background:color-mix(in srgb,${cellBg} 25%,white 75%);`:''}`;
+            else if(cellBg)s=`background:color-mix(in srgb,${cellBg} 12%,white 88%);`;
+            const isEdit=config.puoModificare&&!formulaCols.has(c);
+            const tipo=formatiCol[c]||'text';
+            html+=`<td${s?` style="${s}"`:''}${isEdit?` class="editable-cell" data-rowid="${riga._rowIndex}" data-col="${c.replace(/"/g,'&quot;')}" data-tipo="${tipo}"`:''} onclick="handleCellClick(event,this)">${formattaValoreCella(riga[c])}</td>`;
+        });
+        if(config.puoModificare||config.puoEliminare)html+=`<td style="white-space:nowrap;text-align:right;">
+            ${config.puoModificare?`<button class="tbl-btn" onclick="event.stopPropagation();apriForm('${enc}')">✏️</button>`:''}
+            ${config.puoEliminare?`<button class="tbl-btn" onclick="event.stopPropagation();eliminaRiga(${riga._rowIndex})">🗑️</button>`:''}
+        </td>`;
+        html+='</tr>';
+    });
+    html+='</tbody></table>';
+    document.getElementById('tabella-container').innerHTML=html;
+}
 
-            if (!BASEROW_TABLES || Object.keys(BASEROW_TABLES).length === 0) {
-                alert("Nessuna tabella configurata in config.js");
-                btnSync.innerText = "↻ Sync";
-                return;
-            }
-
-            const db = {};
-            await Promise.all(Object.entries(BASEROW_TABLES).map(async ([nomeFoglio, tableId]) => {
-                try {
-                    const [rows, fields] = await Promise.all([
-                        BR.getAll(tableId),
-                        BR.getFields(tableId).catch(() => [])
-                    ]);
-                    const tipiReadOnly = new Set(['formula','lookup','count','rollup','link_row','created_on','last_modified','created_by','last_modified_by','autonumber','uuid','multiple_collaborators']);
-                    FORMULA_FIELDS[nomeFoglio] = new Set(fields.filter(f => tipiReadOnly.has(f.type)).map(f => f.name));
-                    const campiDaEscludere = new Set(['id', 'order']);
-                    const intestazioni = rows.length > 0 ? Object.keys(rows[0]).filter(k => !campiDaEscludere.has(k)) : [];
-                    db[nomeFoglio] = {
-                        intestazioni,
-                        righe: rows.map(row => {
-                            const riga = { _rowIndex: row.id };
-                            intestazioni.forEach(col => { riga[col] = row[col] ?? ''; });
-                            return riga;
-                        })
-                    };
-                    TABLE_MAP[nomeFoglio] = tableId;
-                } catch(e) {
-                    console.warn(`Errore caricamento ${nomeFoglio}:`, e.message);
-                    db[nomeFoglio] = { intestazioni: [], righe: [] };
-                    FORMULA_FIELDS[nomeFoglio] = new Set();
-                }
-            }));
-
-            DATABASE = db;
+/* ── INLINE EDIT ─── */
+function handleCellClick(event,td){
+    if(!td.classList.contains('editable-cell'))return;
+    if(td.classList.contains('editing'))return;
+    if(event.target.tagName==='INPUT'||event.target.tagName==='BUTTON')return;
+    const rowId=parseInt(td.dataset.rowid),col=td.dataset.col,tipo=td.dataset.tipo||'text';
+    const prevHtml=td.innerHTML;
+    const rigaLocale=DATABASE[FOGLIO_ATTIVO].righe.find(r=>r._rowIndex===rowId);
+    let valoreRaw=rigaLocale?String(rigaLocale[col]||''):'';
+    // converti per input
+    let inputVal=valoreRaw;
+    if(tipo==='date'||tipo==='datetime-local'){
+        const m=valoreRaw.match(/^(\d{2})\/(\d{2})\/(\d{4})(?: (\d{2}):(\d{2}))?/);
+        if(m)inputVal=tipo==='date'?`${m[3]}-${m[2]}-${m[1]}`:`${m[3]}-${m[2]}-${m[1]}T${m[4]||'00'}:${m[5]||'00'}`;
+        else if(valoreRaw.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/))inputVal=tipo==='date'?valoreRaw.slice(0,10):valoreRaw.slice(0,16);
+    }else if(tipo==='time'){const mt=valoreRaw.match(/(\d{2}:\d{2})/);if(mt)inputVal=mt[1];}
+    td.classList.add('editing');td.innerHTML='';
+    const input=document.createElement('input');
+    input.type=tipo;input.value=inputVal;
+    td.appendChild(input);input.focus();input.select();
+    let saved=false;
+    const salva=async()=>{
+        if(saved)return;saved=true;
+        const nv=input.value;
+        td.classList.remove('editing');
+        td.innerHTML=formattaValoreCella(nv)||nv;
+        if(nv===inputVal)return;
+        const tableId=TABLE_MAP[FOGLIO_ATTIVO];if(!tableId)return;
+        try{
+            await BR.patch(tableId,rowId,{[col]:nv});
+            if(rigaLocale)rigaLocale[col]=nv;
             renderMenu();
-            if (FOGLIO_ATTIVO && DATABASE[FOGLIO_ATTIVO]) caricaDati(FOGLIO_ATTIVO);
-            document.getElementById('status-message').style.display = "none";
-            const ora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            btnSync.innerText = `↻ ${ora}`;
-            if (autoSyncTimer) clearTimeout(autoSyncTimer);
-            autoSyncTimer = setTimeout(sincronizza, 30 * 60 * 1000);
-        } catch(e) {
-            btnSync.innerText = "↻ Errore";
-            console.error("Sync error:", e);
-            alert("Errore sync: " + e.message);
+        }catch(e){
+            alert('Errore salvataggio: '+e.message);
+            td.classList.add('editable-cell');
+            td.dataset.rowid=rowId;td.dataset.col=col;td.dataset.tipo=tipo;
+            td.innerHTML=prevHtml;
         }
-    }
-
-    /* ─── MENU ────────────────────────────────────────── */
-    function getNomeDinamico(nomeFoglio) {
-        let config = APP_CONFIG[nomeFoglio] || {};
-        let template = config.displayName;
-        if (!template) return nomeFoglio;
-        let righe = DATABASE[nomeFoglio].righe || [];
-        template = template.replace(/\{\{COUNT\}\}/g, righe.length);
-        template = template.replace(/\{\{COUNT:(.*?)=(.*?)\}\}/g, (match, col, val) => {
-            return righe.filter(r => String(r[col]).trim() == String(val).trim()).length;
-        });
-        return template;
-    }
-
-    function renderMenu() {
-        const container = document.getElementById('buttons-container');
-        const drawerContainer = document.getElementById('drawer-buttons');
-        container.innerHTML = "";
-        drawerContainer.innerHTML = "";
-        let fogliDisponibili = Object.keys(DATABASE);
-        let fogliOrdinati = (APP_CONFIG._sheetOrder || []).filter(f => fogliDisponibili.includes(f));
-        fogliDisponibili.forEach(f => { if (!fogliOrdinati.includes(f)) fogliOrdinati.push(f); });
-        APP_CONFIG._sheetOrder = fogliOrdinati;
-        fogliOrdinati.forEach(nome => {
-            const btn = document.createElement('button');
-            btn.innerText = getNomeDinamico(nome);
-            btn.setAttribute('data-foglio', nome);
-            btn.onclick = () => caricaDati(nome);
-            if (nome === FOGLIO_ATTIVO) btn.classList.add('active');
-            container.appendChild(btn);
-            const btnD = document.createElement('button');
-            btnD.innerText = getNomeDinamico(nome);
-            btnD.setAttribute('data-foglio-drawer', nome);
-            btnD.onclick = () => { caricaDati(nome); chiudiDrawer(); };
-            if (nome === FOGLIO_ATTIVO) btnD.classList.add('active');
-            drawerContainer.appendChild(btnD);
-        });
-    }
-
-    /* ─── ORDINAMENTO MENU ────────────────────────────── */
-    function apriOrdinamento() { aggiornaListaOrdinamento(); document.getElementById('modal-order').style.display = 'flex'; }
-
-    function aggiornaListaOrdinamento() {
-        let html = '';
-        APP_CONFIG._sheetOrder.forEach((foglio, index) => {
-            html += `<div class="order-item"><span>${foglio}</span><div class="order-btns">
-                <button onclick="spostaFoglio(${index}, -1)" ${index === 0 ? 'disabled' : ''}>⬆</button>
-                <button onclick="spostaFoglio(${index}, 1)" ${index === APP_CONFIG._sheetOrder.length - 1 ? 'disabled' : ''}>⬇</button>
-            </div></div>`;
-        });
-        document.getElementById('order-list').innerHTML = html;
-    }
-
-    async function spostaFoglio(index, direzione) {
-        let arr = APP_CONFIG._sheetOrder;
-        let temp = arr[index]; arr[index] = arr[index + direzione]; arr[index + direzione] = temp;
-        aggiornaListaOrdinamento(); renderMenu();
-        await salvaConfig();
-    }
-
-    /* ─── CARICA DATI ─────────────────────────────────── */
-    function caricaDati(nomeFoglio) {
-        FOGLIO_ATTIVO = nomeFoglio;
-        document.getElementById('titolo-foglio').innerText = getNomeDinamico(nomeFoglio);
-        document.querySelectorAll('#sidebar button[data-foglio]').forEach(b => {
-            b.classList.remove('active');
-            if (b.getAttribute('data-foglio') === nomeFoglio) b.classList.add('active');
-        });
-        const config = APP_CONFIG[nomeFoglio] || { puoAggiungere: false, puoModificare: false, colonneVisibili: [] };
-        document.getElementById('btn-add-record').style.display = config.puoAggiungere ? "block" : "none";
-        const intestazioni = DATABASE[nomeFoglio].intestazioni;
-        if (intestazioni.length === 0) {
-            document.getElementById('toolbar').style.display = "none";
-            document.getElementById('tabella-container').innerHTML = `<p style="padding:32px 20px;color:var(--ink-3);">Foglio vuoto.</p>`;
-            return;
-        }
-        let colonneDaMostrare = intestazioni;
-        if (config.colonneVisibili && config.colonneVisibili.length > 0)
-            colonneDaMostrare = intestazioni.filter(h => config.colonneVisibili.includes(h));
-        document.getElementById('toolbar').style.display = "flex";
-        document.getElementById('search-input').value = "";
-        const sortSelect = document.getElementById('sort-column');
-        sortSelect.innerHTML = `<option value="">– Ordina –</option>`;
-        colonneDaMostrare.forEach(col => { sortSelect.innerHTML += `<option value="${col}">${col}</option>`; });
-
-        if (config.sortColonna && colonneDaMostrare.includes(config.sortColonna)) {
-            ORDINAMENTO.colonna = config.sortColonna;
-            ORDINAMENTO.direzione = config.sortDirezione || 1;
-            sortSelect.value = config.sortColonna;
-            document.getElementById('btn-sort-dir').innerText = ORDINAMENTO.direzione === 1 ? "⬇ A–Z" : "⬆ Z–A";
-        } else if (FOGLI_CON_DATE.includes(nomeFoglio) && intestazioni.includes(NOME_COLONNA_DATA)) {
-            ORDINAMENTO.colonna = NOME_COLONNA_DATA; ORDINAMENTO.direzione = 1;
-            document.getElementById('btn-sort-dir').innerText = "⬆ Z–A"; sortSelect.value = NOME_COLONNA_DATA;
-        } else {
-            ORDINAMENTO.colonna = null; ORDINAMENTO.direzione = 1;
-            document.getElementById('btn-sort-dir').innerText = "⬇ A–Z"; sortSelect.value = "";
-        }
-        _vistaCard = !!(config.vistaCardAttiva && config.cardConfig && config.cardConfig.data);
-        _vistaKanban = !!(config.vistaKanbanAttiva && config.kanbanGruppo);
-        renderTabella();
-    }
-
-    function convertiDataItaliana(dataStr) {
-        if (!dataStr) return 0;
-        const mesi = {"gennaio":0,"febbraio":1,"marzo":2,"aprile":3,"maggio":4,"giugno":5,"luglio":6,"agosto":7,"settembre":8,"ottobre":9,"novembre":10,"dicembre":11};
-        const parts = dataStr.toLowerCase().split(' ');
-        let meseIndex = -1, giorno = 1, timeStr = "00:00";
-        for (let i = 0; i < parts.length; i++) {
-            if (mesi[parts[i]] !== undefined) { meseIndex = mesi[parts[i]]; giorno = parseInt(parts[i-1]) || 1; }
-            if (parts[i].includes(':')) timeStr = parts[i];
-        }
-        if (meseIndex === -1) return 0;
-        const tParts = timeStr.split(':');
-        return new Date(new Date().getFullYear(), meseIndex, giorno, parseInt(tParts[0]) || 0, parseInt(tParts[1]) || 0).getTime();
-    }
-
-    function cambiaOrdinamento() { ORDINAMENTO.colonna = document.getElementById('sort-column').value || null; renderTabella(); }
-    function cambiaDirezioneOrdinamento() { ORDINAMENTO.direzione *= -1; document.getElementById('btn-sort-dir').innerText = ORDINAMENTO.direzione === 1 ? "⬇ A–Z" : "⬆ Z–A"; renderTabella(); }
-
-    function formattaValoreCella(val) {
-        if (!val) return "";
-        const s = String(val);
-        const isoMatch = s.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
-        if (isoMatch) return `${isoMatch[3]}/${isoMatch[2]}/${isoMatch[1]} ${isoMatch[4]}:${isoMatch[5]}`;
-        return s;
-    }
-
-    function formattaOrario(val) {
-        if (!val) return "";
-        const s = String(val);
-        if (s.includes('T') && s.includes('-')) {
-            const d = new Date(s);
-            if (!isNaN(d)) return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
-        }
-        const m1899 = s.match(/1899[^\d]*(\d{1,2}):(\d{2})/);
-        if (m1899) return `${m1899[1].padStart(2,'0')}:${m1899[2]}`;
-        const mOra = s.match(/^(\d{1,2}):(\d{2})/);
-        if (mOra) return `${mOra[1].padStart(2,'0')}:${mOra[2]}`;
-        return s;
-    }
-
-    function convertiDataAssoluta(val) {
-        if (!val) return 0;
-        const s = String(val);
-        const iso = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
-        if (iso) return new Date(iso[1], iso[2]-1, iso[3]).getTime();
-        return convertiDataItaliana(s);
-    }
-
-    function formattaDataGruppo(val) {
-        if (!val) return "";
-        const s = String(val);
-        const giorni = ["Domenica","Lunedì","Martedì","Mercoledì","Giovedì","Venerdì","Sabato"];
-        const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
-        const iso = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
-        if (iso) {
-            const d = new Date(iso[1], iso[2]-1, iso[3]);
-            return `${giorni[d.getDay()]} ${d.getDate()} ${mesi[d.getMonth()]}`;
-        }
-        return s.replace(/^\w/, c => c.toUpperCase());
-    }
-
-    /* ─── RENDER TABELLA ──────────────────────────────── */
-    function renderTabella() {
-        const config = APP_CONFIG[FOGLIO_ATTIVO] || { puoAggiungere: false, puoModificare: false, colonneVisibili: [] };
-        const intestazioni = DATABASE[FOGLIO_ATTIVO].intestazioni;
-        const isCalendario = FOGLIO_ATTIVO === 'CALENDARIO';
-        const COL_DATA_CAL = intestazioni[0];
-        const COL_ORA_CAL  = intestazioni[1];
-
-        let righe = [...DATABASE[FOGLIO_ATTIVO].righe];
-        let colonneDaMostrare = intestazioni;
-        if (config.colonneVisibili && config.colonneVisibili.length > 0)
-            colonneDaMostrare = intestazioni.filter(h => config.colonneVisibili.includes(h));
-
-        let colonneTabella = colonneDaMostrare;
-        if (isCalendario) colonneTabella = colonneDaMostrare.filter(c => c !== COL_DATA_CAL && c !== COL_ORA_CAL);
-
-        const query = document.getElementById('search-input').value.toLowerCase();
-        if (query) righe = righe.filter(riga => colonneDaMostrare.some(col => String(riga[col] || "").toLowerCase().includes(query)));
-
-        if (ORDINAMENTO.colonna) {
-            const col = ORDINAMENTO.colonna, dir = ORDINAMENTO.direzione;
-            righe.sort((a, b) => {
-                let valA = String(a[col] || ""), valB = String(b[col] || "");
-                if (col === NOME_COLONNA_DATA || col === COL_DATA_CAL) {
-                    let tA = convertiDataAssoluta(valA), tB = convertiDataAssoluta(valB);
-                    if (tA !== 0 && tB !== 0) return (tA - tB) * dir;
-                }
-                if (!isNaN(valA) && !isNaN(valB) && valA !== "" && valB !== "") return (Number(valA) - Number(valB)) * dir;
-                return valA.toLowerCase().localeCompare(valB.toLowerCase()) * dir;
-            });
-        }
-        if (isCalendario && !ORDINAMENTO.colonna) {
-            righe.sort((a, b) => {
-                let tA = convertiDataAssoluta(String(a[COL_DATA_CAL] || ""));
-                let tB = convertiDataAssoluta(String(b[COL_DATA_CAL] || ""));
-                if (tA !== tB) return tA - tB;
-                return formattaOrario(String(a[COL_ORA_CAL]||"")).localeCompare(formattaOrario(String(b[COL_ORA_CAL]||"")));
-            });
-        }
-
-        if (_vistaKanban && config.kanbanGruppo) {
-            document.getElementById('tabella-container').innerHTML = renderKanban(righe, config, colonneDaMostrare);
-            return;
-        }
-        if (_vistaCard && config.cardConfig && config.cardConfig.data) {
-            document.getElementById('tabella-container').innerHTML = righe.length === 0
-                ? `<p style="padding:32px;color:var(--ink-3);">Nessuna riga trovata.</p>`
-                : renderCard(righe, config, colonneDaMostrare);
-            return;
-        }
-
-        let html = '';
-        if (isCalendario) {
-            /* ── Calendario: lista raggruppata per data ── */
-            html = '<div>';
-            let ultimaData = null;
-            righe.forEach(riga => {
-                const dataRiga = String(riga[COL_DATA_CAL] || "");
-                if (dataRiga !== ultimaData) {
-                    ultimaData = dataRiga;
-                    html += `<div class="cal-date-header">${formattaDataGruppo(dataRiga)}</div>`;
-                }
-                const fmt = valutaFormatRules(riga, config);
-                const rowColor = (fmt && fmt.target !== 'cella') ? fmt.colore : null;
-                const calBodyParts = colonneTabella.map(col => {
-                    const val = formattaValoreCella(riga[col]);
-                    if (!val) return '';
-                    const isCellaTarget = fmt && fmt.target === 'cella' && fmt.colonna === col;
-                    if (isCellaTarget) return `<span style="color:${fmt.colore};font-weight:700;">${val}</span>`;
-                    return val;
-                }).filter(Boolean).join(' · ');
-                const timeStyle = rowColor ? `color:${rowColor};font-weight:700;` : '';
-                const bodyStyle = rowColor ? `color:${rowColor};font-weight:600;` : '';
-                html += `<div class="cal-row">
-                    <div class="cal-time" style="${timeStyle}">${formattaOrario(riga[COL_ORA_CAL])}</div>
-                    <div class="cal-body" style="${bodyStyle}">${calBodyParts}</div>
-                    <div class="cal-actions">
-                        ${config.puoModificare ? `<button class="tbl-btn" onclick="apriForm('${encodeURIComponent(JSON.stringify(riga))}')" title="Modifica">✏️</button>` : ''}
-                        ${config.puoEliminare  ? `<button class="tbl-btn" onclick="eliminaRiga(${riga._rowIndex})" title="Elimina">🗑️</button>` : ''}
-                    </div>
-                </div>`;
-            });
-            html += '</div>';
-        } else {
-            /* ── Tabella normale ── */
-            html = '<table><thead><tr>';
-            const coloriCol = config.coloriColonne || {};
-            if (config.puoEliminare) html += `<th style="width:32px;"><input type="checkbox" id="chk-all" onclick="selezionaTutti(this)"></th>`;
-            colonneTabella.forEach(col => { html += `<th>${col}</th>`; });
-            if (config.puoModificare || config.puoEliminare) html += `<th style="width:64px;"></th>`;
-            html += '</tr></thead><tbody>';
-
-            righe.forEach(riga => {
-                const fmt = valutaFormatRules(riga, config);
-                const rowColor    = (fmt && fmt.target !== 'cella') ? fmt.colore : null;
-                const cellaTarget = (fmt && fmt.target === 'cella') ? fmt.colonna : null;
-                const chk = config.puoEliminare ? `<td class="sel-td"><input type="checkbox" class="row-chk" data-idx="${riga._rowIndex}"></td>` : '';
-                html += `<tr>` + chk;
-                colonneTabella.forEach(col => {
-                    const cellBg = coloriCol[col] || '';
-                    let cellStyle = '';
-                    if (col === cellaTarget) {
-                        cellStyle = `color:${fmt.colore};font-weight:700;${cellBg ? `background:color-mix(in srgb,${cellBg} 25%,white 75%);` : ''}`;
-                    } else if (rowColor) {
-                        cellStyle = `color:${rowColor};font-weight:600;${cellBg ? `background:color-mix(in srgb,${cellBg} 25%,white 75%);` : ''}`;
-                    } else if (cellBg) {
-                        cellStyle = `background:color-mix(in srgb,${cellBg} 12%,white 88%);`;
-                    }
-                    html += `<td${cellStyle ? ` style="${cellStyle}"` : ''}>${formattaValoreCella(riga[col])}</td>`;
-                });
-                if (config.puoModificare || config.puoEliminare) {
-                    html += `<td style="white-space:nowrap;text-align:right;">
-                        ${config.puoModificare ? `<button class="tbl-btn" onclick="apriForm('${encodeURIComponent(JSON.stringify(riga))}')" title="Modifica">✏️</button>` : ''}
-                        ${config.puoEliminare  ? `<button class="tbl-btn" onclick="eliminaRiga(${riga._rowIndex})" title="Elimina">🗑️</button>` : ''}
-                    </td>`;
-                }
-                html += '</tr>';
-            });
-            html += '</tbody></table>';
-        }
-        document.getElementById('tabella-container').innerHTML = righe.length === 0
-            ? `<p style="padding:32px;color:var(--ink-3);">Nessuna riga trovata.</p>`
-            : html;
-    }
-
-    function selezionaTutti(chk) {
-        document.querySelectorAll('.row-chk').forEach(c => {
-            c.checked = chk.checked;
-            c.closest('tr').classList.toggle('selected-row', chk.checked);
-        });
-        aggiornaBarraMulti();
-    }
-    function aggiornaBarraMulti() {
-        const selezionate = document.querySelectorAll('.row-chk:checked');
-        const bar = document.getElementById('multi-delete-bar');
-        bar.style.display = selezionate.length > 0 ? 'flex' : 'none';
-        document.getElementById('multi-count-label').innerText = `${selezionate.length} rig${selezionate.length===1?'a':'he'}`;
-    }
-    function deselezionaTutti() {
-        document.querySelectorAll('.row-chk').forEach(c => { c.checked = false; c.closest('tr').classList.remove('selected-row'); });
-        const all = document.getElementById('chk-all'); if (all) all.checked = false;
-        aggiornaBarraMulti();
-    }
-    async function eliminaSelezionate() {
-        const indici = Array.from(document.querySelectorAll('.row-chk:checked')).map(c => parseInt(c.dataset.idx));
-        if (!indici.length) return;
-        if (!confirm(`Eliminare ${indici.length} rig${indici.length===1?'a':'he'}?`)) return;
-        const tableId = TABLE_MAP[FOGLIO_ATTIVO];
-        if (!tableId) { alert("Tabella non trovata."); return; }
-        try {
-            for (const idx of indici) {
-                const r = await fetch(`${BASEROW_URL}/api/database/rows/table/${tableId}/${idx}/`, { method: "DELETE", headers: { "Authorization": "Token " + BASEROW_TOKEN } });
-                if (!r.ok) { alert(`Errore eliminazione riga ${idx} (HTTP ${r.status})`); return; }
-            }
-            deselezionaTutti(); sincronizza();
-        } catch(e) { alert("Errore: " + e.message); }
-    }
-
-    document.addEventListener('change', e => {
-        if (e.target.classList.contains('row-chk')) {
-            e.target.closest('tr').classList.toggle('selected-row', e.target.checked);
-            aggiornaBarraMulti();
-        }
+    };
+    input.addEventListener('blur',salva);
+    input.addEventListener('keydown',e=>{
+        if(e.key==='Enter'){e.preventDefault();input.blur();}
+        if(e.key==='Escape'){input.removeEventListener('blur',salva);saved=true;td.classList.remove('editing');td.innerHTML=prevHtml;td.classList.add('editable-cell');td.dataset.rowid=rowId;td.dataset.col=col;td.dataset.tipo=tipo;}
+        if(e.key==='Tab'){e.preventDefault();salva();}
     });
+}
 
-    /* ─── KANBAN RENDER ───────────────────────────────── */
-    function renderKanban(righe, config, colonneDaMostrare) {
-        const cardCfg   = config.cardConfig || {};
-        const colGruppo = config.kanbanGruppo;
-        const colData   = cardCfg.data  || "";
-        const colBadge  = cardCfg.badge || "";
-        const colCorpo  = cardCfg.corpo || [];
-        const ordine    = config.kanbanOrdine || [];
-
-        if (righe.length === 0) return `<p style="padding:32px;color:var(--ink-3);">Nessuna riga trovata.</p>`;
-
-        const gruppi = {};
-        const trovati = new Set();
-        righe.forEach(riga => {
-            const g = String(riga[colGruppo] || '—');
-            if (!gruppi[g]) gruppi[g] = [];
-            gruppi[g].push(riga);
-            trovati.add(g);
-        });
-        const ordinati = [...ordine.filter(g => trovati.has(g)), ...Array.from(trovati).filter(g => !ordine.includes(g))];
-
-        let html = '<div class="kanban-board">';
-        ordinati.forEach(g => {
-            html += `<div class="kanban-col">
-                <div class="kanban-col-header">
-                    <span>${g}</span>
-                    <span class="kanban-col-count">${gruppi[g].length}</span>
-                </div>
-                <div class="kanban-col-body">`;
-
-            gruppi[g].forEach(riga => {
-                const fmt         = valutaFormatRules(riga, config);
-                const labelColor  = fmt ? fmt.colore : 'var(--accent)';
-                const titleColor  = (fmt && fmt.target !== 'cella') ? fmt.colore : 'var(--ink)';
-                const titleWeight = fmt ? '600' : '500';
-                const fmtCella    = (fmt && fmt.target === 'cella') ? fmt : null;
-
-                const valData  = colData  ? formattaValoreCella(riga[colData])  : '';
-                const valBadge = colBadge ? formattaValoreCella(riga[colBadge]) : '';
-                const rigaEnc  = encodeURIComponent(JSON.stringify(riga));
-
-                html += `<div class="kanban-card" onclick="apriForm('${rigaEnc}')">
-                    <div class="kanban-card-label" style="color:${labelColor};">${valData}</div>`;
-
-                if (colCorpo.length > 0) {
-                    html += `<div class="kanban-card-body">`;
-                    colCorpo.forEach((col, i) => {
-                        const val = formattaValoreCella(riga[col]);
-                        if (!val) return;
-                        const isCellaTarget = fmtCella && fmtCella.colonna === col;
-                        const style = isCellaTarget ? `color:${fmtCella.colore};font-weight:700;` : `color:${i===0?titleColor:'var(--ink-2)'};font-weight:${i===0?titleWeight:'400'};`;
-                        html += `<div class="kanban-card-body-line" style="${style}">${val}</div>`;
-                    });
-                    html += `</div>`;
-                }
-
-                if (valBadge) html += `<div class="kanban-card-meta">${valBadge}</div>`;
-
-                if (config.puoModificare || config.puoEliminare) {
-                    html += `<div class="kanban-card-actions" onclick="event.stopPropagation()">
-                        ${config.puoModificare ? `<button onclick="apriForm('${rigaEnc}')" title="Modifica">✏️</button>` : ''}
-                        ${config.puoEliminare  ? `<button onclick="eliminaRiga(${riga._rowIndex})" title="Elimina">🗑️</button>` : ''}
-                    </div>`;
-                }
-                html += `</div>`;
-            });
-            html += `</div></div>`;
-        });
-        html += '</div>';
-        return html;
-    }
-
-    async function eliminaRiga(rowIndex) {
-        if (!confirm("Eliminare questa riga?")) return;
-        const tableId = TABLE_MAP[FOGLIO_ATTIVO];
-        if (!tableId) { alert("Tabella non trovata."); return; }
-        try {
-            const r = await fetch(`${BASEROW_URL}/api/database/rows/table/${tableId}/${rowIndex}/`, { method: "DELETE", headers: { "Authorization": "Token " + BASEROW_TOKEN } });
-            if (!r.ok) { alert(`Errore eliminazione (HTTP ${r.status})`); return; }
-            sincronizza();
-        } catch(e) { alert("Errore: " + e.message); }
-    }
-
-    /* ─── IMPOSTAZIONI ────────────────────────────────── */
-    function chiudiModal(id) { document.getElementById(id).style.display = "none"; }
-
-    function apriImpostazioni() {
-        if (!FOGLIO_ATTIVO) return alert("Seleziona un foglio.");
-        const config = APP_CONFIG[FOGLIO_ATTIVO] || {};
-        document.getElementById('settings-nome-foglio').innerText = FOGLIO_ATTIVO;
-        document.getElementById('set-display-name').value = config.displayName || "";
-        document.getElementById('set-add').checked    = config.puoAggiungere  || false;
-        document.getElementById('set-edit').checked   = config.puoModificare  || false;
-        document.getElementById('set-delete').checked = config.puoEliminare   || false;
-
-        const intestazioni = DATABASE[FOGLIO_ATTIVO].intestazioni;
-        const selCol = document.getElementById('set-sort-col');
-        selCol.innerHTML = `<option value="">– Nessun ordinamento –</option>` +
-            intestazioni.map(c => `<option value="${c}" ${config.sortColonna===c?'selected':''}>${c}</option>`).join('');
-        document.getElementById('set-sort-dir').value = config.sortDirezione || 1;
-
-        let colHtml = '<label style="font-weight:700;font-size:11px;letter-spacing:0.5px;text-transform:uppercase;color:var(--ink-3);display:block;margin-bottom:6px;">Colonne Visibili</label>';
-        intestazioni.forEach(col => {
-            const chk = config.colonneVisibili && config.colonneVisibili.includes(col) ? 'checked' : '';
-            colHtml += `<label class="checkbox-label"><input type="checkbox" class="chk-colonna" value="${col}" ${chk}> ${col}</label>`;
-        });
-        document.getElementById('settings-colonne').innerHTML = colHtml;
-
-        const cardCfg = config.cardConfig || {};
-        document.getElementById('set-card-attiva').checked = config.vistaCardAttiva || false;
-        const makeOpts = (sel) => `<option value="">– Nessuna –</option>` +
-            intestazioni.map(c => `<option value="${c}" ${sel===c?'selected':''}>${c}</option>`).join('');
-        document.getElementById('card-col-data').innerHTML  = makeOpts(cardCfg.data  || "");
-        document.getElementById('card-col-badge').innerHTML = makeOpts(cardCfg.badge || "");
-        let corpoHtml = '';
-        intestazioni.forEach(col => {
-            const chk = (cardCfg.corpo||[]).includes(col) ? 'checked' : '';
-            corpoHtml += `<label class="checkbox-label"><input type="checkbox" class="chk-card-corpo" value="${col}" ${chk}> ${col}</label>`;
-        });
-        document.getElementById('card-col-corpo-list').innerHTML = corpoHtml;
-
-        const regole = config.formatRules || [{},{},{},{},{}];
-        while (regole.length < 5) regole.push({});
-        const ops = ['uguale','non uguale','contiene','inizia con','non vuoto','vuoto','data > (dopo)','data < (prima)'];
-        let rulesHtml = '';
-        regole.slice(0,5).forEach((r, i) => {
-            rulesHtml += `<div class="fmt-rule">
-                <select class="fmt-col" data-i="${i}">
-                    <option value="">– –</option>
-                    ${intestazioni.map(c=>`<option value="${c}" ${r.colonna===c?'selected':''}>${c}</option>`).join('')}
-                </select>
-                <select class="fmt-op" data-i="${i}">
-                    ${ops.map(o=>`<option value="${o}" ${r.operatore===o?'selected':''}>${o}</option>`).join('')}
-                </select>
-                <input type="text" class="fmt-val" data-i="${i}" value="${r.valore||''}" placeholder="valore">
-                <input type="color" class="fmt-color" data-i="${i}" value="${r.colore||'#e74c3c'}">
-                <select class="fmt-target" data-i="${i}" style="padding:4px;border:1px solid var(--line);border-radius:4px;font-size:11px;">
-                    <option value="riga" ${(r.target||'riga')==='riga'?'selected':''}>Riga intera</option>
-                    <option value="cella" ${r.target==='cella'?'selected':''}>Solo cella</option>
-                </select>
-            </div>`;
-        });
-        document.getElementById('format-rules-list').innerHTML = rulesHtml;
-
-        const coloriCol = config.coloriColonne || {};
-        let colColHtml = '';
-        intestazioni.forEach(col => {
-            const color = coloriCol[col] || '#ffffff';
-            colColHtml += `<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
-                <input type="color" class="chk-col-color" data-col="${col}" value="${color}" style="width:36px;height:26px;border:1px solid var(--line);border-radius:4px;cursor:pointer;padding:1px;">
-                <span style="font-size:13px;">${col}</span>
-            </div>`;
-        });
-        document.getElementById('colori-colonne-list').innerHTML = colColHtml;
-
-        document.getElementById('set-kanban-attiva').checked = config.vistaKanbanAttiva || false;
-        const selGruppo = document.getElementById('kanban-col-gruppo');
-        selGruppo.innerHTML = `<option value="">– Nessuna –</option>` +
-            intestazioni.map(c => `<option value="${c}" ${config.kanbanGruppo===c?'selected':''}>${c}</option>`).join('');
-        document.getElementById('kanban-ordine').value = (config.kanbanOrdine || []).join('\n');
-
-        const formatiCol = config.formatiColonne || {};
-        const tipiFormato = [
-            { v: '', l: '– Testo libero –' },
-            { v: 'date', l: '📅 Data' },
-            { v: 'datetime-local', l: '📅 Data e Ora' },
-            { v: 'time', l: '🕐 Orario' },
-        ];
-        let formatiHtml = '';
-        intestazioni.forEach(col => {
-            const sel = formatiCol[col] || '';
-            formatiHtml += `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-                <span style="flex:1;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${col}">${col}</span>
-                <select class="chk-col-format" data-col="${col}" style="width:150px;padding:5px;border:1px solid var(--line);border-radius:4px;font-size:11px;">
-                    ${tipiFormato.map(t => `<option value="${t.v}" ${sel===t.v?'selected':''}>${t.l}</option>`).join('')}
-                </select>
-            </div>`;
-        });
-        document.getElementById('formati-colonne-list').innerHTML = formatiHtml;
-
-        document.getElementById('modal-settings').style.display = "flex";
-    }
-
-    function salvaImpostazioni() {
-        const btn = document.getElementById('btn-save-settings');
-        btn.innerText = "…"; btn.disabled = true;
-
-        const formatRules = [];
-        for (let i = 0; i < 5; i++) {
-            const col    = document.querySelector(`.fmt-col[data-i="${i}"]`)?.value || '';
-            const op     = document.querySelector(`.fmt-op[data-i="${i}"]`)?.value  || 'uguale';
-            const val    = document.querySelector(`.fmt-val[data-i="${i}"]`)?.value || '';
-            const color  = document.querySelector(`.fmt-color[data-i="${i}"]`)?.value || '#e74c3c';
-            const target = document.querySelector(`.fmt-target[data-i="${i}"]`)?.value || 'riga';
-            if (col) formatRules.push({ colonna: col, operatore: op, valore: val, colore: color, target });
+/* ── MULTI SELECT ─── */
+function selezionaTutti(chk){document.querySelectorAll('.row-chk').forEach(c=>{c.checked=chk.checked;c.closest('tr').classList.toggle('selected-row',chk.checked);});aggiornaBarraMulti();}
+function aggiornaBarraMulti(){
+    const sel=document.querySelectorAll('.row-chk:checked'),bar=document.getElementById('multi-delete-bar');
+    bar.style.display=sel.length>0?'flex':'none';
+    document.getElementById('multi-count-label').innerText=`${sel.length} rig${sel.length===1?'a':'he'}`;
+}
+function deselezionaTutti(){
+    document.querySelectorAll('.row-chk').forEach(c=>{c.checked=false;c.closest('tr').classList.remove('selected-row');});
+    const all=document.getElementById('chk-all');if(all)all.checked=false;
+    aggiornaBarraMulti();
+}
+async function eliminaSelezionate(){
+    const indici=Array.from(document.querySelectorAll('.row-chk:checked')).map(c=>parseInt(c.dataset.idx));
+    if(!indici.length)return;
+    if(!confirm(`Eliminare ${indici.length} rig${indici.length===1?'a':'he'}?`))return;
+    const tableId=TABLE_MAP[FOGLIO_ATTIVO];if(!tableId){alert("Tabella non trovata.");return;}
+    try{
+        for(const idx of indici){
+            const r=await fetch(`${BASEROW_URL}/api/database/rows/table/${tableId}/${idx}/`,{method:"DELETE",headers:{"Authorization":"Token "+BASEROW_TOKEN}});
+            if(!r.ok){alert(`Errore eliminazione riga ${idx} (HTTP ${r.status})`);return;}
         }
-        const kanbanOrdine = (document.getElementById('kanban-ordine').value || '').split('\n').map(s => s.trim()).filter(Boolean);
-        const coloriColonne = {};
-        document.querySelectorAll('.chk-col-color').forEach(el => {
-            if (el.value && el.value !== '#ffffff') coloriColonne[el.dataset.col] = el.value;
-        });
-        const formatiColonne = {};
-        document.querySelectorAll('.chk-col-format').forEach(el => {
-            if (el.value) formatiColonne[el.dataset.col] = el.value;
-        });
+        deselezionaTutti();sincronizza();
+    }catch(e){alert("Errore: "+e.message);}
+}
+document.addEventListener('change',e=>{if(e.target.classList.contains('row-chk')){e.target.closest('tr').classList.toggle('selected-row',e.target.checked);aggiornaBarraMulti();}});
 
-        APP_CONFIG[FOGLIO_ATTIVO] = {
-            displayName:       document.getElementById('set-display-name').value,
-            puoAggiungere:     document.getElementById('set-add').checked,
-            puoModificare:     document.getElementById('set-edit').checked,
-            puoEliminare:      document.getElementById('set-delete').checked,
-            sortColonna:       document.getElementById('set-sort-col').value || null,
-            sortDirezione:     parseInt(document.getElementById('set-sort-dir').value) || 1,
-            colonneVisibili:   Array.from(document.querySelectorAll('.chk-colonna:checked')).map(c => c.value),
-            vistaCardAttiva:   document.getElementById('set-card-attiva').checked,
-            vistaKanbanAttiva: document.getElementById('set-kanban-attiva').checked,
-            kanbanGruppo:      document.getElementById('kanban-col-gruppo').value || null,
-            kanbanOrdine,
-            cardConfig: {
-                data:  document.getElementById('card-col-data').value  || null,
-                badge: document.getElementById('card-col-badge').value || null,
-                corpo: Array.from(document.querySelectorAll('.chk-card-corpo:checked')).map(c => c.value),
-            },
-            formatRules,
-            coloriColonne,
-            formatiColonne
-        };
-        salvaConfig().then(() => {
-            chiudiModal('modal-settings'); renderMenu(); caricaDati(FOGLIO_ATTIVO);
-        }).catch(e => {
-            alert("Errore salvataggio: " + e.message);
-        }).finally(() => { btn.innerText = "Salva"; btn.disabled = false; });
-    }
+async function eliminaRiga(rowIndex){
+    if(!confirm("Eliminare questa riga?"))return;
+    const tableId=TABLE_MAP[FOGLIO_ATTIVO];if(!tableId){alert("Tabella non trovata.");return;}
+    try{
+        const r=await fetch(`${BASEROW_URL}/api/database/rows/table/${tableId}/${rowIndex}/`,{method:"DELETE",headers:{"Authorization":"Token "+BASEROW_TOKEN}});
+        if(!r.ok){alert(`Errore eliminazione (HTTP ${r.status})`);return;}
+        sincronizza();
+    }catch(e){alert("Errore: "+e.message);}
+}
 
-    async function salvaConfig() {
-        const tableId = BASEROW_TABLES['_CONFIG'];
-        if (!tableId) { localStorage.setItem('appConfig', JSON.stringify(APP_CONFIG)); return; }
-        try {
-            const righe = await BR.getAll(tableId);
-            const json = JSON.stringify(APP_CONFIG);
-            if (righe.length > 0) await BR.patch(tableId, righe[0].id, { valore: json });
-            else await BR.post(tableId, { valore: json });
-            localStorage.setItem('appConfig', json);
-        } catch(e) {
-            console.error('Errore salvaConfig:', e.message);
-            localStorage.setItem('appConfig', JSON.stringify(APP_CONFIG));
+/* ── FORM ─── */
+function chiudiModal(id){document.getElementById(id).style.display="none";}
+
+function apriForm(rigaJSON){
+    const config=APP_CONFIG[FOGLIO_ATTIVO]||{},intestazioni=DATABASE[FOGLIO_ATTIVO].intestazioni;
+    const formulaCols=FORMULA_FIELDS[FOGLIO_ATTIVO]||new Set(),formatiCol=config.formatiColonne||{};
+    let cols=config.colonneVisibili&&config.colonneVisibili.length>0?intestazioni.filter(h=>config.colonneVisibili.includes(h)):intestazioni;
+    const cont=document.getElementById('modal-form-fields');cont.innerHTML="";
+    RIGA_ORIGINALE_IN_MODIFICA=rigaJSON?JSON.parse(decodeURIComponent(rigaJSON)):null;
+    document.getElementById('modal-title').innerText=rigaJSON?"Modifica":"Nuovo";
+    cols.forEach(col=>{
+        let val=RIGA_ORIGINALE_IN_MODIFICA&&RIGA_ORIGINALE_IN_MODIFICA[col]!==undefined?RIGA_ORIGINALE_IN_MODIFICA[col]:"";
+        const isFormula=formulaCols.has(col),tipo=isFormula?'text':(formatiCol[col]||'text');
+        let inputVal=String(val);
+        if(!isFormula){
+            if(tipo==='date'||tipo==='datetime-local'){const m=inputVal.match(/^(\d{2})\/(\d{2})\/(\d{4})(?: (\d{2}):(\d{2}))?/);if(m)inputVal=tipo==='date'?`${m[3]}-${m[2]}-${m[1]}`:`${m[3]}-${m[2]}-${m[1]}T${m[4]||'00'}:${m[5]||'00'}`;else if(inputVal.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/))inputVal=tipo==='date'?inputVal.slice(0,10):inputVal.slice(0,16);}
+            else if(tipo==='time'){const mt=inputVal.match(/(\d{2}:\d{2})/);if(mt)inputVal=mt[1];}
         }
-    }
+        cont.innerHTML+=`<div class="form-group">
+            <label>${col}${isFormula?' <span style="font-size:9px;color:#bbb;">(formula)</span>':''}</label>
+            <input type="${tipo}" id="input-${col}" value="${inputVal.replace(/"/g,'&quot;')}"
+                ${isFormula?'disabled readonly':''}
+                style="${isFormula?'background:#f4f4f4;color:#aaa;cursor:not-allowed;border:1px dashed #ddd;':''}">
+        </div>`;
+    });
+    document.getElementById('modal-form').style.display="flex";
+}
 
-    function apriForm(rigaJSON) {
-        const config = APP_CONFIG[FOGLIO_ATTIVO] || {}, intestazioni = DATABASE[FOGLIO_ATTIVO].intestazioni;
-        const formatiCol = config.formatiColonne || {};
-        const formulaCols = FORMULA_FIELDS[FOGLIO_ATTIVO] || new Set();
-        let cols = config.colonneVisibili && config.colonneVisibili.length > 0
-            ? intestazioni.filter(h => config.colonneVisibili.includes(h)) : intestazioni;
-        const container = document.getElementById('modal-form-fields');
-        container.innerHTML = "";
-        RIGA_ORIGINALE_IN_MODIFICA = rigaJSON ? JSON.parse(decodeURIComponent(rigaJSON)) : null;
-        document.getElementById('modal-title').innerText = rigaJSON ? "Modifica" : "Nuovo";
-        cols.forEach(col => {
-            let val = RIGA_ORIGINALE_IN_MODIFICA && RIGA_ORIGINALE_IN_MODIFICA[col] !== undefined ? RIGA_ORIGINALE_IN_MODIFICA[col] : "";
-            const isFormula = formulaCols.has(col);
-            const tipo = isFormula ? 'text' : (formatiCol[col] || 'text');
-            let inputVal = String(val);
-            if (!isFormula) {
-                if (tipo === 'date' || tipo === 'datetime-local') {
-                    const m = inputVal.match(/^(\d{2})\/(\d{2})\/(\d{4})(?: (\d{2}):(\d{2}))?/);
-                    if (m) inputVal = tipo === 'date' ? `${m[3]}-${m[2]}-${m[1]}` : `${m[3]}-${m[2]}-${m[1]}T${m[4]||'00'}:${m[5]||'00'}`;
-                    else if (inputVal.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/)) inputVal = tipo === 'date' ? inputVal.slice(0,10) : inputVal.slice(0,16);
-                } else if (tipo === 'time') {
-                    const mt = inputVal.match(/(\d{2}:\d{2})/);
-                    if (mt) inputVal = mt[1];
-                }
-            }
-            const formulaStyle = isFormula ? 'background:#f4f4f4;color:#aaa;cursor:not-allowed;border:1px dashed #ddd;' : '';
-            const formulaLabel = isFormula ? ' <span style="font-size:9px;color:#bbb;text-transform:uppercase;letter-spacing:0.5px;">(formula)</span>' : '';
-            container.innerHTML += `<div class="form-group">
-                <label>${col}${formulaLabel}</label>
-                <input type="${tipo}" id="input-${col}" value="${inputVal}"
-                    ${isFormula ? 'disabled readonly' : ''}
-                    style="width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:var(--radius);font-size:13px;${formulaStyle}">
-            </div>`;
-        });
-        document.getElementById('modal-form').style.display = "flex";
-    }
-
-    async function salvaDati() {
-        const intestazioni = DATABASE[FOGLIO_ATTIVO].intestazioni, config = APP_CONFIG[FOGLIO_ATTIVO] || {};
-        const formulaCols = FORMULA_FIELDS[FOGLIO_ATTIVO] || new Set();
-        let cols = config.colonneVisibili && config.colonneVisibili.length > 0
-            ? intestazioni.filter(h => config.colonneVisibili.includes(h)) : intestazioni;
-        const btn = document.getElementById('btn-save-modal');
-        const tableId = TABLE_MAP[FOGLIO_ATTIVO];
-        if (!tableId) { alert("Tabella non trovata per " + FOGLIO_ATTIVO); return; }
-
-        const payload = {};
-        intestazioni.forEach(col => {
-            if (formulaCols.has(col)) return;
-            payload[col] = cols.includes(col)
-                ? (document.getElementById(`input-${col}`)?.value ?? "")
-                : (RIGA_ORIGINALE_IN_MODIFICA ? RIGA_ORIGINALE_IN_MODIFICA[col] || "" : "");
-        });
-
-        const rigaId = RIGA_ORIGINALE_IN_MODIFICA?._rowIndex ?? null;
-        btn.innerText = "…"; btn.disabled = true;
-        try {
-            if (rigaId) await BR.patch(tableId, rigaId, payload);
-            else await BR.post(tableId, payload);
-
-            if (FOGLIO_ATTIVO === 'SAT') {
-                const generaApp = payload['GENERA APP'] ?? payload['GENERA APPUNTAMENTO IN CALENDARIO'] ?? '';
-                const appCerca  = payload['APP CERCA'] || (RIGA_ORIGINALE_IN_MODIFICA ? RIGA_ORIGINALE_IN_MODIFICA['APP CERCA'] : '') || '';
-                const targa     = payload['TARGA AUTO'] || (RIGA_ORIGINALE_IN_MODIFICA ? RIGA_ORIGINALE_IN_MODIFICA['TARGA AUTO'] : '') || '';
-                const isYes     = generaApp === true || String(generaApp).toUpperCase().trim() === 'YES' || generaApp === 1;
-                if (isYes && appCerca.trim() !== '' && targa) await eseguiAppCerca(appCerca.trim(), targa);
-            }
-
-            chiudiModal('modal-form');
-            sincronizza();
-        } catch(e) {
-            alert("Errore: " + e.message);
-        } finally {
-            btn.innerText = "Salva"; btn.disabled = false;
+async function salvaDati(){
+    const intestazioni=DATABASE[FOGLIO_ATTIVO].intestazioni,config=APP_CONFIG[FOGLIO_ATTIVO]||{};
+    const formulaCols=FORMULA_FIELDS[FOGLIO_ATTIVO]||new Set();
+    let cols=config.colonneVisibili&&config.colonneVisibili.length>0?intestazioni.filter(h=>config.colonneVisibili.includes(h)):intestazioni;
+    const btn=document.getElementById('btn-save-modal'),tableId=TABLE_MAP[FOGLIO_ATTIVO];
+    if(!tableId){alert("Tabella non trovata per "+FOGLIO_ATTIVO);return;}
+    const payload={};
+    intestazioni.forEach(col=>{
+        if(formulaCols.has(col))return;
+        payload[col]=cols.includes(col)?(document.getElementById(`input-${col}`)?.value??""):(RIGA_ORIGINALE_IN_MODIFICA?RIGA_ORIGINALE_IN_MODIFICA[col]||"":"");
+    });
+    const rigaId=RIGA_ORIGINALE_IN_MODIFICA?._rowIndex??null;
+    btn.innerText="…";btn.disabled=true;
+    try{
+        if(rigaId)await BR.patch(tableId,rigaId,payload);else await BR.post(tableId,payload);
+        if(FOGLIO_ATTIVO==='SAT'){
+            const genApp=payload['GENERA APP']??payload['GENERA APPUNTAMENTO IN CALENDARIO']??'';
+            const appCerca=payload['APP CERCA']||(RIGA_ORIGINALE_IN_MODIFICA?RIGA_ORIGINALE_IN_MODIFICA['APP CERCA']:'')||'';
+            const targa=payload['TARGA AUTO']||(RIGA_ORIGINALE_IN_MODIFICA?RIGA_ORIGINALE_IN_MODIFICA['TARGA AUTO']:'')||'';
+            const isYes=genApp===true||String(genApp).toUpperCase().trim()==='YES'||genApp===1;
+            if(isYes&&appCerca.trim()!==''&&targa)await eseguiAppCerca(appCerca.trim(),targa);
         }
-    }
+        chiudiModal('modal-form');sincronizza();
+    }catch(e){alert("Errore: "+e.message);}
+    finally{btn.innerText="Salva";btn.disabled=false;}
+}
 
-    async function eseguiAppCerca(appCerca, targa) {
-        const tableIdCal = BASEROW_TABLES['CALENDARIO'];
-        if (!tableIdCal) { alert('❌ APP CERCA: tabella CALENDARIO non trovata in config.js'); return; }
-        try {
-            console.log(`APP CERCA: cerco "${appCerca}" in LIB A/M/S, scriverò targa "${targa}"`);
-            const righe = await BR.getAll(tableIdCal);
-            const mappa = [
-                { cerca: 'LIB A', scrivi: 'ANDREA' },
-                { cerca: 'LIB M', scrivi: 'MATTEO' },
-                { cerca: 'LIB S', scrivi: 'SARA'   },
-            ];
-            let trovato = false;
-            for (const { cerca, scrivi } of mappa) {
-                if (trovato) break;
-                const rigaTarget = righe.find(r => String(r[cerca] || '').trim() === appCerca);
-                if (rigaTarget) {
-                    await BR.patch(tableIdCal, rigaTarget.id, { [scrivi]: targa });
-                    alert(`✅ APP CERCA: trovato "${appCerca}" in ${cerca}\n→ Scritto "${targa}" in colonna ${scrivi}`);
-                    trovato = true;
-                }
-            }
-            if (!trovato) alert(`⚠️ APP CERCA: nessuna corrispondenza per "${appCerca}"`);
-        } catch(e) {
-            alert(`❌ Errore APP CERCA:\n${e.message}`);
-        }
+async function eseguiAppCerca(appCerca,targa){
+    const tableIdCal=BASEROW_TABLES['CALENDARIO'];if(!tableIdCal){alert('❌ APP CERCA: tabella CALENDARIO non trovata');return;}
+    try{
+        const righe=await BR.getAll(tableIdCal);
+        const mappa=[{cerca:'LIB A',scrivi:'ANDREA'},{cerca:'LIB M',scrivi:'MATTEO'},{cerca:'LIB S',scrivi:'SARA'}];
+        let trovato=false;
+        for(const{cerca,scrivi}of mappa){if(trovato)break;const rt=righe.find(r=>String(r[cerca]||'').trim()===appCerca);if(rt){await BR.patch(tableIdCal,rt.id,{[scrivi]:targa});alert(`✅ APP CERCA: trovato "${appCerca}" in ${cerca} → "${targa}" in ${scrivi}`);trovato=true;}}
+        if(!trovato)alert(`⚠️ APP CERCA: nessuna corrispondenza per "${appCerca}"`);
+    }catch(e){alert(`❌ Errore APP CERCA:\n${e.message}`);}
+}
+
+/* ── IMPOSTAZIONI ─── */
+function apriImpostazioni(){
+    if(!FOGLIO_ATTIVO)return alert("Seleziona un foglio.");
+    const config=APP_CONFIG[FOGLIO_ATTIVO]||{},intestazioni=DATABASE[FOGLIO_ATTIVO].intestazioni;
+    document.getElementById('settings-nome-foglio').innerText=FOGLIO_ATTIVO;
+    document.getElementById('set-display-name').value=config.displayName||"";
+    document.getElementById('set-add').checked=config.puoAggiungere||false;
+    document.getElementById('set-edit').checked=config.puoModificare||false;
+    document.getElementById('set-delete').checked=config.puoEliminare||false;
+    const selCol=document.getElementById('set-sort-col');
+    selCol.innerHTML=`<option value="">– Nessun ordinamento –</option>`+intestazioni.map(c=>`<option value="${c}" ${config.sortColonna===c?'selected':''}>${c}</option>`).join('');
+    document.getElementById('set-sort-dir').value=config.sortDirezione||1;
+    let colHtml=`<label style="font-weight:700;font-size:11px;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-3);display:block;margin-bottom:6px;">Colonne Visibili</label>`;
+    intestazioni.forEach(c=>{const chk=config.colonneVisibili&&config.colonneVisibili.includes(c)?'checked':'';colHtml+=`<label class="checkbox-label"><input type="checkbox" class="chk-colonna" value="${c}" ${chk}> ${c}</label>`;});
+    document.getElementById('settings-colonne').innerHTML=colHtml;
+    const cc=config.cardConfig||{};
+    document.getElementById('set-card-attiva').checked=config.vistaCardAttiva||false;
+    const makeOpts=sel=>`<option value="">– Nessuna –</option>`+intestazioni.map(c=>`<option value="${c}" ${sel===c?'selected':''}>${c}</option>`).join('');
+    document.getElementById('card-col-data').innerHTML=makeOpts(cc.data||"");
+    document.getElementById('card-col-badge').innerHTML=makeOpts(cc.badge||"");
+    document.getElementById('card-col-corpo-list').innerHTML=intestazioni.map(c=>{const chk=(cc.corpo||[]).includes(c)?'checked':'';return`<label class="checkbox-label"><input type="checkbox" class="chk-card-corpo" value="${c}" ${chk}> ${c}</label>`;}).join('');
+    const regole=config.formatRules||[{},{},{},{},{}];while(regole.length<5)regole.push({});
+    const ops=['uguale','non uguale','contiene','inizia con','non vuoto','vuoto','data > (dopo)','data < (prima)'];
+    document.getElementById('format-rules-list').innerHTML=regole.slice(0,5).map((r,i)=>`<div class="fmt-rule">
+        <select class="fmt-col" data-i="${i}"><option value="">– –</option>${intestazioni.map(c=>`<option value="${c}" ${r.colonna===c?'selected':''}>${c}</option>`).join('')}</select>
+        <select class="fmt-op" data-i="${i}">${ops.map(o=>`<option value="${o}" ${r.operatore===o?'selected':''}>${o}</option>`).join('')}</select>
+        <input type="text" class="fmt-val" data-i="${i}" value="${r.valore||''}" placeholder="valore">
+        <input type="color" class="fmt-color" data-i="${i}" value="${r.colore||'#e74c3c'}">
+        <select class="fmt-target" data-i="${i}" style="padding:4px;border:1px solid var(--line);border-radius:4px;font-size:11px;">
+            <option value="riga" ${(r.target||'riga')==='riga'?'selected':''}>Riga intera</option>
+            <option value="cella" ${r.target==='cella'?'selected':''}>Solo cella</option>
+        </select>
+    </div>`).join('');
+    const coloriCol=config.coloriColonne||{};
+    document.getElementById('colori-colonne-list').innerHTML=intestazioni.map(c=>`<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+        <input type="color" class="chk-col-color" data-col="${c}" value="${coloriCol[c]||'#ffffff'}" style="width:36px;height:26px;border:1px solid var(--line);border-radius:4px;cursor:pointer;padding:1px;">
+        <span style="font-size:13px;">${c}</span></div>`).join('');
+    document.getElementById('set-kanban-attiva').checked=config.vistaKanbanAttiva||false;
+    document.getElementById('kanban-col-gruppo').innerHTML=`<option value="">– Nessuna –</option>`+intestazioni.map(c=>`<option value="${c}" ${config.kanbanGruppo===c?'selected':''}>${c}</option>`).join('');
+    document.getElementById('kanban-ordine').value=(config.kanbanOrdine||[]).join('\n');
+    const formatiCol=config.formatiColonne||{};
+    const tipiFormato=[{v:'',l:'– Testo libero –'},{v:'date',l:'📅 Data'},{v:'datetime-local',l:'📅 Data e Ora'},{v:'time',l:'🕐 Orario'}];
+    document.getElementById('formati-colonne-list').innerHTML=intestazioni.map(c=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <span style="flex:1;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${c}">${c}</span>
+        <select class="chk-col-format" data-col="${c}" style="width:150px;padding:5px;border:1px solid var(--line);border-radius:4px;font-size:11px;">
+            ${tipiFormato.map(t=>`<option value="${t.v}" ${formatiCol[c]===t.v?'selected':''}>${t.l}</option>`).join('')}
+        </select></div>`).join('');
+    document.getElementById('modal-settings').style.display="flex";
+}
+
+function salvaImpostazioni(){
+    const btn=document.getElementById('btn-save-settings');btn.innerText="…";btn.disabled=true;
+    const formatRules=[];
+    for(let i=0;i<5;i++){
+        const col=document.querySelector(`.fmt-col[data-i="${i}"]`)?.value||'';
+        const op=document.querySelector(`.fmt-op[data-i="${i}"]`)?.value||'uguale';
+        const val=document.querySelector(`.fmt-val[data-i="${i}"]`)?.value||'';
+        const color=document.querySelector(`.fmt-color[data-i="${i}"]`)?.value||'#e74c3c';
+        const target=document.querySelector(`.fmt-target[data-i="${i}"]`)?.value||'riga';
+        if(col)formatRules.push({colonna:col,operatore:op,valore:val,colore:color,target});
     }
+    const kanbanOrdine=(document.getElementById('kanban-ordine').value||'').split('\n').map(s=>s.trim()).filter(Boolean);
+    const coloriColonne={};document.querySelectorAll('.chk-col-color').forEach(el=>{if(el.value&&el.value!=='#ffffff')coloriColonne[el.dataset.col]=el.value;});
+    const formatiColonne={};document.querySelectorAll('.chk-col-format').forEach(el=>{if(el.value)formatiColonne[el.dataset.col]=el.value;});
+    APP_CONFIG[FOGLIO_ATTIVO]={
+        displayName:document.getElementById('set-display-name').value,
+        puoAggiungere:document.getElementById('set-add').checked,
+        puoModificare:document.getElementById('set-edit').checked,
+        puoEliminare:document.getElementById('set-delete').checked,
+        sortColonna:document.getElementById('set-sort-col').value||null,
+        sortDirezione:parseInt(document.getElementById('set-sort-dir').value)||1,
+        colonneVisibili:Array.from(document.querySelectorAll('.chk-colonna:checked')).map(c=>c.value),
+        vistaCardAttiva:document.getElementById('set-card-attiva').checked,
+        vistaKanbanAttiva:document.getElementById('set-kanban-attiva').checked,
+        kanbanGruppo:document.getElementById('kanban-col-gruppo').value||null,
+        kanbanOrdine,
+        cardConfig:{data:document.getElementById('card-col-data').value||null,badge:document.getElementById('card-col-badge').value||null,corpo:Array.from(document.querySelectorAll('.chk-card-corpo:checked')).map(c=>c.value)},
+        formatRules,coloriColonne,formatiColonne
+    };
+    salvaConfig().then(()=>{chiudiModal('modal-settings');renderMenu();caricaDati(FOGLIO_ATTIVO);})
+        .catch(e=>alert("Errore: "+e.message))
+        .finally(()=>{btn.innerText="Salva";btn.disabled=false;});
+}
+
+async function salvaConfig(){
+    const tableId=BASEROW_TABLES['_CONFIG'];
+    if(!tableId){localStorage.setItem('appConfig',JSON.stringify(APP_CONFIG));return;}
+    try{
+        const righe=await BR.getAll(tableId);const json=JSON.stringify(APP_CONFIG);
+        if(righe.length>0)await BR.patch(tableId,righe[0].id,{valore:json});else await BR.post(tableId,{valore:json});
+        localStorage.setItem('appConfig',json);
+    }catch(e){console.error('salvaConfig:',e.message);localStorage.setItem('appConfig',JSON.stringify(APP_CONFIG));}
+}
 </script>
 </body>
 </html>
