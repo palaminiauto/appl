@@ -314,7 +314,7 @@
 
 <script>
 if(typeof BASEROW_URL==='undefined'||typeof BASEROW_TOKEN==='undefined')alert("Manca config.js!");
-const BR_HDR=()=({"Authorization":"Token "+BASEROW_TOKEN,"Content-Type":"application/json"});
+const BR_HDR=()=>({"Authorization":"Token "+BASEROW_TOKEN,"Content-Type":"application/json"});
 const BR={
     async getFields(t){const r=await fetch(`${BASEROW_URL}/api/database/fields/table/${t}/`,{headers:BR_HDR()});if(!r.ok)throw new Error(await r.text());return r.json();},
     async getAll(t){let res=[],p=1;while(true){const r=await fetch(`${BASEROW_URL}/api/database/rows/table/${t}/?user_field_names=true&size=200&page=${p}`,{headers:BR_HDR()});if(!r.ok)throw new Error(await r.text());const d=await r.json();res=res.concat(d.results);if(!d.next)break;p++;}return res;},
