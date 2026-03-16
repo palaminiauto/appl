@@ -5,1485 +5,1873 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PALAMINI AUTO</title>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#4f8bc4">
-    <!-- Baserow config — modifica config.js con i tuoi dati -->
+    <meta name="theme-color" content="#111111">
     <script src="config.js"></script>
-
     <style>
+        /* ─── DESIGN SYSTEM ──────────────────────────────── */
         :root {
-            --primary-blue: #4f8bc4;
-            --dark-blue: #3b6d9c;
-            --light-blue: #6aa3d9;
-            --bg-color: #f4f7f6;
+            --ink:     #111111;
+            --ink-2:   #555555;
+            --ink-3:   #999999;
+            --sheet:   #ffffff;
+            --bg:      #f4f4f4;
+            --line:    #e5e5e5;
+            --sidebar: #111111;
+            --sid-txt: rgba(255,255,255,0.82);
+            --sid-act: rgba(255,255,255,0.10);
+            --accent:  #4f8bc4; /* usato SOLO dove strettamente serve */
+            --radius:  6px;
+            --sh:      0 1px 2px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04);
+            --sh2:     0 2px 8px rgba(0,0,0,0.10), 0 1px 3px rgba(0,0,0,0.06);
+        }
+        *, *::before, *::after { box-sizing: border-box; }
+        body {
+            font-family: 'SF Pro Text', -apple-system, 'Segoe UI', sans-serif;
+            margin: 0;
+            background: var(--bg);
+            height: 100vh;
+            overflow: hidden;
+            font-size: 13px;
+            color: var(--ink);
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* BASE & LAYOUT */
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background-color: var(--bg-color); height: 100vh; overflow: hidden; }
-        
-        /* LOGIN */
-        #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: var(--dark-blue); color: white; }
-        .login-box { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); text-align: center; color: #333; width: 90%; max-width: 350px; }
-        .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        .login-box button { width: 100%; padding: 12px; background: var(--primary-blue); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        .login-box button:disabled { background: #95a5a6; cursor: not-allowed; }
+        /* ─── LOGIN ──────────────────────────────────────── */
+        #login-screen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: var(--sidebar);
+        }
+        .login-box {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            padding: 36px 32px;
+            border-radius: 10px;
+            text-align: center;
+            width: 90%;
+            max-width: 300px;
+        }
+        .login-box h2 {
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            color: white;
+            margin: 0 0 24px;
+        }
+        .login-box input {
+            width: 100%;
+            padding: 10px 12px;
+            margin-bottom: 12px;
+            border: 1px solid #333;
+            border-radius: var(--radius);
+            font-size: 14px;
+            background: #222;
+            color: white;
+            outline: none;
+        }
+        .login-box input:focus { border-color: #555; }
+        .login-box button {
+            width: 100%;
+            padding: 10px;
+            background: white;
+            color: #111;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            letter-spacing: 0.3px;
+        }
+        .login-box button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* APP E SIDEBAR FISSA */
-        #app-screen { display: none; height: 100vh; flex-direction: row; }
-        #sidebar { width: 160px; min-width: 160px; background: var(--dark-blue); color: white; padding: 10px 8px; overflow-y: auto; flex-shrink: 0; box-sizing: border-box; display: flex; flex-direction: column; }
-        #sidebar h3 { font-size: 14px; margin-top: 0; text-transform: uppercase; letter-spacing: 1px; color: #d6e8f7;}
-        #sidebar button { display: block; width: 100%; padding: 8px 10px; margin-bottom: 5px; cursor: pointer; background: rgba(255,255,255,0.1); color: white; border: none; text-align: left; border-radius: 6px; transition: 0.2s; font-weight: 500; font-size: 13px; }
-        #sidebar button:hover, #sidebar button.active { background: var(--primary-blue); box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-        #buttons-container { flex-grow: 1; overflow-y: auto; }
+        /* ─── APP LAYOUT ─────────────────────────────────── */
+        #app-screen {
+            display: none;
+            height: 100vh;
+            flex-direction: row;
+        }
 
+        /* ─── SIDEBAR ────────────────────────────────────── */
+        #sidebar {
+            width: 164px;
+            min-width: 164px;
+            background: var(--sidebar);
+            padding: 10px 6px;
+            overflow-y: auto;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        #sidebar h3 {
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.28);
+            padding: 6px 8px 8px;
+            margin: 0;
+        }
+        #buttons-container { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 1px; }
+        #sidebar button {
+            display: block;
+            width: 100%;
+            padding: 7px 10px;
+            cursor: pointer;
+            background: transparent;
+            color: var(--sid-txt);
+            border: none;
+            text-align: left;
+            border-radius: var(--radius);
+            font-size: 12px;
+            font-weight: 400;
+            transition: background 0.12s;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.4;
+        }
+        #sidebar button:hover  { background: rgba(255,255,255,0.07); }
+        #sidebar button.active { background: var(--sid-act); color: white; font-weight: 500; }
 
-        #main-container { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; width: 100%; }
-        #header { background: white; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); z-index: 10; border-bottom: 3px solid var(--primary-blue); gap: 10px; }
-        #content { padding: 20px; overflow-y: auto; flex-grow: 1; }
+        /* ─── MAIN ───────────────────────────────────────── */
+        #main-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: var(--sheet);
+        }
 
-        /* Bottoni header emoji-only */
-        .btn-icon { width: 38px; height: 38px; border: none; border-radius: 6px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; transition: 0.2s; flex-shrink: 0; }
-        .btn-icon:hover { opacity: 0.85; }
-        .btn-icon-sync { background: #f39c12; color: white; padding: 0 10px; width: auto; font-size: 13px; font-weight: bold; }
+        /* ─── HEADER ─────────────────────────────────────── */
+        #header {
+            background: var(--sheet);
+            padding: 0 14px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--line);
+            gap: 10px;
+            flex-shrink: 0;
+        }
+        .header-left { display: flex; flex-direction: column; min-width: 0; gap: 2px; }
+        #titolo-foglio {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--ink);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            letter-spacing: -0.1px;
+        }
+        #btn-add-record {
+            display: none;
+            padding: 4px 12px;
+            background: var(--sidebar);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            width: fit-content;
+            letter-spacing: 0.2px;
+        }
+        .header-right { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+
+        /* Icon-only header buttons */
+        .hb {
+            width: 34px;
+            height: 34px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            color: var(--ink-2);
+            transition: background 0.12s;
+            flex-shrink: 0;
+        }
+        .hb:hover { background: var(--bg); }
+        #btn-sync {
+            padding: 0 12px;
+            width: auto;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            color: var(--ink-2);
+            border: 1px solid var(--line);
+            gap: 5px;
+            border-radius: 20px;
+            height: 30px;
+        }
         #hamburger-btn { display: none; }
 
-        /* ================================================
-           MOBILE: Hamburger + Drawer
-           ================================================ */
-        @media (max-width: 768px) {
-            #sidebar { display: none !important; }
-            #header { padding: 10px 12px; }
-            #hamburger-btn { display: flex; }
-            /* Nasconde titolo foglio su mobile per fare spazio */
-            #titolo-foglio { font-size: 15px; }
+        /* ─── CONTENT ────────────────────────────────────── */
+        #content {
+            overflow-y: auto;
+            flex-grow: 1;
+            background: var(--sheet);
+        }
+        #status-message {
+            padding: 48px 20px;
+            text-align: center;
+            color: var(--ink-3);
+            font-size: 13px;
         }
 
-        /* Drawer mobile */
-        #drawer-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 5000; }
-        #drawer { position: fixed; top: 0; left: -280px; width: 260px; height: 100%; background: var(--dark-blue); z-index: 5001; transition: left 0.25s ease; display: flex; flex-direction: column; padding: 20px 15px; box-sizing: border-box; overflow-y: auto; }
-        #drawer.open { left: 0; }
-        #drawer-overlay.open { display: block; }
-        #drawer h3 { color: #d6e8f7; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 10px; }
-        #drawer button { display: block; width: 100%; padding: 10px 12px; margin-bottom: 6px; cursor: pointer; background: rgba(255,255,255,0.1); color: white; border: none; text-align: left; border-radius: 6px; font-weight: 500; }
-        #drawer button:hover, #drawer button.active { background: var(--primary-blue); }
-        #drawer-buttons { flex-grow: 1; overflow-y: auto; }
-        #drawer-footer { margin-top: 15px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.2); display: flex; gap: 8px; }
-        #drawer-footer button { flex: 1; padding: 10px; font-size: 18px; text-align: center; border-radius: 6px; border: none; cursor: pointer; }
+        /* ─── TOOLBAR ────────────────────────────────────── */
+        #toolbar {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            background: var(--sheet);
+            border-bottom: 1px solid var(--line);
+            flex-shrink: 0;
+        }
+        #search-input {
+            flex: 1;
+            max-width: 260px;
+            padding: 6px 11px;
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            font-size: 12px;
+            outline: none;
+            background: var(--bg);
+            color: var(--ink);
+        }
+        #search-input:focus { border-color: #bbb; background: white; }
+        #sort-column {
+            padding: 5px 8px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            font-size: 11px;
+            background: white;
+            color: var(--ink);
+            cursor: pointer;
+        }
+        .btn-sort {
+            padding: 5px 9px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: white;
+            font-size: 11px;
+            cursor: pointer;
+            color: var(--ink-2);
+        }
 
-        /* ================================================
-        #tabella-container { --table-font: 13px; }
-        #tabella-container td, #tabella-container th { font-size: var(--table-font); }
-
-        /* ===== CARD VIEW ===== */
-        .cards-grid { display: flex; flex-direction: column; gap: 10px; }
+        /* ─── CARD VIEW ──────────────────────────────────── */
+        .cards-grid {
+            display: flex;
+            flex-direction: column;
+        }
         .card {
-            background: white; border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            padding: 12px 14px; cursor: pointer;
-            border-left: 4px solid var(--primary-blue);
-            transition: box-shadow 0.15s;
+            background: var(--sheet);
+            padding: 13px 16px 11px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--line);
+            transition: background 0.10s;
         }
-        .card:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.13); }
-        .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 5px; }
-        .card-data  { font-weight: 700; font-size: 14px; color: #2c3e50; flex-shrink: 0; }
-        .card-badge { font-size: 12px; color: #2c3e50; text-align: right; max-width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .card-body  { font-size: 13px; color: #2c3e50; line-height: 1.4; }
-        .card-actions { display: flex; gap: 8px; margin-top: 8px; justify-content: flex-end; }
-        .card-actions button { border: none; border-radius: 6px; padding: 5px 10px; font-size: 14px; cursor: pointer; color: white; }
-        .card-btn-edit   { background: var(--light-blue); }
-        .card-btn-delete { background: #e74c3c; }
-        .table-wrapper { overflow-x: auto; background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .card:hover { background: var(--bg); }
+        .card-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 3px; }
+        .card-label {
+            font-size: 10.5px;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+        }
+        .card-badge-right {
+            font-size: 11px;
+            color: var(--ink-3);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 160px;
+        }
+        .card-title {
+            font-size: 13.5px;
+            font-weight: 500;
+            color: var(--ink);
+            line-height: 1.45;
+        }
+        .card-actions {
+            display: flex;
+            gap: 2px;
+            margin-top: 6px;
+            justify-content: flex-end;
+        }
+        .card-action-btn {
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            width: 26px;
+            height: 26px;
+            border-radius: 4px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--ink-3);
+            transition: background 0.10s;
+        }
+        .card-action-btn:hover { background: var(--bg); }
+
+        /* ─── TABLE VIEW ─────────────────────────────────── */
+        .table-wrapper { overflow-x: auto; }
         table { border-collapse: collapse; width: 100%; }
         @media (min-width: 769px) { table { table-layout: fixed; } }
-        th, td { border: 1px solid #eee; padding: 10px; text-align: center; word-wrap: break-word; overflow-wrap: break-word; }
-        th { background-color: var(--primary-blue); color: white; }
-        tr:hover { background-color: #f0f6fa; }
+        th {
+            padding: 8px 12px;
+            text-align: left;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.7px;
+            text-transform: uppercase;
+            color: var(--ink-3);
+            background: var(--sheet);
+            border-bottom: 2px solid var(--line);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        td {
+            padding: 9px 12px;
+            border-bottom: 1px solid var(--line);
+            font-size: 12.5px;
+            text-align: left;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            color: var(--ink);
+            vertical-align: top;
+        }
+        tr:last-child td { border-bottom: none; }
+        tbody tr:hover td { background: var(--bg); }
+        .sel-td { width: 32px; text-align: center; padding: 9px 8px; }
+        tr.selected-row td { background: #f0f0f0 !important; }
 
-        /* BOTTONI INTESTAZIONE */
-        .btn { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: white; }
-        .btn-sync { background: #f39c12; }
-        .btn-settings { background: #7f8c8d; margin-left: 5px; }
-        .btn-add { background: var(--primary-blue); display: none; margin-top: 10px; width: max-content; }
-        .btn-edit   { background: var(--light-blue); padding: 5px 8px; font-size: 15px; }
-        .btn-delete { background: #e74c3c; padding: 5px 8px; font-size: 15px; margin-left: 4px; }
+        /* Table action buttons */
+        .tbl-btn {
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            width: 26px;
+            height: 26px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: var(--ink-3);
+            transition: background 0.10s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .tbl-btn:hover { background: var(--bg); }
 
-        /* MODALI APP */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 1000; }
-        .modal-content { background: white; padding: 25px; border-radius: 8px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-sizing: border-box; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; color: var(--dark-blue); }
-        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        .checkbox-label { display: flex; align-items: center; gap: 8px; font-weight: normal; margin-top: 8px; cursor: pointer; font-size: 15px; }
-        .checkbox-label input { width: auto !important; margin: 0 !important; cursor: pointer; transform: scale(1.2); }
-        .modal-buttons { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
-        .btn-save { background: var(--primary-blue); }
-        .btn-cancel { background: #e74c3c; }
-        .order-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee; background: #f9f9f9; margin-bottom: 5px; border-radius: 4px; }
-        /* Multiselezione */
-        #multi-delete-bar { display:none; position:sticky; bottom:0; left:0; right:0; background:#c0392b; color:white; padding:10px 16px; z-index:200; align-items:center; gap:12px; font-size:14px; font-weight:bold; border-top:2px solid #a93226; }
-        #multi-delete-bar button { background:white; color:#c0392b; border:none; border-radius:6px; padding:6px 14px; font-weight:bold; cursor:pointer; font-size:13px; }
-        #multi-delete-bar button.annulla { background:rgba(255,255,255,0.2); color:white; border:1px solid rgba(255,255,255,0.5); }
-        .sel-td { width:32px; text-align:center; }
-        tr.selected-row td { background-color: #fde8e6 !important; }
-        .kanban-board { display: flex; gap: 14px; overflow-x: auto; height: 100%; padding-bottom: 10px; }
-        .kanban-col { min-width: 260px; max-width: 300px; flex-shrink: 0; display: flex; flex-direction: column; background: #f0f4f8; border-radius: 10px; overflow: hidden; }
-        .kanban-col-header { background: var(--dark-blue); color: white; padding: 10px 14px; font-weight: bold; font-size: 13px; display: flex; justify-content: space-between; align-items: center; }
-        .kanban-col-count { background: rgba(255,255,255,0.25); border-radius: 10px; padding: 2px 8px; font-size: 12px; }
-        .kanban-col-body { flex: 1; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 8px; }
-        .kanban-card { background: white; border-radius: 8px; padding: 10px 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); cursor: pointer; border-left: 3px solid var(--primary-blue); transition: box-shadow 0.15s; }
-        .kanban-card:hover { box-shadow: 0 3px 10px rgba(0,0,0,0.14); }
-        .kanban-card-top { display: flex; justify-content: space-between; margin-bottom: 4px; }
-        .kanban-card-data { font-weight: 700; font-size: 12px; color: #2c3e50; }
-        .kanban-card-badge { font-size: 11px; color: #7f8c8d; max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .kanban-card-body { font-size: 12px; color: #2c3e50; line-height: 1.4; }
-        .kanban-card-actions { display: flex; gap: 6px; margin-top: 6px; justify-content: flex-end; }
-        .kanban-card-actions button { border: none; border-radius: 5px; padding: 3px 8px; font-size: 12px; cursor: pointer; color: white; }
-        .fmt-rule { display:grid; grid-template-columns:1fr 110px 1fr 46px 76px; gap:4px; align-items:center; padding:5px; background:#f8f9fa; border-radius:6px; margin-bottom:5px; border:1px solid #e0e0e0; }
-        .fmt-rule select, .fmt-rule input[type=text] { padding:4px; border:1px solid #ccc; border-radius:4px; font-size:11px; width:100%; box-sizing:border-box; }
-        .fmt-rule input[type=color] { width:40px; height:28px; border:1px solid #ccc; border-radius:4px; cursor:pointer; padding:1px; }
-        .order-btns button { padding: 5px 10px; border: none; background: #ddd; border-radius: 4px; cursor: pointer; }
-        .order-btns button:hover { background: #ccc; }
+        /* ─── CALENDARIO GROUPED LIST ────────────────────── */
+        .cal-date-header {
+            padding: 10px 16px 8px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: var(--ink-2);
+            background: var(--bg);
+            border-bottom: 1px solid var(--line);
+            text-transform: uppercase;
+        }
+        .cal-row {
+            display: flex;
+            align-items: baseline;
+            gap: 0;
+            padding: 0;
+            border-bottom: 1px solid var(--line);
+            transition: background 0.10s;
+        }
+        .cal-row:hover { background: var(--bg); }
+        .cal-time {
+            min-width: 52px;
+            padding: 10px 8px 10px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--ink-2);
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .cal-body {
+            flex: 1;
+            padding: 10px 8px;
+            font-size: 12.5px;
+            color: var(--ink);
+            line-height: 1.4;
+        }
+        .cal-actions {
+            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            flex-shrink: 0;
+        }
 
-        /* (mobile gestito dal drawer sopra) */
-        @media (max-width: 768px) { .desktop-only { display: none !important; } }
+        /* ─── KANBAN ─────────────────────────────────────── */
+        .kanban-board {
+            display: flex;
+            gap: 0;
+            overflow-x: auto;
+            height: 100%;
+            background: var(--bg);
+        }
+        .kanban-col {
+            min-width: 256px;
+            max-width: 290px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg);
+            border-right: 1px solid var(--line);
+        }
+        .kanban-col-header {
+            padding: 11px 12px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            color: var(--ink-2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--line);
+            background: var(--bg);
+        }
+        .kanban-col-count {
+            font-size: 10px;
+            color: var(--ink-3);
+            font-weight: 500;
+        }
+        .kanban-col-body {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            padding: 6px;
+        }
+        .kanban-card {
+            background: var(--sheet);
+            border-radius: var(--radius);
+            padding: 11px 12px;
+            box-shadow: var(--sh);
+            cursor: pointer;
+            transition: box-shadow 0.12s;
+            margin-bottom: 4px;
+        }
+        .kanban-card:hover { box-shadow: var(--sh2); }
+        .kanban-card-label {
+            font-size: 9.5px;
+            font-weight: 700;
+            letter-spacing: 0.7px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        .kanban-card-title {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--ink);
+            line-height: 1.4;
+        }
+        .kanban-card-meta {
+            font-size: 11px;
+            color: var(--ink-3);
+            margin-top: 3px;
+        }
+        .kanban-card-body { margin-top: 5px; }
+        .kanban-card-body-line {
+            font-size: 11.5px;
+            color: var(--ink-2);
+            line-height: 1.45;
+        }
+        .kanban-card-actions {
+            display: flex;
+            gap: 2px;
+            margin-top: 6px;
+            justify-content: flex-end;
+        }
+        .kanban-card-actions button {
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: var(--ink-3);
+            transition: background 0.10s;
+        }
+        .kanban-card-actions button:hover { background: var(--bg); }
+
+        /* ─── MULTI-DELETE BAR ───────────────────────────── */
+        #multi-delete-bar {
+            display: none;
+            position: sticky;
+            bottom: 0;
+            background: var(--sidebar);
+            color: white;
+            padding: 10px 16px;
+            z-index: 200;
+            align-items: center;
+            gap: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        #multi-delete-bar button {
+            background: rgba(255,255,255,0.12);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            padding: 6px 14px;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        #multi-delete-bar button:hover { background: rgba(255,255,255,0.20); }
+        #multi-delete-bar button.annulla {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.25);
+        }
+
+        /* ─── MODALI ─────────────────────────────────────── */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.45);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            padding: 24px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 480px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.18);
+        }
+        .modal-content h3 {
+            margin: 0 0 20px;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--ink);
+        }
+        .form-group { margin-bottom: 14px; }
+        .form-group label {
+            display: block;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.7px;
+            text-transform: uppercase;
+            color: var(--ink-3);
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 9px 11px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            font-size: 13px;
+            outline: none;
+            color: var(--ink);
+        }
+        .form-group input:focus, .form-group select:focus { border-color: #aaa; }
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            padding: 5px 0;
+            color: var(--ink);
+        }
+        .checkbox-label input { width: auto !important; margin: 0 !important; cursor: pointer; }
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 20px;
+        }
+        /* btn compatibility layer */
+        .btn { padding: 8px 16px; border: none; border-radius: var(--radius); cursor: pointer; font-size: 12px; font-weight: 500; }
+        .btn-save { background: var(--sidebar); color: white; }
+        .btn-cancel { background: var(--bg); color: var(--ink); border: 1px solid var(--line); }
+        .btn-add { background: var(--sidebar); color: white; display: none; margin-top: 4px; width: max-content; font-size: 11px; border-radius: 20px; }
+        /* Keep for backward compat - now icon-only visually */
+        .btn-edit   { background: transparent; color: var(--ink-3); padding: 4px 6px; font-size: 13px; }
+        .btn-delete { background: transparent; color: var(--ink-3); padding: 4px 6px; font-size: 13px; margin-left: 2px; }
+
+        /* ─── ORDER MODAL ────────────────────────────────── */
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 9px 12px;
+            border-radius: var(--radius);
+            background: var(--bg);
+            margin-bottom: 4px;
+            font-size: 13px;
+        }
+        .order-btns button {
+            padding: 4px 8px;
+            border: 1px solid var(--line);
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+            margin-left: 4px;
+            font-size: 11px;
+        }
+        .order-btns button:hover { background: var(--bg); }
+        .order-btns button:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        /* ─── FORMAT RULES ───────────────────────────────── */
+        .fmt-rule {
+            display: grid;
+            grid-template-columns: 1fr 110px 1fr 46px 76px;
+            gap: 4px;
+            align-items: center;
+            padding: 5px;
+            background: var(--bg);
+            border-radius: var(--radius);
+            margin-bottom: 5px;
+            border: 1px solid var(--line);
+        }
+        .fmt-rule select, .fmt-rule input[type=text] {
+            padding: 4px;
+            border: 1px solid var(--line);
+            border-radius: 4px;
+            font-size: 11px;
+            width: 100%;
+        }
+        .fmt-rule input[type=color] {
+            width: 40px;
+            height: 28px;
+            border: 1px solid var(--line);
+            border-radius: 4px;
+            cursor: pointer;
+            padding: 1px;
+        }
+
+        /* ─── MOBILE ─────────────────────────────────────── */
+        @media (max-width: 768px) {
+            #sidebar { display: none !important; }
+            #hamburger-btn { display: flex !important; }
+            .desktop-only { display: none !important; }
+            #titolo-foglio { font-size: 13px; }
+        }
+
+        /* ─── DRAWER MOBILE ──────────────────────────────── */
+        #drawer-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 5000;
+        }
+        #drawer-overlay.open { display: block; }
+        #drawer {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 256px;
+            height: 100%;
+            background: var(--sidebar);
+            z-index: 5001;
+            transition: left 0.22s ease;
+            display: flex;
+            flex-direction: column;
+            padding: 16px 8px;
+            overflow-y: auto;
+        }
+        #drawer.open { left: 0; }
+        #drawer h3 {
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.28);
+            padding: 0 8px 8px;
+            margin: 0;
+        }
+        #drawer-buttons { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 1px; }
+        #drawer button {
+            display: block;
+            width: 100%;
+            padding: 9px 12px;
+            cursor: pointer;
+            background: transparent;
+            color: var(--sid-txt);
+            border: none;
+            text-align: left;
+            border-radius: var(--radius);
+            font-size: 13px;
+        }
+        #drawer button:hover, #drawer button.active { background: rgba(255,255,255,0.10); }
+        #drawer-footer {
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            gap: 6px;
+        }
+        #drawer-footer button { flex: 1; padding: 10px; text-align: center; }
+
+        /* ─── SETTINGS PANEL MISC ────────────────────────── */
+        hr { border: 0; border-top: 1px solid var(--line); margin: 16px 0; }
+        #settings-nome-foglio { font-weight: 700; }
+        p { font-size: 12px; color: var(--ink-2); margin: 0; }
+
+        /* ─── TABLE FONT VAR ─────────────────────────────── */
+        #tabella-container { --table-font: 13px; }
+        #tabella-container td { font-size: var(--table-font); }
     </style>
 </head>
 <body>
 
-    <!-- LOGIN -->
-    <div id="login-screen">
-        <div class="login-box">
-            <h2 style="color: var(--primary-blue); margin-top:0;">APP PALAMINI AUTO</h2>
-            <input type="password" id="pass-input" placeholder="Password di accesso">
-            <button onclick="faiLogin()" id="btn-login">Entra</button>
-        </div>
+<!-- ── LOGIN ──────────────────────────────────────────── -->
+<div id="login-screen">
+    <div class="login-box">
+        <h2>Palamini Auto</h2>
+        <input type="password" id="pass-input" placeholder="Password" autocomplete="current-password">
+        <button onclick="faiLogin()" id="btn-login">Accedi</button>
     </div>
+</div>
 
-    <!-- DRAWER MOBILE -->
-    <div id="drawer-overlay" onclick="chiudiDrawer()"></div>
-    <div id="drawer">
+<!-- ── DRAWER MOBILE ───────────────────────────────────── -->
+<div id="drawer-overlay" onclick="chiudiDrawer()"></div>
+<div id="drawer">
+    <h3>Fogli</h3>
+    <div id="drawer-buttons"></div>
+    <div id="drawer-footer">
+        <button style="background:rgba(255,255,255,0.08);color:white;" onclick="apriOrdinamento();chiudiDrawer()">↕</button>
+        <button style="background:rgba(255,255,255,0.08);color:white;" onclick="apriImpostazioni();chiudiDrawer()">⚙</button>
+    </div>
+</div>
+
+<!-- ── APP PRINCIPALE ─────────────────────────────────── -->
+<div id="app-screen">
+    <div id="sidebar">
         <h3>Fogli</h3>
-        <div id="drawer-buttons"></div>
-        <div id="drawer-footer">
-            <button style="background:rgba(255,255,255,0.15); color:white;" onclick="apriOrdinamento(); chiudiDrawer()" title="Ordina Menu">↕️</button>
-            <button style="background:rgba(255,255,255,0.15); color:white;" onclick="apriImpostazioni(); chiudiDrawer()" title="Impostazioni">⚙️</button>
-        </div>
+        <div id="buttons-container"></div>
     </div>
 
-    <!-- ================================================
+    <div id="main-container">
+        <!-- HEADER -->
+        <div id="header">
+            <div class="header-left">
+                <h2 id="titolo-foglio">Palamini Auto</h2>
+                <button id="btn-add-record" class="btn btn-add" onclick="apriForm(null)">+ Nuovo</button>
+            </div>
+            <div class="header-right">
+                <button id="hamburger-btn" class="hb" onclick="apriDrawer()">☰</button>
+                <button onclick="sincronizza()" id="btn-sync" class="hb btn-sync">↻ Sync</button>
+                <button onclick="cambiaFont(-1)" class="hb desktop-only" title="Riduci testo" style="font-size:11px;font-weight:700;">A−</button>
+                <button onclick="cambiaFont(1)"  class="hb desktop-only" title="Aumenta testo" style="font-size:11px;font-weight:700;">A+</button>
+                <button onclick="apriOrdinamento()" class="hb desktop-only" title="Ordina Menu" style="font-size:13px;">↕</button>
+                <button onclick="apriImpostazioni()" class="hb desktop-only" title="Impostazioni" style="font-size:13px;">⚙</button>
+            </div>
+        </div>
+
+        <!-- CONTENT -->
+        <div id="content">
+            <div id="status-message">Seleziona un foglio.</div>
+            <div id="toolbar">
+                <input type="text" id="search-input" placeholder="🔍 Cerca..." oninput="renderTabella()">
+                <select id="sort-column" onchange="cambiaOrdinamento()"></select>
+                <button id="btn-sort-dir" class="btn-sort" onclick="cambiaDirezioneOrdinamento()">⬇ A–Z</button>
+            </div>
+            <div class="table-wrapper" id="tabella-container"></div>
+            <div id="multi-delete-bar">
+                <span id="multi-count-label">0 selezionate</span>
+                <button onclick="eliminaSelezionate()">🗑 Elimina</button>
+                <button class="annulla" onclick="deselezionaTutti()">✕</button>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- APP PRINCIPALE -->
-    <div id="app-screen">
-        <div id="sidebar">
-            <div id="buttons-container"></div>
-        </div>
-
-        <div id="main-container">
-            <div id="header">
-                <div style="display:flex; flex-direction:column; min-width:0;">
-                    <h2 id="titolo-foglio" style="margin:0; color: var(--dark-blue); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Benvenuto</h2>
-                    <button id="btn-add-record" class="btn btn-add" onclick="apriForm(null)">+ Nuova Riga</button>
-                </div>
-                <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
-                    <!-- Hamburger solo mobile -->
-                    <button id="hamburger-btn" class="btn-icon" style="background:var(--dark-blue); color:white;" onclick="apriDrawer()">☰</button>
-                    <!-- Sync sempre visibile -->
-                    <button onclick="sincronizza()" id="btn-sync" class="btn btn-icon btn-icon-sync">🔄 Sync</button>
-                    <!-- Font size -->
-                    <button onclick="cambiaFont(-1)" class="btn-icon desktop-only" style="background:#34495e; color:white; font-weight:bold;" title="Riduci testo">A-</button>
-                    <button onclick="cambiaFont(1)"  class="btn-icon desktop-only" style="background:#34495e; color:white; font-weight:bold;" title="Aumenta testo">A+</button>
-                    <!-- Ordina menu e Impostazioni: solo desktop -->
-                    <button onclick="apriOrdinamento()" class="btn-icon desktop-only" style="background:#7f8c8d; color:white;" title="Ordina Menu">↕️</button>
-                    <button onclick="apriImpostazioni()" class="btn-icon desktop-only" style="background:#7f8c8d; color:white;" title="Impostazioni">⚙️</button>
-                </div>
-            </div>
-            <div id="content">
-                <div id="status-message">Seleziona un foglio per iniziare.</div>
-                <div id="toolbar" class="toolbar" style="display: none;">
-                    <input type="text" id="search-input" placeholder="🔍 Cerca in questo foglio..." oninput="renderTabella()">
-                    <select id="sort-column" onchange="cambiaOrdinamento()"></select>
-                    <button id="btn-sort-dir" class="btn-sort" onclick="cambiaDirezioneOrdinamento()">⬇️ A-Z</button>
-                </div>
-                <div class="table-wrapper" id="tabella-container"></div>
-                <div id="multi-delete-bar">
-                    <span id="multi-count-label">0 selezionate</span>
-                    <button onclick="eliminaSelezionate()">🗑️ Elimina selezionate</button>
-                    <button class="annulla" onclick="deselezionaTutti()">✕ Annulla</button>
-                </div>
-            </div>
+<!-- ── MODAL FORM ──────────────────────────────────────── -->
+<div id="modal-form" class="modal-overlay">
+    <div class="modal-content">
+        <h3 id="modal-title">Nuovo Record</h3>
+        <div id="modal-form-fields"></div>
+        <div class="modal-buttons">
+            <button class="btn btn-cancel" onclick="chiudiModal('modal-form')">Annulla</button>
+            <button class="btn btn-save" onclick="salvaDati()" id="btn-save-modal">Salva</button>
         </div>
     </div>
+</div>
 
-    <!-- Modali App -->
-    <div id="modal-form" class="modal-overlay">
-        <div class="modal-content">
-            <h3 id="modal-title" style="color: var(--primary-blue);">Nuovo Record</h3>
-            <div id="modal-form-fields"></div>
-            <div class="modal-buttons">
-                <button class="btn btn-cancel" onclick="chiudiModal('modal-form')">Annulla</button>
-                <button class="btn btn-save" onclick="salvaDati()" id="btn-save-modal">Salva Dati</button>
+<!-- ── MODAL SETTINGS ──────────────────────────────────── -->
+<div id="modal-settings" class="modal-overlay">
+    <div class="modal-content">
+        <h3>⚙ Impostazioni — <span id="settings-nome-foglio"></span></h3>
+
+        <div class="form-group">
+            <label>Nome nel Menu</label>
+            <p style="margin-bottom:6px;">Usa <b>{{COUNT}}</b> o <b>{{COUNT:Colonna=Valore}}</b></p>
+            <input type="text" id="set-display-name" placeholder="Es. SAT ({{COUNT}})">
+        </div>
+
+        <label class="checkbox-label"><input type="checkbox" id="set-add"> Permetti aggiunta righe</label>
+        <label class="checkbox-label"><input type="checkbox" id="set-edit"> Permetti modifica righe</label>
+        <label class="checkbox-label"><input type="checkbox" id="set-delete"> Permetti eliminazione righe</label>
+
+        <div class="form-group" style="margin-top:12px;">
+            <label>Ordinamento predefinito</label>
+            <div style="display:flex;gap:8px;">
+                <select id="set-sort-col" style="flex:1;padding:8px;border:1px solid var(--line);border-radius:var(--radius);"></select>
+                <select id="set-sort-dir" style="width:90px;padding:8px;border:1px solid var(--line);border-radius:var(--radius);">
+                    <option value="1">A → Z</option>
+                    <option value="-1">Z → A</option>
+                </select>
             </div>
         </div>
-    </div>
 
-    <div id="modal-settings" class="modal-overlay">
-        <div class="modal-content">
-            <h3 style="color: var(--primary-blue);">⚙️ Impostazioni Foglio: <b id="settings-nome-foglio"></b></h3>
+        <hr>
+        <div id="settings-colonne"></div>
 
+        <hr>
+        <div>
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+                <label style="font-weight:700;font-size:13px;margin:0;">📋 Vista Card</label>
+                <label class="checkbox-label" style="margin:0;"><input type="checkbox" id="set-card-attiva"> Attiva</label>
+            </div>
+            <div id="card-config-body">
+                <div class="form-group">
+                    <label>Etichetta superiore sinistra</label>
+                    <select id="card-col-data" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:var(--radius);"></select>
+                </div>
+                <div class="form-group">
+                    <label>Etichetta superiore destra</label>
+                    <select id="card-col-badge" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:var(--radius);"></select>
+                </div>
+                <div class="form-group">
+                    <label>Colonne corpo</label>
+                    <div id="card-col-corpo-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <hr>
+        <div>
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+                <label style="font-weight:700;font-size:13px;margin:0;">🗂 Vista Kanban</label>
+                <label class="checkbox-label" style="margin:0;"><input type="checkbox" id="set-kanban-attiva"> Attiva</label>
+            </div>
             <div class="form-group">
-                <label>Nome nel Menu (Opzionale)</label>
-                <p style="font-size:11px;margin:0 0 5px;color:#666;">Usa <b>{{COUNT}}</b> per il totale righe, o <b>{{COUNT:Colonna=Valore}}</b> per contare righe specifiche.</p>
-                <input type="text" id="set-display-name" placeholder="Es. SAT ({{COUNT}})">
+                <label>Colonna di raggruppamento</label>
+                <select id="kanban-col-gruppo" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:var(--radius);"></select>
             </div>
-
-            <label class="checkbox-label"><input type="checkbox" id="set-add"> Permetti aggiunta di nuove righe</label>
-            <label class="checkbox-label"><input type="checkbox" id="set-edit"> Permetti modifica delle righe</label>
-            <label class="checkbox-label"><input type="checkbox" id="set-delete"> Permetti eliminazione righe</label>
-
-            <div class="form-group" style="margin-top:12px;">
-                <label>Ordinamento predefinito</label>
-                <div style="display:flex;gap:8px;">
-                    <select id="set-sort-col" style="flex:1;padding:8px;border:1px solid #ccc;border-radius:4px;"></select>
-                    <select id="set-sort-dir" style="width:90px;padding:8px;border:1px solid #ccc;border-radius:4px;">
-                        <option value="1">A → Z</option>
-                        <option value="-1">Z → A</option>
-                    </select>
-                </div>
-            </div>
-
-            <hr style="border:0;border-top:1px solid #ccc;margin:15px 0;">
-            <div id="settings-colonne"></div>
-
-            <!-- ===== CONFIGURAZIONE VISTA CARD ===== -->
-            <hr style="border:0;border-top:1px solid #ccc;margin:15px 0;">
-            <div>
-                <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
-                    <label style="font-weight:bold;color:var(--dark-blue);font-size:14px;margin:0;">📋 Vista Card</label>
-                    <label class="checkbox-label" style="margin:0;">
-                        <input type="checkbox" id="set-card-attiva"> Attiva vista card per questo foglio
-                    </label>
-                </div>
-                <p style="font-size:11px;color:#666;margin:0 0 10px;">Se attiva, questo foglio si aprirà sempre in vista card.</p>
-                <div id="card-config-body">
-                    <div class="form-group">
-                        <label>Etichetta superiore (in alto a sinistra, arancione)</label>
-                        <select id="card-col-data" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:4px;"></select>
-                    </div>
-                    <div class="form-group">
-                        <label>Etichetta laterale (in alto a destra, grigio)</label>
-                        <select id="card-col-badge" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:4px;"></select>
-                    </div>
-                    <div class="form-group">
-                        <label>Colonne CORPO (nell'ordine, separate da " – ")</label>
-                        <div id="card-col-corpo-list"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ===== KANBAN VIEW ===== -->
-            <hr style="border:0;border-top:1px solid #ccc;margin:15px 0;">
-            <div>
-                <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
-                    <label style="font-weight:bold;color:var(--dark-blue);font-size:14px;margin:0;">🗂️ Vista Kanban</label>
-                    <label class="checkbox-label" style="margin:0;">
-                        <input type="checkbox" id="set-kanban-attiva"> Attiva vista kanban per questo foglio
-                    </label>
-                </div>
-                <p style="font-size:11px;color:#666;margin:0 0 10px;">Le card vengono raggruppate in colonne orizzontali in base al valore della colonna scelta.</p>
-                <div class="form-group">
-                    <label>Colonna di raggruppamento (intestazione colonne)</label>
-                    <select id="kanban-col-gruppo" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:4px;"></select>
-                </div>
-                <div class="form-group">
-                    <label>Ordine colonne kanban (una per riga, dall'alto in basso)</label>
-                    <textarea id="kanban-ordine" rows="8" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:4px;font-size:12px;font-family:inherit;box-sizing:border-box;" placeholder="Es:&#10;1) PREVENTIVI DA FARE&#10;2) DA AUTORIZZARE&#10;3) MATERIALE IN ARRIVO"></textarea>
-                    <p style="font-size:11px;color:#888;margin-top:4px;">Lascia vuoto per usare l'ordine naturale dei dati.</p>
-                </div>
-            </div>
-
-            <!-- ===== FORMATI DATA/ORA ===== -->
-            <hr style="border:0;border-top:1px solid #ccc;margin:15px 0;">
-            <div>
-                <label style="font-weight:bold;color:var(--dark-blue);font-size:14px;display:block;margin-bottom:6px;">📅 Formato Data/Ora per Colonna</label>
-                <p style="font-size:11px;color:#666;margin:0 0 10px;">Il form di modifica userà un calendario/orario se impostato.</p>
-                <div id="formati-colonne-list"></div>
-            </div>
-            <hr style="border:0;border-top:1px solid #ccc;margin:15px 0;">
-            <div>
-                <label style="font-weight:bold;color:var(--dark-blue);font-size:14px;display:block;margin-bottom:6px;">🎨 Regole di Formattazione</label>
-                <p style="font-size:11px;color:#666;margin:0 0 8px;">La prima regola che corrisponde vince. <b>Solo cella</b> colora solo il valore della colonna scelta, <b>Riga intera</b> colora tutta la riga.</p>
-                <div style="display:grid;grid-template-columns:1fr 110px 1fr 46px 76px;gap:4px;margin-bottom:4px;font-size:11px;color:#666;font-weight:bold;padding:0 2px;">
-                    <span>Colonna</span><span>Operatore</span><span>Valore</span><span>Col.</span><span>Target</span>
-                </div>
-                <div id="format-rules-list"></div>
-            </div>
-
-            <!-- ===== COLORI COLONNE ===== -->
-            <hr style="border:0;border-top:1px solid #ccc;margin:15px 0;">
-            <div>
-                <label style="font-weight:bold;color:var(--dark-blue);font-size:14px;display:block;margin-bottom:6px;">🟦 Colore Sfondo per Colonna</label>
-                <p style="font-size:11px;color:#666;margin:0 0 10px;">Assegna un colore tenue di sfondo a ogni colonna (intestazione + celle). Lascia bianco per nessun colore.</p>
-                <div id="colori-colonne-list"></div>
-            </div>
-
-            <div class="modal-buttons">
-                <button class="btn btn-cancel" onclick="chiudiModal('modal-settings')">Annulla</button>
-                <button class="btn btn-save" onclick="salvaImpostazioni()" id="btn-save-settings">Salva Impostazioni</button>
+            <div class="form-group">
+                <label>Ordine colonne kanban (una per riga)</label>
+                <textarea id="kanban-ordine" rows="6" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:var(--radius);font-size:12px;font-family:inherit;" placeholder="Es:&#10;DA FARE&#10;IN CORSO&#10;FATTO"></textarea>
             </div>
         </div>
-    </div>
 
-    <div id="modal-order" class="modal-overlay">
-        <div class="modal-content">
-            <h3 style="color: var(--primary-blue);">↕️ Ordina Menu Fogli</h3>
-            <p style="font-size: 13px;">Sposta i fogli per cambiare l'ordine nel menu laterale.</p>
-            <div id="order-list"></div>
-            <div class="modal-buttons">
-                <button class="btn btn-save" onclick="chiudiModal('modal-order')" style="width: 100%;">Fatto</button>
+        <hr>
+        <div>
+            <label style="font-weight:700;font-size:13px;display:block;margin-bottom:6px;">📅 Formato Data/Ora</label>
+            <div id="formati-colonne-list"></div>
+        </div>
+
+        <hr>
+        <div>
+            <label style="font-weight:700;font-size:13px;display:block;margin-bottom:6px;">🎨 Regole di Formattazione</label>
+            <p style="margin-bottom:8px;">La prima regola che corrisponde vince.</p>
+            <div style="display:grid;grid-template-columns:1fr 110px 1fr 46px 76px;gap:4px;margin-bottom:4px;font-size:10px;color:var(--ink-3);font-weight:700;padding:0 2px;">
+                <span>Colonna</span><span>Operatore</span><span>Valore</span><span>Col.</span><span>Target</span>
             </div>
+            <div id="format-rules-list"></div>
+        </div>
+
+        <hr>
+        <div>
+            <label style="font-weight:700;font-size:13px;display:block;margin-bottom:6px;">🟦 Colore Sfondo Colonna</label>
+            <div id="colori-colonne-list"></div>
+        </div>
+
+        <div class="modal-buttons">
+            <button class="btn btn-cancel" onclick="chiudiModal('modal-settings')">Annulla</button>
+            <button class="btn btn-save" onclick="salvaImpostazioni()" id="btn-save-settings">Salva</button>
         </div>
     </div>
+</div>
 
-    <script>
-        // ============================================================
-        // ⚙️ CONFIGURAZIONE — i valori vengono da config.js
-        // ============================================================
-        if (typeof BASEROW_URL === 'undefined' || typeof BASEROW_TOKEN === 'undefined') {
-            alert("Manca config.js o le variabili BASEROW_URL / BASEROW_TOKEN non sono definite!");
+<!-- ── MODAL ORDER ─────────────────────────────────────── -->
+<div id="modal-order" class="modal-overlay">
+    <div class="modal-content">
+        <h3>↕ Ordina Menu</h3>
+        <div id="order-list"></div>
+        <div class="modal-buttons">
+            <button class="btn btn-save" onclick="chiudiModal('modal-order')" style="width:100%;">Fatto</button>
+        </div>
+    </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     JAVASCRIPT — logica identica all'originale
+     Solo le funzioni di rendering HTML sono aggiornate
+     ════════════════════════════════════════════════════════ -->
+<script>
+    if (typeof BASEROW_URL === 'undefined' || typeof BASEROW_TOKEN === 'undefined') {
+        alert("Manca config.js o le variabili BASEROW_URL / BASEROW_TOKEN non sono definite!");
+    }
+
+    const BR_HDR = () => ({
+        "Authorization": "Token " + BASEROW_TOKEN,
+        "Content-Type":  "application/json"
+    });
+
+    const BR = {
+        async getFields(tableId) {
+            const r = await fetch(`${BASEROW_URL}/api/database/fields/table/${tableId}/`, { headers: BR_HDR() });
+            if (!r.ok) throw new Error(await r.text());
+            return r.json();
+        },
+        async getAll(tableId) {
+            let results = [], page = 1;
+            while (true) {
+                const r = await fetch(`${BASEROW_URL}/api/database/rows/table/${tableId}/?user_field_names=true&size=200&page=${page}`, { headers: BR_HDR() });
+                if (!r.ok) throw new Error(await r.text());
+                const data = await r.json();
+                results = results.concat(data.results);
+                if (!data.next) break;
+                page++;
+            }
+            return results;
+        },
+        async getTables(databaseId) {
+            const r = await fetch(`${BASEROW_URL}/api/database/tables/database/${databaseId}/`, { headers: BR_HDR() });
+            if (!r.ok) throw new Error(await r.text());
+            return r.json();
+        },
+        async post(tableId, body) {
+            const r = await fetch(`${BASEROW_URL}/api/database/rows/table/${tableId}/?user_field_names=true`, { method: "POST", headers: BR_HDR(), body: JSON.stringify(body) });
+            if (!r.ok) throw new Error(await r.text());
+            return r.json();
+        },
+        async patch(tableId, rowId, body) {
+            const r = await fetch(`${BASEROW_URL}/api/database/rows/table/${tableId}/${rowId}/?user_field_names=true`, { method: "PATCH", headers: BR_HDR(), body: JSON.stringify(body) });
+            if (!r.ok) throw new Error(await r.text());
+            return r.json();
+        },
+        async del(tableId, rowId) {
+            const r = await fetch(`${BASEROW_URL}/api/database/rows/table/${tableId}/${rowId}/`, { method: "DELETE", headers: BR_HDR() });
+            if (!r.ok) throw new Error(await r.text());
+            return true;
+        },
+        async delBatch(tableId, rowIds) {
+            const r = await fetch(`${BASEROW_URL}/api/database/rows/table/${tableId}/batch-delete/`, { method: "DELETE", headers: BR_HDR(), body: JSON.stringify({ items: rowIds }) });
+            if (!r.ok) throw new Error(await r.text());
+            return true;
         }
+    };
 
-        // ============================================================
-        // LAYER BASEROW
-        // ============================================================
-        const BR_HDR = () => ({
-            "Authorization": "Token " + BASEROW_TOKEN,
-            "Content-Type":  "application/json"
+    let TABLE_MAP = {};
+    const FOGLI_CON_DATE = ["SAT", "APP PNM", "FLOTTE"];
+    const NOME_COLONNA_DATA = "DATA e ORA";
+    let DATABASE = {};
+    let APP_CONFIG = {};
+    let FOGLIO_ATTIVO = "";
+    let RIGA_ORIGINALE_IN_MODIFICA = null;
+    let ORDINAMENTO = { colonna: null, direzione: 1 };
+    let autoSyncTimer = null;
+    let FORMULA_FIELDS = {};
+
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(e => console.log(e));
+
+    window.onload = function() {
+        const sessione = JSON.parse(localStorage.getItem('appSession'));
+        if (sessione && (new Date().getTime() - sessione.timestamp) / 3600000 < 24) {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('app-screen').style.display = 'flex';
+            sincronizza();
+        }
+    };
+
+    async function faiLogin() {
+        const pass = document.getElementById('pass-input').value.trim();
+        const btn  = document.getElementById('btn-login');
+        btn.innerText = "…"; btn.disabled = true;
+        if (pass === BASEROW_PASSWORD) {
+            localStorage.setItem('appSession', JSON.stringify({ timestamp: new Date().getTime() }));
+            window.location.reload();
+        } else {
+            alert("Password errata");
+            btn.innerText = "Accedi"; btn.disabled = false;
+        }
+    }
+
+    let _fontSize = parseInt(localStorage.getItem('tableFontSize') || '13');
+    function aggiornaFont() {
+        document.getElementById('tabella-container').style.setProperty('--table-font', _fontSize + 'px');
+        document.querySelectorAll('.card-title').forEach(el => el.style.fontSize = _fontSize + 'px');
+    }
+    function cambiaFont(delta) {
+        _fontSize = Math.min(22, Math.max(9, _fontSize + delta));
+        localStorage.setItem('tableFontSize', _fontSize);
+        aggiornaFont();
+    }
+    window.addEventListener('load', aggiornaFont);
+
+    let _vistaCard = false;
+    let _vistaKanban = false;
+
+    function parsaData(str) {
+        if (!str) return null;
+        const m = String(str).match(/^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}))?/);
+        if (m) return new Date(`${m[3]}-${m[2]}-${m[1]}T${m[4]||'00'}:${m[5]||'00'}`).getTime();
+        const d = new Date(str); return isNaN(d) ? null : d.getTime();
+    }
+
+    function valutaFormatRules(riga, config) {
+        const regole = config.formatRules || [];
+        for (const r of regole) {
+            if (!r.colonna || !r.colore) continue;
+            const valCella = String(riga[r.colonna] || '').trim();
+            let match = false;
+            switch (r.operatore) {
+                case 'uguale':          match = valCella === r.valore; break;
+                case 'non uguale':      match = valCella !== r.valore; break;
+                case 'contiene':        match = valCella.toLowerCase().includes((r.valore||'').toLowerCase()); break;
+                case 'inizia con':      match = valCella.toLowerCase().startsWith((r.valore||'').toLowerCase()); break;
+                case 'non vuoto':       match = valCella !== ''; break;
+                case 'vuoto':           match = valCella === ''; break;
+                case 'data > (dopo)': {
+                    const tsCella = parsaData(formattaValoreCella(valCella) || valCella);
+                    const tsConf  = parsaData(r.valore);
+                    match = tsCella !== null && tsConf !== null && tsCella > tsConf; break;
+                }
+                case 'data < (prima)': {
+                    const tsCella = parsaData(formattaValoreCella(valCella) || valCella);
+                    const tsConf  = parsaData(r.valore);
+                    match = tsCella !== null && tsConf !== null && tsCella < tsConf; break;
+                }
+                default: break;
+            }
+            if (match) return { colore: r.colore, target: r.target || 'riga', colonna: r.colonna };
+        }
+        return null;
+    }
+
+    /* ─── CARD RENDER ─────────────────────────────────── */
+    function renderCard(righe, config, colonneDaMostrare) {
+        const cardCfg = config.cardConfig || {};
+        const colData  = cardCfg.data  || "";
+        const colBadge = cardCfg.badge || "";
+        const colCorpo = cardCfg.corpo || [];
+
+        if (righe.length === 0) return `<p style="padding:32px 20px;color:var(--ink-3);">Nessuna riga trovata.</p>`;
+
+        let html = '<div class="cards-grid">';
+        righe.forEach(riga => {
+            const fmt = valutaFormatRules(riga, config);
+            const labelColor = fmt ? fmt.colore : 'var(--accent)';
+            const titleColor = (fmt && fmt.target !== 'cella') ? fmt.colore : 'var(--ink)';
+            const titleWeight = fmt ? '600' : '500';
+
+            const valData  = colData  ? formattaValoreCella(riga[colData])  : '';
+            const valBadge = colBadge ? formattaValoreCella(riga[colBadge]) : '';
+            const valCorpo = colCorpo.map(c => formattaValoreCella(riga[c])).filter(Boolean).join(' · ');
+            const rigaEnc  = encodeURIComponent(JSON.stringify(riga));
+
+            html += `<div class="card" onclick="apriForm('${rigaEnc}')">
+                <div class="card-top">
+                    <div class="card-label" style="color:${labelColor};">${valData}</div>
+                    ${valBadge ? `<div class="card-badge-right">${valBadge}</div>` : ''}
+                </div>
+                <div class="card-title" style="color:${titleColor};font-weight:${titleWeight};">${valCorpo}</div>`;
+
+            if (config.puoModificare || config.puoEliminare) {
+                html += `<div class="card-actions" onclick="event.stopPropagation()">
+                    ${config.puoModificare ? `<button class="card-action-btn" onclick="apriForm('${rigaEnc}')" title="Modifica">✏️</button>` : ''}
+                    ${config.puoEliminare  ? `<button class="card-action-btn" onclick="eliminaRiga(${riga._rowIndex})" title="Elimina">🗑️</button>` : ''}
+                </div>`;
+            }
+            html += `</div>`;
         });
+        html += '</div>';
+        setTimeout(aggiornaFont, 0);
+        return html;
+    }
 
-        const BR = {
-            // Legge i tipi di campo di una tabella (serve per escludere i formula fields)
-            async getFields(tableId) {
-                const r = await fetch(
-                    `${BASEROW_URL}/api/database/fields/table/${tableId}/`,
-                    { headers: BR_HDR() }
-                );
-                if (!r.ok) throw new Error(await r.text());
-                return r.json();
-            },
-            // Legge tutte le righe di una tabella (gestisce paginazione automatica)
-            async getAll(tableId) {
-                let results = [];
-                let page = 1;
-                while (true) {
-                    const r = await fetch(
-                        `${BASEROW_URL}/api/database/rows/table/${tableId}/?user_field_names=true&size=200&page=${page}`,
-                        { headers: BR_HDR() }
-                    );
-                    if (!r.ok) throw new Error(await r.text());
-                    const data = await r.json();
-                    results = results.concat(data.results);
-                    if (!data.next) break;
-                    page++;
+    /* ─── DRAWER MOBILE ───────────────────────────────── */
+    function apriDrawer() {
+        document.getElementById('drawer').classList.add('open');
+        document.getElementById('drawer-overlay').classList.add('open');
+    }
+    function chiudiDrawer() {
+        document.getElementById('drawer').classList.remove('open');
+        document.getElementById('drawer-overlay').classList.remove('open');
+    }
+
+    /* ─── SYNC ────────────────────────────────────────── */
+    async function sincronizza() {
+        const sessione = JSON.parse(localStorage.getItem('appSession'));
+        if (!sessione) return;
+        const btnSync = document.getElementById('btn-sync');
+        btnSync.innerText = "…";
+        try {
+            const tableIdConfig = BASEROW_TABLES['_CONFIG'];
+            if (tableIdConfig) {
+                try {
+                    const configRighe = await BR.getAll(tableIdConfig);
+                    if (configRighe.length > 0 && configRighe[0].valore) {
+                        APP_CONFIG = JSON.parse(configRighe[0].valore);
+                        localStorage.setItem('appConfig', JSON.stringify(APP_CONFIG));
+                    } else {
+                        APP_CONFIG = JSON.parse(localStorage.getItem('appConfig') || '{}');
+                    }
+                } catch(e) {
+                    APP_CONFIG = JSON.parse(localStorage.getItem('appConfig') || '{}');
                 }
-                return results;
-            },
-            // Lista tabelle di un database
-            async getTables(databaseId) {
-                const r = await fetch(`${BASEROW_URL}/api/database/tables/database/${databaseId}/`, { headers: BR_HDR() });
-                if (!r.ok) throw new Error(await r.text());
-                return r.json();
-            },
-            // Crea riga
-            async post(tableId, body) {
-                const r = await fetch(
-                    `${BASEROW_URL}/api/database/rows/table/${tableId}/?user_field_names=true`,
-                    { method: "POST", headers: BR_HDR(), body: JSON.stringify(body) }
-                );
-                if (!r.ok) throw new Error(await r.text());
-                return r.json();
-            },
-            // Modifica riga
-            async patch(tableId, rowId, body) {
-                const r = await fetch(
-                    `${BASEROW_URL}/api/database/rows/table/${tableId}/${rowId}/?user_field_names=true`,
-                    { method: "PATCH", headers: BR_HDR(), body: JSON.stringify(body) }
-                );
-                if (!r.ok) throw new Error(await r.text());
-                return r.json();
-            },
-            // Elimina riga singola
-            async del(tableId, rowId) {
-                const r = await fetch(
-                    `${BASEROW_URL}/api/database/rows/table/${tableId}/${rowId}/`,
-                    { method: "DELETE", headers: BR_HDR() }
-                );
-                if (!r.ok) throw new Error(await r.text());
-                return true;
-            },
-            // Elimina più righe insieme
-            async delBatch(tableId, rowIds) {
-                const r = await fetch(
-                    `${BASEROW_URL}/api/database/rows/table/${tableId}/batch-delete/`,
-                    { method: "DELETE", headers: BR_HDR(), body: JSON.stringify({ items: rowIds }) }
-                );
-                if (!r.ok) throw new Error(await r.text());
-                return true;
-            }
-        };
-
-        // Mappa nomeFoglio → tableId Baserow (popolata al sync)
-        let TABLE_MAP = {};  // { "SAT": 12345, "SCHEDE": 12346, ... }
-
-        // ============================================================
-        // CONFIGURAZIONE APP
-        // ============================================================
-        const FOGLI_CON_DATE = ["SAT", "APP PNM", "FLOTTE"]; 
-        const NOME_COLONNA_DATA = "DATA e ORA"; 
-
-        let DATABASE = {};
-        let APP_CONFIG = {};
-        let FOGLIO_ATTIVO = "";
-        let RIGA_ORIGINALE_IN_MODIFICA = null;
-        let ORDINAMENTO = { colonna: null, direzione: 1 }; 
-        let autoSyncTimer = null;
-
-        if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(e => console.log(e));
-
-        window.onload = function() {
-            const sessione = JSON.parse(localStorage.getItem('appSession'));
-            if (sessione && (new Date().getTime() - sessione.timestamp) / 3600000 < 24) {
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('app-screen').style.display = 'flex';
-                sincronizza();
-            }
-        };
-
-        // ============================================================
-        // LOGIN — password definita in config.js come BASEROW_PASSWORD
-        // ============================================================
-        async function faiLogin() {
-            const pass = document.getElementById('pass-input').value.trim();
-            const btn  = document.getElementById('btn-login');
-            btn.innerHTML = "⏳ Accesso..."; btn.disabled = true;
-            if (pass === BASEROW_PASSWORD) {
-                localStorage.setItem('appSession', JSON.stringify({ timestamp: new Date().getTime() }));
-                window.location.reload();
             } else {
-                alert("Password errata");
-                btn.innerHTML = "Entra"; btn.disabled = false;
+                APP_CONFIG = JSON.parse(localStorage.getItem('appConfig') || '{}');
             }
-        }
 
-        // ============================================================
-        // FONT SIZE GLOBALE TABELLA
-        // ============================================================
-        let _fontSize = parseInt(localStorage.getItem('tableFontSize') || '13');
-        function aggiornaFont() {
-            const fs = _fontSize + 'px';
-            document.getElementById('tabella-container').style.setProperty('--table-font', fs);
-            // applica anche alle card
-            document.querySelectorAll('.card-body').forEach(el => el.style.fontSize = fs);
-            document.querySelectorAll('.card-data').forEach(el => el.style.fontSize = (Math.max(12, _fontSize + 1)) + 'px');
-        }
-        function cambiaFont(delta) {
-            _fontSize = Math.min(22, Math.max(9, _fontSize + delta));
-            localStorage.setItem('tableFontSize', _fontSize);
-            aggiornaFont();
-        }
-        window.addEventListener('load', aggiornaFont);
+            if (!BASEROW_TABLES || Object.keys(BASEROW_TABLES).length === 0) {
+                alert("Nessuna tabella configurata in config.js");
+                btnSync.innerText = "↻ Sync";
+                return;
+            }
 
-        // Vista card: gestita dalle impostazioni foglio (vistaCardAttiva)
-        let _vistaCard = false;
-        let _vistaKanban = false;
-
-        // Converte una stringa data (dd/mm/yyyy HH:MM o ISO) in timestamp per confronto
-        function parsaData(str) {
-            if (!str) return null;
-            // dd/mm/yyyy o dd/mm/yyyy HH:MM
-            const m = String(str).match(/^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}))?/);
-            if (m) return new Date(`${m[3]}-${m[2]}-${m[1]}T${m[4]||'00'}:${m[5]||'00'}`).getTime();
-            // ISO
-            const d = new Date(str); return isNaN(d) ? null : d.getTime();
-        }
-
-        // Valuta le format rules configurate. Restituisce { colore, target } o null
-        function valutaFormatRules(riga, config) {
-            const regole = config.formatRules || [];
-            for (const r of regole) {
-                if (!r.colonna || !r.colore) continue;
-                const valCella = String(riga[r.colonna] || '').trim();
-                let match = false;
-                switch (r.operatore) {
-                    case 'uguale':          match = valCella === r.valore; break;
-                    case 'non uguale':      match = valCella !== r.valore; break;
-                    case 'contiene':        match = valCella.toLowerCase().includes((r.valore||'').toLowerCase()); break;
-                    case 'inizia con':      match = valCella.toLowerCase().startsWith((r.valore||'').toLowerCase()); break;
-                    case 'non vuoto':       match = valCella !== ''; break;
-                    case 'vuoto':           match = valCella === ''; break;
-                    case 'data > (dopo)': {
-                        const tsCella = parsaData(formattaValoreCella(valCella) || valCella);
-                        const tsConf  = parsaData(r.valore);
-                        match = tsCella !== null && tsConf !== null && tsCella > tsConf; break;
-                    }
-                    case 'data < (prima)': {
-                        const tsCella = parsaData(formattaValoreCella(valCella) || valCella);
-                        const tsConf  = parsaData(r.valore);
-                        match = tsCella !== null && tsConf !== null && tsCella < tsConf; break;
-                    }
-                    default: break;
+            const db = {};
+            await Promise.all(Object.entries(BASEROW_TABLES).map(async ([nomeFoglio, tableId]) => {
+                try {
+                    const [rows, fields] = await Promise.all([
+                        BR.getAll(tableId),
+                        BR.getFields(tableId).catch(() => [])
+                    ]);
+                    const tipiReadOnly = new Set(['formula','lookup','count','rollup','link_row','created_on','last_modified','created_by','last_modified_by','autonumber','uuid','multiple_collaborators']);
+                    FORMULA_FIELDS[nomeFoglio] = new Set(fields.filter(f => tipiReadOnly.has(f.type)).map(f => f.name));
+                    const campiDaEscludere = new Set(['id', 'order']);
+                    const intestazioni = rows.length > 0 ? Object.keys(rows[0]).filter(k => !campiDaEscludere.has(k)) : [];
+                    db[nomeFoglio] = {
+                        intestazioni,
+                        righe: rows.map(row => {
+                            const riga = { _rowIndex: row.id };
+                            intestazioni.forEach(col => { riga[col] = row[col] ?? ''; });
+                            return riga;
+                        })
+                    };
+                    TABLE_MAP[nomeFoglio] = tableId;
+                } catch(e) {
+                    console.warn(`Errore caricamento ${nomeFoglio}:`, e.message);
+                    db[nomeFoglio] = { intestazioni: [], righe: [] };
+                    FORMULA_FIELDS[nomeFoglio] = new Set();
                 }
-                if (match) return { colore: r.colore, target: r.target || 'riga', colonna: r.colonna };
-            }
-            return null;
+            }));
+
+            DATABASE = db;
+            renderMenu();
+            if (FOGLIO_ATTIVO && DATABASE[FOGLIO_ATTIVO]) caricaDati(FOGLIO_ATTIVO);
+            document.getElementById('status-message').style.display = "none";
+            const ora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            btnSync.innerText = `↻ ${ora}`;
+            if (autoSyncTimer) clearTimeout(autoSyncTimer);
+            autoSyncTimer = setTimeout(sincronizza, 30 * 60 * 1000);
+        } catch(e) {
+            btnSync.innerText = "↻ Errore";
+            console.error("Sync error:", e);
+            alert("Errore sync: " + e.message);
+        }
+    }
+
+    /* ─── MENU ────────────────────────────────────────── */
+    function getNomeDinamico(nomeFoglio) {
+        let config = APP_CONFIG[nomeFoglio] || {};
+        let template = config.displayName;
+        if (!template) return nomeFoglio;
+        let righe = DATABASE[nomeFoglio].righe || [];
+        template = template.replace(/\{\{COUNT\}\}/g, righe.length);
+        template = template.replace(/\{\{COUNT:(.*?)=(.*?)\}\}/g, (match, col, val) => {
+            return righe.filter(r => String(r[col]).trim() == String(val).trim()).length;
+        });
+        return template;
+    }
+
+    function renderMenu() {
+        const container = document.getElementById('buttons-container');
+        const drawerContainer = document.getElementById('drawer-buttons');
+        container.innerHTML = "";
+        drawerContainer.innerHTML = "";
+        let fogliDisponibili = Object.keys(DATABASE);
+        let fogliOrdinati = (APP_CONFIG._sheetOrder || []).filter(f => fogliDisponibili.includes(f));
+        fogliDisponibili.forEach(f => { if (!fogliOrdinati.includes(f)) fogliOrdinati.push(f); });
+        APP_CONFIG._sheetOrder = fogliOrdinati;
+        fogliOrdinati.forEach(nome => {
+            const btn = document.createElement('button');
+            btn.innerText = getNomeDinamico(nome);
+            btn.setAttribute('data-foglio', nome);
+            btn.onclick = () => caricaDati(nome);
+            if (nome === FOGLIO_ATTIVO) btn.classList.add('active');
+            container.appendChild(btn);
+            const btnD = document.createElement('button');
+            btnD.innerText = getNomeDinamico(nome);
+            btnD.setAttribute('data-foglio-drawer', nome);
+            btnD.onclick = () => { caricaDati(nome); chiudiDrawer(); };
+            if (nome === FOGLIO_ATTIVO) btnD.classList.add('active');
+            drawerContainer.appendChild(btnD);
+        });
+    }
+
+    /* ─── ORDINAMENTO MENU ────────────────────────────── */
+    function apriOrdinamento() { aggiornaListaOrdinamento(); document.getElementById('modal-order').style.display = 'flex'; }
+
+    function aggiornaListaOrdinamento() {
+        let html = '';
+        APP_CONFIG._sheetOrder.forEach((foglio, index) => {
+            html += `<div class="order-item"><span>${foglio}</span><div class="order-btns">
+                <button onclick="spostaFoglio(${index}, -1)" ${index === 0 ? 'disabled' : ''}>⬆</button>
+                <button onclick="spostaFoglio(${index}, 1)" ${index === APP_CONFIG._sheetOrder.length - 1 ? 'disabled' : ''}>⬇</button>
+            </div></div>`;
+        });
+        document.getElementById('order-list').innerHTML = html;
+    }
+
+    async function spostaFoglio(index, direzione) {
+        let arr = APP_CONFIG._sheetOrder;
+        let temp = arr[index]; arr[index] = arr[index + direzione]; arr[index + direzione] = temp;
+        aggiornaListaOrdinamento(); renderMenu();
+        await salvaConfig();
+    }
+
+    /* ─── CARICA DATI ─────────────────────────────────── */
+    function caricaDati(nomeFoglio) {
+        FOGLIO_ATTIVO = nomeFoglio;
+        document.getElementById('titolo-foglio').innerText = getNomeDinamico(nomeFoglio);
+        document.querySelectorAll('#sidebar button[data-foglio]').forEach(b => {
+            b.classList.remove('active');
+            if (b.getAttribute('data-foglio') === nomeFoglio) b.classList.add('active');
+        });
+        const config = APP_CONFIG[nomeFoglio] || { puoAggiungere: false, puoModificare: false, colonneVisibili: [] };
+        document.getElementById('btn-add-record').style.display = config.puoAggiungere ? "block" : "none";
+        const intestazioni = DATABASE[nomeFoglio].intestazioni;
+        if (intestazioni.length === 0) {
+            document.getElementById('toolbar').style.display = "none";
+            document.getElementById('tabella-container').innerHTML = `<p style="padding:32px 20px;color:var(--ink-3);">Foglio vuoto.</p>`;
+            return;
+        }
+        let colonneDaMostrare = intestazioni;
+        if (config.colonneVisibili && config.colonneVisibili.length > 0)
+            colonneDaMostrare = intestazioni.filter(h => config.colonneVisibili.includes(h));
+        document.getElementById('toolbar').style.display = "flex";
+        document.getElementById('search-input').value = "";
+        const sortSelect = document.getElementById('sort-column');
+        sortSelect.innerHTML = `<option value="">– Ordina –</option>`;
+        colonneDaMostrare.forEach(col => { sortSelect.innerHTML += `<option value="${col}">${col}</option>`; });
+
+        if (config.sortColonna && colonneDaMostrare.includes(config.sortColonna)) {
+            ORDINAMENTO.colonna = config.sortColonna;
+            ORDINAMENTO.direzione = config.sortDirezione || 1;
+            sortSelect.value = config.sortColonna;
+            document.getElementById('btn-sort-dir').innerText = ORDINAMENTO.direzione === 1 ? "⬇ A–Z" : "⬆ Z–A";
+        } else if (FOGLI_CON_DATE.includes(nomeFoglio) && intestazioni.includes(NOME_COLONNA_DATA)) {
+            ORDINAMENTO.colonna = NOME_COLONNA_DATA; ORDINAMENTO.direzione = 1;
+            document.getElementById('btn-sort-dir').innerText = "⬆ Z–A"; sortSelect.value = NOME_COLONNA_DATA;
+        } else {
+            ORDINAMENTO.colonna = null; ORDINAMENTO.direzione = 1;
+            document.getElementById('btn-sort-dir').innerText = "⬇ A–Z"; sortSelect.value = "";
+        }
+        _vistaCard = !!(config.vistaCardAttiva && config.cardConfig && config.cardConfig.data);
+        _vistaKanban = !!(config.vistaKanbanAttiva && config.kanbanGruppo);
+        renderTabella();
+    }
+
+    function convertiDataItaliana(dataStr) {
+        if (!dataStr) return 0;
+        const mesi = {"gennaio":0,"febbraio":1,"marzo":2,"aprile":3,"maggio":4,"giugno":5,"luglio":6,"agosto":7,"settembre":8,"ottobre":9,"novembre":10,"dicembre":11};
+        const parts = dataStr.toLowerCase().split(' ');
+        let meseIndex = -1, giorno = 1, timeStr = "00:00";
+        for (let i = 0; i < parts.length; i++) {
+            if (mesi[parts[i]] !== undefined) { meseIndex = mesi[parts[i]]; giorno = parseInt(parts[i-1]) || 1; }
+            if (parts[i].includes(':')) timeStr = parts[i];
+        }
+        if (meseIndex === -1) return 0;
+        const tParts = timeStr.split(':');
+        return new Date(new Date().getFullYear(), meseIndex, giorno, parseInt(tParts[0]) || 0, parseInt(tParts[1]) || 0).getTime();
+    }
+
+    function cambiaOrdinamento() { ORDINAMENTO.colonna = document.getElementById('sort-column').value || null; renderTabella(); }
+    function cambiaDirezioneOrdinamento() { ORDINAMENTO.direzione *= -1; document.getElementById('btn-sort-dir').innerText = ORDINAMENTO.direzione === 1 ? "⬇ A–Z" : "⬆ Z–A"; renderTabella(); }
+
+    function formattaValoreCella(val) {
+        if (!val) return "";
+        const s = String(val);
+        const isoMatch = s.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
+        if (isoMatch) return `${isoMatch[3]}/${isoMatch[2]}/${isoMatch[1]} ${isoMatch[4]}:${isoMatch[5]}`;
+        return s;
+    }
+
+    function formattaOrario(val) {
+        if (!val) return "";
+        const s = String(val);
+        if (s.includes('T') && s.includes('-')) {
+            const d = new Date(s);
+            if (!isNaN(d)) return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+        }
+        const m1899 = s.match(/1899[^\d]*(\d{1,2}):(\d{2})/);
+        if (m1899) return `${m1899[1].padStart(2,'0')}:${m1899[2]}`;
+        const mOra = s.match(/^(\d{1,2}):(\d{2})/);
+        if (mOra) return `${mOra[1].padStart(2,'0')}:${mOra[2]}`;
+        return s;
+    }
+
+    function convertiDataAssoluta(val) {
+        if (!val) return 0;
+        const s = String(val);
+        const iso = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+        if (iso) return new Date(iso[1], iso[2]-1, iso[3]).getTime();
+        return convertiDataItaliana(s);
+    }
+
+    function formattaDataGruppo(val) {
+        if (!val) return "";
+        const s = String(val);
+        const giorni = ["Domenica","Lunedì","Martedì","Mercoledì","Giovedì","Venerdì","Sabato"];
+        const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
+        const iso = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+        if (iso) {
+            const d = new Date(iso[1], iso[2]-1, iso[3]);
+            return `${giorni[d.getDay()]} ${d.getDate()} ${mesi[d.getMonth()]}`;
+        }
+        return s.replace(/^\w/, c => c.toUpperCase());
+    }
+
+    /* ─── RENDER TABELLA ──────────────────────────────── */
+    function renderTabella() {
+        const config = APP_CONFIG[FOGLIO_ATTIVO] || { puoAggiungere: false, puoModificare: false, colonneVisibili: [] };
+        const intestazioni = DATABASE[FOGLIO_ATTIVO].intestazioni;
+        const isCalendario = FOGLIO_ATTIVO === 'CALENDARIO';
+        const COL_DATA_CAL = intestazioni[0];
+        const COL_ORA_CAL  = intestazioni[1];
+
+        let righe = [...DATABASE[FOGLIO_ATTIVO].righe];
+        let colonneDaMostrare = intestazioni;
+        if (config.colonneVisibili && config.colonneVisibili.length > 0)
+            colonneDaMostrare = intestazioni.filter(h => config.colonneVisibili.includes(h));
+
+        let colonneTabella = colonneDaMostrare;
+        if (isCalendario) colonneTabella = colonneDaMostrare.filter(c => c !== COL_DATA_CAL && c !== COL_ORA_CAL);
+
+        const query = document.getElementById('search-input').value.toLowerCase();
+        if (query) righe = righe.filter(riga => colonneDaMostrare.some(col => String(riga[col] || "").toLowerCase().includes(query)));
+
+        if (ORDINAMENTO.colonna) {
+            const col = ORDINAMENTO.colonna, dir = ORDINAMENTO.direzione;
+            righe.sort((a, b) => {
+                let valA = String(a[col] || ""), valB = String(b[col] || "");
+                if (col === NOME_COLONNA_DATA || col === COL_DATA_CAL) {
+                    let tA = convertiDataAssoluta(valA), tB = convertiDataAssoluta(valB);
+                    if (tA !== 0 && tB !== 0) return (tA - tB) * dir;
+                }
+                if (!isNaN(valA) && !isNaN(valB) && valA !== "" && valB !== "") return (Number(valA) - Number(valB)) * dir;
+                return valA.toLowerCase().localeCompare(valB.toLowerCase()) * dir;
+            });
+        }
+        if (isCalendario && !ORDINAMENTO.colonna) {
+            righe.sort((a, b) => {
+                let tA = convertiDataAssoluta(String(a[COL_DATA_CAL] || ""));
+                let tB = convertiDataAssoluta(String(b[COL_DATA_CAL] || ""));
+                if (tA !== tB) return tA - tB;
+                return formattaOrario(String(a[COL_ORA_CAL]||"")).localeCompare(formattaOrario(String(b[COL_ORA_CAL]||"")));
+            });
         }
 
-        function renderCard(righe, config, colonneDaMostrare) {
-            const cardCfg = config.cardConfig || {};
-            const colData  = cardCfg.data  || "";
-            const colBadge = cardCfg.badge || "";
-            const colCorpo = cardCfg.corpo || [];
+        if (_vistaKanban && config.kanbanGruppo) {
+            document.getElementById('tabella-container').innerHTML = renderKanban(righe, config, colonneDaMostrare);
+            return;
+        }
+        if (_vistaCard && config.cardConfig && config.cardConfig.data) {
+            document.getElementById('tabella-container').innerHTML = righe.length === 0
+                ? `<p style="padding:32px;color:var(--ink-3);">Nessuna riga trovata.</p>`
+                : renderCard(righe, config, colonneDaMostrare);
+            return;
+        }
 
-            if (righe.length === 0) return "<p>Nessuna riga trovata.</p>";
+        let html = '';
+        if (isCalendario) {
+            /* ── Calendario: lista raggruppata per data ── */
+            html = '<div>';
+            let ultimaData = null;
+            righe.forEach(riga => {
+                const dataRiga = String(riga[COL_DATA_CAL] || "");
+                if (dataRiga !== ultimaData) {
+                    ultimaData = dataRiga;
+                    html += `<div class="cal-date-header">${formattaDataGruppo(dataRiga)}</div>`;
+                }
+                const fmt = valutaFormatRules(riga, config);
+                const rowColor = (fmt && fmt.target !== 'cella') ? fmt.colore : null;
+                const calBodyParts = colonneTabella.map(col => {
+                    const val = formattaValoreCella(riga[col]);
+                    if (!val) return '';
+                    const isCellaTarget = fmt && fmt.target === 'cella' && fmt.colonna === col;
+                    if (isCellaTarget) return `<span style="color:${fmt.colore};font-weight:700;">${val}</span>`;
+                    return val;
+                }).filter(Boolean).join(' · ');
+                const timeStyle = rowColor ? `color:${rowColor};font-weight:700;` : '';
+                const bodyStyle = rowColor ? `color:${rowColor};font-weight:600;` : '';
+                html += `<div class="cal-row">
+                    <div class="cal-time" style="${timeStyle}">${formattaOrario(riga[COL_ORA_CAL])}</div>
+                    <div class="cal-body" style="${bodyStyle}">${calBodyParts}</div>
+                    <div class="cal-actions">
+                        ${config.puoModificare ? `<button class="tbl-btn" onclick="apriForm('${encodeURIComponent(JSON.stringify(riga))}')" title="Modifica">✏️</button>` : ''}
+                        ${config.puoEliminare  ? `<button class="tbl-btn" onclick="eliminaRiga(${riga._rowIndex})" title="Elimina">🗑️</button>` : ''}
+                    </div>
+                </div>`;
+            });
+            html += '</div>';
+        } else {
+            /* ── Tabella normale ── */
+            html = '<table><thead><tr>';
+            const coloriCol = config.coloriColonne || {};
+            if (config.puoEliminare) html += `<th style="width:32px;"><input type="checkbox" id="chk-all" onclick="selezionaTutti(this)"></th>`;
+            colonneTabella.forEach(col => { html += `<th>${col}</th>`; });
+            if (config.puoModificare || config.puoEliminare) html += `<th style="width:64px;"></th>`;
+            html += '</tr></thead><tbody>';
 
-            let html = '<div class="cards-grid">';
             righe.forEach(riga => {
                 const fmt = valutaFormatRules(riga, config);
-                const borderColor = fmt ? fmt.colore : 'var(--primary-blue)';
+                const rowColor    = (fmt && fmt.target !== 'cella') ? fmt.colore : null;
+                const cellaTarget = (fmt && fmt.target === 'cella') ? fmt.colonna : null;
+                const chk = config.puoEliminare ? `<td class="sel-td"><input type="checkbox" class="row-chk" data-idx="${riga._rowIndex}"></td>` : '';
+                html += `<tr>` + chk;
+                colonneTabella.forEach(col => {
+                    const cellBg = coloriCol[col] || '';
+                    let cellStyle = '';
+                    if (col === cellaTarget) {
+                        cellStyle = `color:${fmt.colore};font-weight:700;${cellBg ? `background:color-mix(in srgb,${cellBg} 25%,white 75%);` : ''}`;
+                    } else if (rowColor) {
+                        cellStyle = `color:${rowColor};font-weight:600;${cellBg ? `background:color-mix(in srgb,${cellBg} 25%,white 75%);` : ''}`;
+                    } else if (cellBg) {
+                        cellStyle = `background:color-mix(in srgb,${cellBg} 12%,white 88%);`;
+                    }
+                    html += `<td${cellStyle ? ` style="${cellStyle}"` : ''}>${formattaValoreCella(riga[col])}</td>`;
+                });
+                if (config.puoModificare || config.puoEliminare) {
+                    html += `<td style="white-space:nowrap;text-align:right;">
+                        ${config.puoModificare ? `<button class="tbl-btn" onclick="apriForm('${encodeURIComponent(JSON.stringify(riga))}')" title="Modifica">✏️</button>` : ''}
+                        ${config.puoEliminare  ? `<button class="tbl-btn" onclick="eliminaRiga(${riga._rowIndex})" title="Elimina">🗑️</button>` : ''}
+                    </td>`;
+                }
+                html += '</tr>';
+            });
+            html += '</tbody></table>';
+        }
+        document.getElementById('tabella-container').innerHTML = righe.length === 0
+            ? `<p style="padding:32px;color:var(--ink-3);">Nessuna riga trovata.</p>`
+            : html;
+    }
+
+    function selezionaTutti(chk) {
+        document.querySelectorAll('.row-chk').forEach(c => {
+            c.checked = chk.checked;
+            c.closest('tr').classList.toggle('selected-row', chk.checked);
+        });
+        aggiornaBarraMulti();
+    }
+    function aggiornaBarraMulti() {
+        const selezionate = document.querySelectorAll('.row-chk:checked');
+        const bar = document.getElementById('multi-delete-bar');
+        bar.style.display = selezionate.length > 0 ? 'flex' : 'none';
+        document.getElementById('multi-count-label').innerText = `${selezionate.length} rig${selezionate.length===1?'a':'he'}`;
+    }
+    function deselezionaTutti() {
+        document.querySelectorAll('.row-chk').forEach(c => { c.checked = false; c.closest('tr').classList.remove('selected-row'); });
+        const all = document.getElementById('chk-all'); if (all) all.checked = false;
+        aggiornaBarraMulti();
+    }
+    async function eliminaSelezionate() {
+        const indici = Array.from(document.querySelectorAll('.row-chk:checked')).map(c => parseInt(c.dataset.idx));
+        if (!indici.length) return;
+        if (!confirm(`Eliminare ${indici.length} rig${indici.length===1?'a':'he'}?`)) return;
+        const tableId = TABLE_MAP[FOGLIO_ATTIVO];
+        if (!tableId) { alert("Tabella non trovata."); return; }
+        try {
+            for (const idx of indici) {
+                const r = await fetch(`${BASEROW_URL}/api/database/rows/table/${tableId}/${idx}/`, { method: "DELETE", headers: { "Authorization": "Token " + BASEROW_TOKEN } });
+                if (!r.ok) { alert(`Errore eliminazione riga ${idx} (HTTP ${r.status})`); return; }
+            }
+            deselezionaTutti(); sincronizza();
+        } catch(e) { alert("Errore: " + e.message); }
+    }
+
+    document.addEventListener('change', e => {
+        if (e.target.classList.contains('row-chk')) {
+            e.target.closest('tr').classList.toggle('selected-row', e.target.checked);
+            aggiornaBarraMulti();
+        }
+    });
+
+    /* ─── KANBAN RENDER ───────────────────────────────── */
+    function renderKanban(righe, config, colonneDaMostrare) {
+        const cardCfg   = config.cardConfig || {};
+        const colGruppo = config.kanbanGruppo;
+        const colData   = cardCfg.data  || "";
+        const colBadge  = cardCfg.badge || "";
+        const colCorpo  = cardCfg.corpo || [];
+        const ordine    = config.kanbanOrdine || [];
+
+        if (righe.length === 0) return `<p style="padding:32px;color:var(--ink-3);">Nessuna riga trovata.</p>`;
+
+        const gruppi = {};
+        const trovati = new Set();
+        righe.forEach(riga => {
+            const g = String(riga[colGruppo] || '—');
+            if (!gruppi[g]) gruppi[g] = [];
+            gruppi[g].push(riga);
+            trovati.add(g);
+        });
+        const ordinati = [...ordine.filter(g => trovati.has(g)), ...Array.from(trovati).filter(g => !ordine.includes(g))];
+
+        let html = '<div class="kanban-board">';
+        ordinati.forEach(g => {
+            html += `<div class="kanban-col">
+                <div class="kanban-col-header">
+                    <span>${g}</span>
+                    <span class="kanban-col-count">${gruppi[g].length}</span>
+                </div>
+                <div class="kanban-col-body">`;
+
+            gruppi[g].forEach(riga => {
+                const fmt         = valutaFormatRules(riga, config);
+                const labelColor  = fmt ? fmt.colore : 'var(--accent)';
+                const titleColor  = (fmt && fmt.target !== 'cella') ? fmt.colore : 'var(--ink)';
+                const titleWeight = fmt ? '600' : '500';
+                const fmtCella    = (fmt && fmt.target === 'cella') ? fmt : null;
 
                 const valData  = colData  ? formattaValoreCella(riga[colData])  : '';
                 const valBadge = colBadge ? formattaValoreCella(riga[colBadge]) : '';
-                const valCorpo = colCorpo.map(c => formattaValoreCella(riga[c])).filter(Boolean).join(' – ');
                 const rigaEnc  = encodeURIComponent(JSON.stringify(riga));
 
-                const bodyColor = fmt ? fmt.colore : '#2c3e50';
+                html += `<div class="kanban-card" onclick="apriForm('${rigaEnc}')">
+                    <div class="kanban-card-label" style="color:${labelColor};">${valData}</div>`;
 
-                html += `<div class="card" style="border-left-color:${borderColor};" onclick="apriForm('${rigaEnc}')">
-                    <div class="card-top">
-                        <div class="card-data">${valData}</div>
-                        <div class="card-badge">${valBadge}</div>
-                    </div>
-                    <div class="card-body" style="color:${bodyColor}; font-weight:${fmt ? '600' : 'normal'};">${valCorpo}</div>`;
+                if (colCorpo.length > 0) {
+                    html += `<div class="kanban-card-body">`;
+                    colCorpo.forEach((col, i) => {
+                        const val = formattaValoreCella(riga[col]);
+                        if (!val) return;
+                        const isCellaTarget = fmtCella && fmtCella.colonna === col;
+                        const style = isCellaTarget ? `color:${fmtCella.colore};font-weight:700;` : `color:${i===0?titleColor:'var(--ink-2)'};font-weight:${i===0?titleWeight:'400'};`;
+                        html += `<div class="kanban-card-body-line" style="${style}">${val}</div>`;
+                    });
+                    html += `</div>`;
+                }
+
+                if (valBadge) html += `<div class="kanban-card-meta">${valBadge}</div>`;
 
                 if (config.puoModificare || config.puoEliminare) {
-                    html += `<div class="card-actions" onclick="event.stopPropagation()">
-                        ${config.puoModificare ? `<button class="card-btn-edit" onclick="apriForm('${rigaEnc}')">✏️</button>` : ''}
-                        ${config.puoEliminare  ? `<button class="card-btn-delete" onclick="eliminaRiga(${riga._rowIndex})">🗑️</button>` : ''}
+                    html += `<div class="kanban-card-actions" onclick="event.stopPropagation()">
+                        ${config.puoModificare ? `<button onclick="apriForm('${rigaEnc}')" title="Modifica">✏️</button>` : ''}
+                        ${config.puoEliminare  ? `<button onclick="eliminaRiga(${riga._rowIndex})" title="Elimina">🗑️</button>` : ''}
                     </div>`;
                 }
                 html += `</div>`;
             });
-            html += '</div>';
-            // Aggiorna font dopo render
-            setTimeout(aggiornaFont, 0);
-            return html;
+            html += `</div></div>`;
+        });
+        html += '</div>';
+        return html;
+    }
+
+    async function eliminaRiga(rowIndex) {
+        if (!confirm("Eliminare questa riga?")) return;
+        const tableId = TABLE_MAP[FOGLIO_ATTIVO];
+        if (!tableId) { alert("Tabella non trovata."); return; }
+        try {
+            const r = await fetch(`${BASEROW_URL}/api/database/rows/table/${tableId}/${rowIndex}/`, { method: "DELETE", headers: { "Authorization": "Token " + BASEROW_TOKEN } });
+            if (!r.ok) { alert(`Errore eliminazione (HTTP ${r.status})`); return; }
+            sincronizza();
+        } catch(e) { alert("Errore: " + e.message); }
+    }
+
+    /* ─── IMPOSTAZIONI ────────────────────────────────── */
+    function chiudiModal(id) { document.getElementById(id).style.display = "none"; }
+
+    function apriImpostazioni() {
+        if (!FOGLIO_ATTIVO) return alert("Seleziona un foglio.");
+        const config = APP_CONFIG[FOGLIO_ATTIVO] || {};
+        document.getElementById('settings-nome-foglio').innerText = FOGLIO_ATTIVO;
+        document.getElementById('set-display-name').value = config.displayName || "";
+        document.getElementById('set-add').checked    = config.puoAggiungere  || false;
+        document.getElementById('set-edit').checked   = config.puoModificare  || false;
+        document.getElementById('set-delete').checked = config.puoEliminare   || false;
+
+        const intestazioni = DATABASE[FOGLIO_ATTIVO].intestazioni;
+        const selCol = document.getElementById('set-sort-col');
+        selCol.innerHTML = `<option value="">– Nessun ordinamento –</option>` +
+            intestazioni.map(c => `<option value="${c}" ${config.sortColonna===c?'selected':''}>${c}</option>`).join('');
+        document.getElementById('set-sort-dir').value = config.sortDirezione || 1;
+
+        let colHtml = '<label style="font-weight:700;font-size:11px;letter-spacing:0.5px;text-transform:uppercase;color:var(--ink-3);display:block;margin-bottom:6px;">Colonne Visibili</label>';
+        intestazioni.forEach(col => {
+            const chk = config.colonneVisibili && config.colonneVisibili.includes(col) ? 'checked' : '';
+            colHtml += `<label class="checkbox-label"><input type="checkbox" class="chk-colonna" value="${col}" ${chk}> ${col}</label>`;
+        });
+        document.getElementById('settings-colonne').innerHTML = colHtml;
+
+        const cardCfg = config.cardConfig || {};
+        document.getElementById('set-card-attiva').checked = config.vistaCardAttiva || false;
+        const makeOpts = (sel) => `<option value="">– Nessuna –</option>` +
+            intestazioni.map(c => `<option value="${c}" ${sel===c?'selected':''}>${c}</option>`).join('');
+        document.getElementById('card-col-data').innerHTML  = makeOpts(cardCfg.data  || "");
+        document.getElementById('card-col-badge').innerHTML = makeOpts(cardCfg.badge || "");
+        let corpoHtml = '';
+        intestazioni.forEach(col => {
+            const chk = (cardCfg.corpo||[]).includes(col) ? 'checked' : '';
+            corpoHtml += `<label class="checkbox-label"><input type="checkbox" class="chk-card-corpo" value="${col}" ${chk}> ${col}</label>`;
+        });
+        document.getElementById('card-col-corpo-list').innerHTML = corpoHtml;
+
+        const regole = config.formatRules || [{},{},{},{},{}];
+        while (regole.length < 5) regole.push({});
+        const ops = ['uguale','non uguale','contiene','inizia con','non vuoto','vuoto','data > (dopo)','data < (prima)'];
+        let rulesHtml = '';
+        regole.slice(0,5).forEach((r, i) => {
+            rulesHtml += `<div class="fmt-rule">
+                <select class="fmt-col" data-i="${i}">
+                    <option value="">– –</option>
+                    ${intestazioni.map(c=>`<option value="${c}" ${r.colonna===c?'selected':''}>${c}</option>`).join('')}
+                </select>
+                <select class="fmt-op" data-i="${i}">
+                    ${ops.map(o=>`<option value="${o}" ${r.operatore===o?'selected':''}>${o}</option>`).join('')}
+                </select>
+                <input type="text" class="fmt-val" data-i="${i}" value="${r.valore||''}" placeholder="valore">
+                <input type="color" class="fmt-color" data-i="${i}" value="${r.colore||'#e74c3c'}">
+                <select class="fmt-target" data-i="${i}" style="padding:4px;border:1px solid var(--line);border-radius:4px;font-size:11px;">
+                    <option value="riga" ${(r.target||'riga')==='riga'?'selected':''}>Riga intera</option>
+                    <option value="cella" ${r.target==='cella'?'selected':''}>Solo cella</option>
+                </select>
+            </div>`;
+        });
+        document.getElementById('format-rules-list').innerHTML = rulesHtml;
+
+        const coloriCol = config.coloriColonne || {};
+        let colColHtml = '';
+        intestazioni.forEach(col => {
+            const color = coloriCol[col] || '#ffffff';
+            colColHtml += `<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+                <input type="color" class="chk-col-color" data-col="${col}" value="${color}" style="width:36px;height:26px;border:1px solid var(--line);border-radius:4px;cursor:pointer;padding:1px;">
+                <span style="font-size:13px;">${col}</span>
+            </div>`;
+        });
+        document.getElementById('colori-colonne-list').innerHTML = colColHtml;
+
+        document.getElementById('set-kanban-attiva').checked = config.vistaKanbanAttiva || false;
+        const selGruppo = document.getElementById('kanban-col-gruppo');
+        selGruppo.innerHTML = `<option value="">– Nessuna –</option>` +
+            intestazioni.map(c => `<option value="${c}" ${config.kanbanGruppo===c?'selected':''}>${c}</option>`).join('');
+        document.getElementById('kanban-ordine').value = (config.kanbanOrdine || []).join('\n');
+
+        const formatiCol = config.formatiColonne || {};
+        const tipiFormato = [
+            { v: '', l: '– Testo libero –' },
+            { v: 'date', l: '📅 Data' },
+            { v: 'datetime-local', l: '📅 Data e Ora' },
+            { v: 'time', l: '🕐 Orario' },
+        ];
+        let formatiHtml = '';
+        intestazioni.forEach(col => {
+            const sel = formatiCol[col] || '';
+            formatiHtml += `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                <span style="flex:1;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${col}">${col}</span>
+                <select class="chk-col-format" data-col="${col}" style="width:150px;padding:5px;border:1px solid var(--line);border-radius:4px;font-size:11px;">
+                    ${tipiFormato.map(t => `<option value="${t.v}" ${sel===t.v?'selected':''}>${t.l}</option>`).join('')}
+                </select>
+            </div>`;
+        });
+        document.getElementById('formati-colonne-list').innerHTML = formatiHtml;
+
+        document.getElementById('modal-settings').style.display = "flex";
+    }
+
+    function salvaImpostazioni() {
+        const btn = document.getElementById('btn-save-settings');
+        btn.innerText = "…"; btn.disabled = true;
+
+        const formatRules = [];
+        for (let i = 0; i < 5; i++) {
+            const col    = document.querySelector(`.fmt-col[data-i="${i}"]`)?.value || '';
+            const op     = document.querySelector(`.fmt-op[data-i="${i}"]`)?.value  || 'uguale';
+            const val    = document.querySelector(`.fmt-val[data-i="${i}"]`)?.value || '';
+            const color  = document.querySelector(`.fmt-color[data-i="${i}"]`)?.value || '#e74c3c';
+            const target = document.querySelector(`.fmt-target[data-i="${i}"]`)?.value || 'riga';
+            if (col) formatRules.push({ colonna: col, operatore: op, valore: val, colore: color, target });
         }
-
-        // ============================================================
-        // DRAWER MOBILE
-        // ============================================================
-        function apriDrawer() {
-            document.getElementById('drawer').classList.add('open');
-            document.getElementById('drawer-overlay').classList.add('open');
-        }
-        function chiudiDrawer() {
-            document.getElementById('drawer').classList.remove('open');
-            document.getElementById('drawer-overlay').classList.remove('open');
-        }
-
-        // Mappa nomeFoglio → set di colonne formula (read-only)
-        let FORMULA_FIELDS = {};  // { "SAT": Set(["col1","col2"]), ... }
-
-        // ============================================================
-        // SYNC PRINCIPALE — legge le tabelle da BASEROW_TABLES in config.js
-        // ============================================================
-        async function sincronizza() {
-            const sessione = JSON.parse(localStorage.getItem('appSession'));
-            if (!sessione) return;
-            const btnSync = document.getElementById('btn-sync');
-            btnSync.innerText = "⏳ Sincronizzazione...";
-            try {
-                // 1. Carica APP_CONFIG da Baserow se disponibile, altrimenti localStorage
-                const tableIdConfig = BASEROW_TABLES['_CONFIG'];
-                if (tableIdConfig) {
-                    try {
-                        const configRighe = await BR.getAll(tableIdConfig);
-                        if (configRighe.length > 0 && configRighe[0].valore) {
-                            APP_CONFIG = JSON.parse(configRighe[0].valore);
-                            localStorage.setItem('appConfig', JSON.stringify(APP_CONFIG));
-                        } else {
-                            APP_CONFIG = JSON.parse(localStorage.getItem('appConfig') || '{}');
-                        }
-                    } catch(e) {
-                        console.warn('Errore lettura config da Baserow:', e.message);
-                        APP_CONFIG = JSON.parse(localStorage.getItem('appConfig') || '{}');
-                    }
-                } else {
-                    APP_CONFIG = JSON.parse(localStorage.getItem('appConfig') || '{}');
-                }
-
-                if (!BASEROW_TABLES || Object.keys(BASEROW_TABLES).length === 0) {
-                    alert("Nessuna tabella configurata in config.js — aggiungi le tabelle in BASEROW_TABLES.");
-                    btnSync.innerText = "🔄 Errore Sync";
-                    return;
-                }
-
-                // Carica tutte le tabelle in parallelo
-                const db = {};
-                await Promise.all(Object.entries(BASEROW_TABLES).map(async ([nomeFoglio, tableId]) => {
-                    try {
-                        // Carica righe e tipi di campo in parallelo
-                        const [rows, fields] = await Promise.all([
-                            BR.getAll(tableId),
-                            BR.getFields(tableId).catch(() => [])
-                        ]);
-
-                        // Salva i campi read-only (formula, lookup, count ecc.)
-                        const tipiReadOnly = new Set([
-                            'formula', 'lookup', 'count', 'rollup',
-                            'link_row', 'created_on', 'last_modified',
-                            'created_by', 'last_modified_by', 'autonumber',
-                            'uuid', 'multiple_collaborators'
-                        ]);
-                        FORMULA_FIELDS[nomeFoglio] = new Set(
-                            fields
-                                .filter(f => tipiReadOnly.has(f.type))
-                                .map(f => f.name)
-                        );
-
-                        const campiDaEscludere = new Set(['id', 'order']);
-                        const intestazioni = rows.length > 0
-                            ? Object.keys(rows[0]).filter(k => !campiDaEscludere.has(k))
-                            : [];
-
-                        db[nomeFoglio] = {
-                            intestazioni,
-                            righe: rows.map(row => {
-                                const riga = { _rowIndex: row.id };
-                                intestazioni.forEach(col => { riga[col] = row[col] ?? ''; });
-                                return riga;
-                            })
-                        };
-                        TABLE_MAP[nomeFoglio] = tableId;
-                    } catch(e) {
-                        console.warn(`Errore caricamento ${nomeFoglio}:`, e.message);
-                        db[nomeFoglio] = { intestazioni: [], righe: [] };
-                        FORMULA_FIELDS[nomeFoglio] = new Set();
-                    }
-                }));
-
-                DATABASE = db;
-                renderMenu();
-                if (FOGLIO_ATTIVO && DATABASE[FOGLIO_ATTIVO]) caricaDati(FOGLIO_ATTIVO);
-                document.getElementById('status-message').style.display = "none";
-                const ora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                btnSync.innerText = `🔄 Sync (${ora})`;
-                if (autoSyncTimer) clearTimeout(autoSyncTimer);
-                autoSyncTimer = setTimeout(sincronizza, 30 * 60 * 1000);
-            } catch(e) {
-                btnSync.innerText = "🔄 Errore Sync";
-                console.error("Sync error:", e);
-                alert("Errore sync: " + e.message);
-            }
-        }
-
-        // ============================================================
-        // MENU E NOMI DINAMICI
-        // ============================================================
-        function getNomeDinamico(nomeFoglio) {
-            let config = APP_CONFIG[nomeFoglio] || {};
-            let template = config.displayName;
-            if (!template) return nomeFoglio;
-            let righe = DATABASE[nomeFoglio].righe || [];
-            template = template.replace(/\{\{COUNT\}\}/g, righe.length);
-            template = template.replace(/\{\{COUNT:(.*?)=(.*?)\}\}/g, (match, col, val) => {
-                return righe.filter(r => String(r[col]).trim() == String(val).trim()).length;
-            });
-            return template;
-        }
-
-        function renderMenu() {
-            const container = document.getElementById('buttons-container');
-            const drawerContainer = document.getElementById('drawer-buttons');
-            container.innerHTML = "";
-            drawerContainer.innerHTML = "";
-            let fogliDisponibili = Object.keys(DATABASE);
-            let fogliOrdinati = (APP_CONFIG._sheetOrder || []).filter(f => fogliDisponibili.includes(f));
-            fogliDisponibili.forEach(f => { if (!fogliOrdinati.includes(f)) fogliOrdinati.push(f); });
-            APP_CONFIG._sheetOrder = fogliOrdinati;
-            fogliOrdinati.forEach(nome => {
-                // Sidebar desktop
-                const btn = document.createElement('button');
-                btn.innerText = getNomeDinamico(nome);
-                btn.setAttribute('data-foglio', nome);
-                btn.onclick = () => caricaDati(nome);
-                if (nome === FOGLIO_ATTIVO) btn.classList.add('active');
-                container.appendChild(btn);
-                // Drawer mobile
-                const btnD = document.createElement('button');
-                btnD.innerText = getNomeDinamico(nome);
-                btnD.setAttribute('data-foglio-drawer', nome);
-                btnD.onclick = () => { caricaDati(nome); chiudiDrawer(); };
-                if (nome === FOGLIO_ATTIVO) btnD.classList.add('active');
-                drawerContainer.appendChild(btnD);
-            });
-        }
-
-        // ============================================================
-        // ORDINAMENTO FOGLI
-        // ============================================================
-        function apriOrdinamento() { aggiornaListaOrdinamento(); document.getElementById('modal-order').style.display = 'flex'; }
-
-        function aggiornaListaOrdinamento() {
-            let html = '';
-            APP_CONFIG._sheetOrder.forEach((foglio, index) => {
-                html += `<div class="order-item"><span>${foglio}</span><div class="order-btns">
-                    <button onclick="spostaFoglio(${index}, -1)" ${index === 0 ? 'disabled' : ''}>⬆️</button>
-                    <button onclick="spostaFoglio(${index}, 1)" ${index === APP_CONFIG._sheetOrder.length - 1 ? 'disabled' : ''}>⬇️</button>
-                </div></div>`;
-            });
-            document.getElementById('order-list').innerHTML = html;
-        }
-
-        async function spostaFoglio(index, direzione) {
-            let arr = APP_CONFIG._sheetOrder;
-            let temp = arr[index]; arr[index] = arr[index + direzione]; arr[index + direzione] = temp;
-            aggiornaListaOrdinamento(); renderMenu();
-            await salvaConfig();
-        }
-
-        // ============================================================
-        // TABELLA DATI
-        // ============================================================
-        function caricaDati(nomeFoglio) {
-            FOGLIO_ATTIVO = nomeFoglio;
-            document.getElementById('titolo-foglio').innerText = getNomeDinamico(nomeFoglio);
-            document.querySelectorAll('#sidebar button[data-foglio]').forEach(b => {
-                b.classList.remove('active');
-                if (b.getAttribute('data-foglio') === nomeFoglio) b.classList.add('active');
-            });
-            const config = APP_CONFIG[nomeFoglio] || { puoAggiungere: false, puoModificare: false, colonneVisibili: [] };
-            document.getElementById('btn-add-record').style.display = config.puoAggiungere ? "block" : "none";
-            const intestazioni = DATABASE[nomeFoglio].intestazioni;
-            if (intestazioni.length === 0) {
-                document.getElementById('toolbar').style.display = "none";
-                document.getElementById('tabella-container').innerHTML = "<p>Foglio vuoto.</p>";
-                return;
-            }
-            let colonneDaMostrare = intestazioni;
-            if (config.colonneVisibili && config.colonneVisibili.length > 0) colonneDaMostrare = intestazioni.filter(h => config.colonneVisibili.includes(h));
-            document.getElementById('toolbar').style.display = "flex";
-            document.getElementById('search-input').value = "";
-            const sortSelect = document.getElementById('sort-column');
-            sortSelect.innerHTML = `<option value="">-- Ordina per --</option>`;
-            colonneDaMostrare.forEach(col => { sortSelect.innerHTML += `<option value="${col}">${col}</option>`; });
-
-            // Applica ordinamento predefinito da config, altrimenti fallback su FOGLI_CON_DATE
-            if (config.sortColonna && colonneDaMostrare.includes(config.sortColonna)) {
-                ORDINAMENTO.colonna = config.sortColonna;
-                ORDINAMENTO.direzione = config.sortDirezione || 1;
-                sortSelect.value = config.sortColonna;
-                document.getElementById('btn-sort-dir').innerText = ORDINAMENTO.direzione === 1 ? "⬇️ A-Z" : "⬆️ Z-A";
-            } else if (FOGLI_CON_DATE.includes(nomeFoglio) && intestazioni.includes(NOME_COLONNA_DATA)) {
-                ORDINAMENTO.colonna = NOME_COLONNA_DATA; ORDINAMENTO.direzione = 1;
-                document.getElementById('btn-sort-dir').innerText = "⬆️ Z-A"; sortSelect.value = NOME_COLONNA_DATA;
-            } else {
-                ORDINAMENTO.colonna = null; ORDINAMENTO.direzione = 1;
-                document.getElementById('btn-sort-dir').innerText = "⬇️ A-Z"; sortSelect.value = "";
-            }
-            // Vista card o kanban: da config
-            _vistaCard = !!(config.vistaCardAttiva && config.cardConfig && config.cardConfig.data);
-            _vistaKanban = !!(config.vistaKanbanAttiva && config.kanbanGruppo);
-            renderTabella();
-        }
-
-        function convertiDataItaliana(dataStr) {
-            if (!dataStr) return 0;
-            const mesi = {"gennaio":0,"febbraio":1,"marzo":2,"aprile":3,"maggio":4,"giugno":5,"luglio":6,"agosto":7,"settembre":8,"ottobre":9,"novembre":10,"dicembre":11};
-            const parts = dataStr.toLowerCase().split(' ');
-            let meseIndex = -1, giorno = 1, timeStr = "00:00";
-            for (let i = 0; i < parts.length; i++) {
-                if (mesi[parts[i]] !== undefined) { meseIndex = mesi[parts[i]]; giorno = parseInt(parts[i-1]) || 1; }
-                if (parts[i].includes(':')) timeStr = parts[i];
-            }
-            if (meseIndex === -1) return 0;
-            const tParts = timeStr.split(':');
-            return new Date(new Date().getFullYear(), meseIndex, giorno, parseInt(tParts[0]) || 0, parseInt(tParts[1]) || 0).getTime();
-        }
-
-        function cambiaOrdinamento() { ORDINAMENTO.colonna = document.getElementById('sort-column').value || null; renderTabella(); }
-        function cambiaDirezioneOrdinamento() { ORDINAMENTO.direzione *= -1; document.getElementById('btn-sort-dir').innerText = ORDINAMENTO.direzione === 1 ? "⬇️ A-Z" : "⬆️ Z-A"; renderTabella(); }
-
-        // Converte date ISO (2026-03-07T08:56:13.160Z) in formato leggibile (07/03/2026 08:56)
-        function formattaValoreCella(val) {
-            if (!val) return "";
-            const s = String(val);
-            const isoMatch = s.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
-            if (isoMatch) return `${isoMatch[3]}/${isoMatch[2]}/${isoMatch[1]} ${isoMatch[4]}:${isoMatch[5]}`;
-            return s;
-        }
-
-        // Estrae solo HH:MM da stringhe con data fittizia 1899 o ISO (converte UTC→locale)
-        function formattaOrario(val) {
-            if (!val) return "";
-            const s = String(val);
-            // Formato ISO — usa Date per conversione UTC→locale corretta
-            if (s.includes('T') && s.includes('-')) {
-                const d = new Date(s);
-                if (!isNaN(d)) return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
-            }
-            // Formato "31/12/1899 08:30:00" o simili con 1899 — già ora locale, estrai direttamente
-            const m1899 = s.match(/1899[^\d]*(\d{1,2}):(\d{2})/);
-            if (m1899) return `${m1899[1].padStart(2,'0')}:${m1899[2]}`;
-            // Già solo HH:MM
-            const mOra = s.match(/^(\d{1,2}):(\d{2})/);
-            if (mOra) return `${mOra[1].padStart(2,'0')}:${mOra[2]}`;
-            return s;
-        }
-
-        // Converte una data (ISO o italiana) in timestamp per ordinamento
-        function convertiDataAssoluta(val) {
-            if (!val) return 0;
-            const s = String(val);
-            // ISO
-            const iso = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
-            if (iso) return new Date(iso[1], iso[2]-1, iso[3]).getTime();
-            // Italiana "venerdì 6 marzo" o "6 marzo"
-            return convertiDataItaliana(s);
-        }
-
-        // Formatta data in "Venerdì 6 Marzo" per l'etichetta di gruppo
-        function formattaDataGruppo(val) {
-            if (!val) return "";
-            const s = String(val);
-            const giorni = ["Domenica","Lunedì","Martedì","Mercoledì","Giovedì","Venerdì","Sabato"];
-            const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
-            // ISO
-            const iso = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
-            if (iso) {
-                const d = new Date(iso[1], iso[2]-1, iso[3]);
-                return `${giorni[d.getDay()]} ${d.getDate()} ${mesi[d.getMonth()]}`;
-            }
-            // Già italiana: capitalizza e restituisce
-            return s.replace(/^\w/, c => c.toUpperCase());
-        }
-
-        function renderTabella() {
-            const config = APP_CONFIG[FOGLIO_ATTIVO] || { puoAggiungere: false, puoModificare: false, colonneVisibili: [] };
-            const intestazioni = DATABASE[FOGLIO_ATTIVO].intestazioni;
-            const isCalendario = FOGLIO_ATTIVO === 'CALENDARIO';
-            const COL_DATA_CAL = intestazioni[0];
-            const COL_ORA_CAL  = intestazioni[1];
-
-            let righe = [...DATABASE[FOGLIO_ATTIVO].righe];
-            let colonneDaMostrare = intestazioni;
-            if (config.colonneVisibili && config.colonneVisibili.length > 0) colonneDaMostrare = intestazioni.filter(h => config.colonneVisibili.includes(h));
-
-            let colonneTabella = colonneDaMostrare;
-            if (isCalendario) colonneTabella = colonneDaMostrare.filter(c => c !== COL_DATA_CAL && c !== COL_ORA_CAL);
-
-            const query = document.getElementById('search-input').value.toLowerCase();
-            if (query) righe = righe.filter(riga => colonneDaMostrare.some(col => String(riga[col] || "").toLowerCase().includes(query)));
-
-            // Ordinamento
-            if (ORDINAMENTO.colonna) {
-                const col = ORDINAMENTO.colonna, dir = ORDINAMENTO.direzione;
-                righe.sort((a, b) => {
-                    let valA = String(a[col] || ""), valB = String(b[col] || "");
-                    if (col === NOME_COLONNA_DATA || col === COL_DATA_CAL) {
-                        let tA = convertiDataAssoluta(valA), tB = convertiDataAssoluta(valB);
-                        if (tA !== 0 && tB !== 0) return (tA - tB) * dir;
-                    }
-                    if (!isNaN(valA) && !isNaN(valB) && valA !== "" && valB !== "") return (Number(valA) - Number(valB)) * dir;
-                    return valA.toLowerCase().localeCompare(valB.toLowerCase()) * dir;
-                });
-            }
-            if (isCalendario && !ORDINAMENTO.colonna) {
-                righe.sort((a, b) => {
-                    let tA = convertiDataAssoluta(String(a[COL_DATA_CAL] || ""));
-                    let tB = convertiDataAssoluta(String(b[COL_DATA_CAL] || ""));
-                    if (tA !== tB) return tA - tB;
-                    return formattaOrario(String(a[COL_ORA_CAL]||"")).localeCompare(formattaOrario(String(b[COL_ORA_CAL]||"")));
-                });
-            }
-
-            // ===== VISTA KANBAN =====
-            if (_vistaKanban && config.kanbanGruppo) {
-                document.getElementById('tabella-container').innerHTML = renderKanban(righe, config, colonneDaMostrare);
-                return;
-            }
-
-            // ===== VISTA CARD =====
-            if (_vistaCard && config.cardConfig && config.cardConfig.data) {
-                document.getElementById('tabella-container').innerHTML = righe.length === 0 ? "<p>Nessuna riga trovata.</p>" : renderCard(righe, config, colonneDaMostrare);
-                return;
-            }
-
-            let html = '';
-            if (isCalendario) {
-                // Rendering con raggruppamento per data
-                html = `<table><thead><tr>`;
-                html += `<th style="width:70px">Orario</th>`;
-                colonneTabella.forEach(col => html += `<th>${col}</th>`);
-                if (config.puoModificare || config.puoEliminare) html += `<th style="width:70px">Azioni</th>`;
-                html += `</tr></thead><tbody>`;
-
-                let ultimaData = null;
-                righe.forEach(riga => {
-                    const dataRiga = String(riga[COL_DATA_CAL] || "");
-                    if (dataRiga !== ultimaData) {
-                        ultimaData = dataRiga;
-                        const ncol = colonneTabella.length + 1 + ((config.puoModificare || config.puoEliminare) ? 1 : 0);
-                        html += `<tr><td colspan="${ncol}" style="background:#3b6d9c; color:white; font-weight:bold; padding:8px 12px; font-size:14px; letter-spacing:0.5px;">
-                            📅 ${formattaDataGruppo(dataRiga)}
-                        </td></tr>`;
-                    }
-                    // Coloring SAT riutilizzato se serve
-                    html += `<tr>`;
-                    html += `<td><b>${formattaOrario(riga[COL_ORA_CAL])}</b></td>`;
-                    colonneTabella.forEach(col => html += `<td>${formattaValoreCella(riga[col])}</td>`);
-                    if (config.puoModificare || config.puoEliminare) {
-                        html += `<td style="white-space:nowrap;">
-                            ${config.puoModificare ? `<button class="btn btn-edit" title="Modifica" onclick="apriForm('${encodeURIComponent(JSON.stringify(riga))}')">✏️</button>` : ''}
-                            ${config.puoEliminare  ? `<button class="btn btn-delete" title="Elimina" onclick="eliminaRiga(${riga._rowIndex})">🗑️</button>` : ''}
-                        </td>`;
-                    }
-                    html += `</tr>`;
-                });
-                html += `</tbody></table>`;
-            } else {
-                // Rendering normale
-                html = '<table><thead><tr>';
-                const coloriCol = config.coloriColonne || {};
-                if (config.puoEliminare) html += `<th style="width:32px;"><input type="checkbox" id="chk-all" onclick="selezionaTutti(this)"></th>`;
-                colonneTabella.forEach(col => {
-                    const bg = coloriCol[col] || '';
-                    const thStyle = bg ? `style="background:${bg}; color:#1a1a1a;"` : '';
-                    html += `<th ${thStyle}>${col}</th>`;
-                });
-                if (config.puoModificare || config.puoEliminare) html += `<th style="width:70px">Azioni</th>`;
-                html += '</tr></thead><tbody>';
-                righe.forEach(riga => {
-                    const fmt = valutaFormatRules(riga, config);
-                    const rowColor     = (fmt && fmt.target !== 'cella') ? fmt.colore : null;
-                    const cellaTarget  = (fmt && fmt.target === 'cella') ? fmt.colonna : null;
-                    const chk = config.puoEliminare ? `<td class="sel-td"><input type="checkbox" class="row-chk" data-idx="${riga._rowIndex}"></td>` : '';
-                    html += `<tr>` + chk;
-                    colonneTabella.forEach(col => {
-                        const cellBg = coloriCol[col] || '';
-                        let cellStyle = '';
-                        if (col === cellaTarget) {
-                            // Solo cella: colora solo questo td
-                            cellStyle = `color:${fmt.colore}; font-weight:700;${cellBg ? ` background:color-mix(in srgb, ${cellBg} 30%, white 70%);` : ''}`;
-                        } else if (rowColor) {
-                            cellStyle = `color:${rowColor}; font-weight:600;${cellBg ? ` background:color-mix(in srgb, ${cellBg} 30%, white 70%);` : ''}`;
-                        } else if (cellBg) {
-                            cellStyle = `background:color-mix(in srgb, ${cellBg} 18%, white 82%);`;
-                        }
-                        html += `<td${cellStyle ? ` style="${cellStyle}"` : ''}>${formattaValoreCella(riga[col])}</td>`;
-                    });
-                    if (config.puoModificare || config.puoEliminare) {
-                        html += `<td style="white-space:nowrap;">
-                            ${config.puoModificare ? `<button class="btn btn-edit" title="Modifica" onclick="apriForm('${encodeURIComponent(JSON.stringify(riga))}')">✏️</button>` : ''}
-                            ${config.puoEliminare  ? `<button class="btn btn-delete" title="Elimina" onclick="eliminaRiga(${riga._rowIndex})">🗑️</button>` : ''}
-                        </td>`;
-                    }
-                    html += '</tr>';
-                });
-                html += '</tbody></table>';
-            }
-
-            document.getElementById('tabella-container').innerHTML = righe.length === 0 ? "<p>Nessuna riga trovata.</p>" : html;
-        }
-
-        function selezionaTutti(chk) {
-            document.querySelectorAll('.row-chk').forEach(c => {
-                c.checked = chk.checked;
-                c.closest('tr').classList.toggle('selected-row', chk.checked);
-            });
-            aggiornaBarraMulti();
-        }
-        function aggiornaBarraMulti() {
-            const selezionate = document.querySelectorAll('.row-chk:checked');
-            const bar = document.getElementById('multi-delete-bar');
-            bar.style.display = selezionate.length > 0 ? 'flex' : 'none';
-            document.getElementById('multi-count-label').innerText = `${selezionate.length} rig${selezionate.length===1?'a':'he'} selezionat${selezionate.length===1?'a':'e'}`;
-        }
-        function deselezionaTutti() {
-            document.querySelectorAll('.row-chk').forEach(c => { c.checked = false; c.closest('tr').classList.remove('selected-row'); });
-            const all = document.getElementById('chk-all'); if (all) all.checked = false;
-            aggiornaBarraMulti();
-        }
-        async function eliminaSelezionate() {
-            const indici = Array.from(document.querySelectorAll('.row-chk:checked')).map(c => parseInt(c.dataset.idx));
-            if (!indici.length) return;
-            if (!confirm(`Eliminare definitivamente ${indici.length} rig${indici.length===1?'a':'he'}?`)) return;
-            const tableId = TABLE_MAP[FOGLIO_ATTIVO];
-            if (!tableId) { alert("Tabella non trovata."); return; }
-            try {
-                // Elimina in sequenza — il batch delete non è supportato sul piano free
-                for (const idx of indici) {
-                    const r = await fetch(
-                        `${BASEROW_URL}/api/database/rows/table/${tableId}/${idx}/`,
-                        { method: "DELETE", headers: { "Authorization": "Token " + BASEROW_TOKEN } }
-                    );
-                    if (!r.ok) {
-                        const err = await r.text();
-                        alert(`Errore eliminazione riga ${idx} (HTTP ${r.status}):\n${err}`);
-                        return;
-                    }
-                }
-                deselezionaTutti();
-                sincronizza();
-            } catch(e) {
-                alert("Errore eliminazione: " + e.message);
-            }
-        }
-
-        // Aggiungi listener delegato per checkbox singola
-        document.addEventListener('change', e => {
-            if (e.target.classList.contains('row-chk')) {
-                e.target.closest('tr').classList.toggle('selected-row', e.target.checked);
-                aggiornaBarraMulti();
-            }
+        const kanbanOrdine = (document.getElementById('kanban-ordine').value || '').split('\n').map(s => s.trim()).filter(Boolean);
+        const coloriColonne = {};
+        document.querySelectorAll('.chk-col-color').forEach(el => {
+            if (el.value && el.value !== '#ffffff') coloriColonne[el.dataset.col] = el.value;
+        });
+        const formatiColonne = {};
+        document.querySelectorAll('.chk-col-format').forEach(el => {
+            if (el.value) formatiColonne[el.dataset.col] = el.value;
         });
 
-        function renderKanban(righe, config, colonneDaMostrare) {
-            const cardCfg   = config.cardConfig || {};
-            const colGruppo = config.kanbanGruppo;
-            const colData   = cardCfg.data  || "";
-            const colBadge  = cardCfg.badge || "";
-            const colCorpo  = cardCfg.corpo || [];
-            const coloriCol = config.coloriColonne || {};
-            const ordine    = config.kanbanOrdine  || [];   // array di valori nell'ordine voluto
+        APP_CONFIG[FOGLIO_ATTIVO] = {
+            displayName:       document.getElementById('set-display-name').value,
+            puoAggiungere:     document.getElementById('set-add').checked,
+            puoModificare:     document.getElementById('set-edit').checked,
+            puoEliminare:      document.getElementById('set-delete').checked,
+            sortColonna:       document.getElementById('set-sort-col').value || null,
+            sortDirezione:     parseInt(document.getElementById('set-sort-dir').value) || 1,
+            colonneVisibili:   Array.from(document.querySelectorAll('.chk-colonna:checked')).map(c => c.value),
+            vistaCardAttiva:   document.getElementById('set-card-attiva').checked,
+            vistaKanbanAttiva: document.getElementById('set-kanban-attiva').checked,
+            kanbanGruppo:      document.getElementById('kanban-col-gruppo').value || null,
+            kanbanOrdine,
+            cardConfig: {
+                data:  document.getElementById('card-col-data').value  || null,
+                badge: document.getElementById('card-col-badge').value || null,
+                corpo: Array.from(document.querySelectorAll('.chk-card-corpo:checked')).map(c => c.value),
+            },
+            formatRules,
+            coloriColonne,
+            formatiColonne
+        };
+        salvaConfig().then(() => {
+            chiudiModal('modal-settings'); renderMenu(); caricaDati(FOGLIO_ATTIVO);
+        }).catch(e => {
+            alert("Errore salvataggio: " + e.message);
+        }).finally(() => { btn.innerText = "Salva"; btn.disabled = false; });
+    }
 
-            if (righe.length === 0) return "<p>Nessuna riga trovata.</p>";
-
-            // Raggruppa
-            const gruppi = {};
-            const trovati = new Set();
-            righe.forEach(riga => {
-                const g = String(riga[colGruppo] || '—');
-                if (!gruppi[g]) gruppi[g] = [];
-                gruppi[g].push(riga);
-                trovati.add(g);
-            });
-
-            // Ordine: prima quelli configurati, poi eventuali residui
-            const ordinati = [...ordine.filter(g => trovati.has(g)),
-                              ...Array.from(trovati).filter(g => !ordine.includes(g))];
-
-            let html = '<div class="kanban-board">';
-            ordinati.forEach(g => {
-                const colBg = coloriCol[g] || '';
-                const headerStyle = colBg ? `background:${colBg}; color:#1a1a1a;` : '';
-                html += `<div class="kanban-col">
-                    <div class="kanban-col-header" style="${headerStyle}">
-                        <span>${g}</span>
-                        <span class="kanban-col-count">${gruppi[g].length}</span>
-                    </div>
-                    <div class="kanban-col-body">`;
-
-                gruppi[g].forEach(riga => {
-                    const fmt         = valutaFormatRules(riga, config);
-                    const borderColor = fmt ? fmt.colore : 'var(--primary-blue)';
-                    const fmtRiga     = (fmt && fmt.target !== 'cella') ? fmt : null;
-                    const fmtCella    = (fmt && fmt.target === 'cella') ? fmt : null;
-
-                    const valData  = colData  ? formattaValoreCella(riga[colData])  : '';
-                    const valBadge = colBadge ? formattaValoreCella(riga[colBadge]) : '';
-                    const rigaEnc  = encodeURIComponent(JSON.stringify(riga));
-
-                    html += `<div class="kanban-card" style="border-left-color:${borderColor};" onclick="apriForm('${rigaEnc}')">
-                        <div class="kanban-card-top">
-                            <span class="kanban-card-data" ${fmtRiga?`style="color:${fmtRiga.colore};font-weight:700;"` : ''}>${valData}</span>
-                            <span class="kanban-card-badge">${valBadge}</span>
-                        </div>`;
-
-                    // Corpo: una riga per campo
-                    if (colCorpo.length > 0) {
-                        html += `<div class="kanban-card-body">`;
-                        colCorpo.forEach(col => {
-                            const val = formattaValoreCella(riga[col]);
-                            if (!val) return;
-                            const isCellaTarget = fmtCella && fmtCella.colonna === col;
-                            const style = fmtRiga ? `color:${fmtRiga.colore};font-weight:600;`
-                                        : isCellaTarget ? `color:${fmtCella.colore};font-weight:700;` : '';
-                            html += `<div style="${style}"><span style="color:#888;font-size:11px;">${col}:</span> ${val}</div>`;
-                        });
-                        html += `</div>`;
-                    }
-
-                    if (config.puoModificare || config.puoEliminare) {
-                        html += `<div class="kanban-card-actions" onclick="event.stopPropagation()">
-                            ${config.puoModificare ? `<button style="background:var(--light-blue);" onclick="apriForm('${rigaEnc}')">✏️</button>` : ''}
-                            ${config.puoEliminare  ? `<button style="background:#e74c3c;" onclick="eliminaRiga(${riga._rowIndex})">🗑️</button>` : ''}
-                        </div>`;
-                    }
-                    html += `</div>`;
-                });
-                html += `</div></div>`;
-            });
-            html += '</div>';
-            return html;
+    async function salvaConfig() {
+        const tableId = BASEROW_TABLES['_CONFIG'];
+        if (!tableId) { localStorage.setItem('appConfig', JSON.stringify(APP_CONFIG)); return; }
+        try {
+            const righe = await BR.getAll(tableId);
+            const json = JSON.stringify(APP_CONFIG);
+            if (righe.length > 0) await BR.patch(tableId, righe[0].id, { valore: json });
+            else await BR.post(tableId, { valore: json });
+            localStorage.setItem('appConfig', json);
+        } catch(e) {
+            console.error('Errore salvaConfig:', e.message);
+            localStorage.setItem('appConfig', JSON.stringify(APP_CONFIG));
         }
+    }
 
-        async function eliminaRiga(rowIndex) {
-            if (!confirm("Eliminare questa riga definitivamente?")) return;
-            const tableId = TABLE_MAP[FOGLIO_ATTIVO];
-            if (!tableId) { alert("Tabella non trovata."); return; }
-            try {
-                const r = await fetch(
-                    `${BASEROW_URL}/api/database/rows/table/${tableId}/${rowIndex}/`,
-                    { method: "DELETE", headers: { "Authorization": "Token " + BASEROW_TOKEN } }
-                );
-                if (!r.ok) {
-                    const err = await r.text();
-                    alert(`Errore eliminazione (HTTP ${r.status}):\n${err}`);
-                    return;
+    function apriForm(rigaJSON) {
+        const config = APP_CONFIG[FOGLIO_ATTIVO] || {}, intestazioni = DATABASE[FOGLIO_ATTIVO].intestazioni;
+        const formatiCol = config.formatiColonne || {};
+        const formulaCols = FORMULA_FIELDS[FOGLIO_ATTIVO] || new Set();
+        let cols = config.colonneVisibili && config.colonneVisibili.length > 0
+            ? intestazioni.filter(h => config.colonneVisibili.includes(h)) : intestazioni;
+        const container = document.getElementById('modal-form-fields');
+        container.innerHTML = "";
+        RIGA_ORIGINALE_IN_MODIFICA = rigaJSON ? JSON.parse(decodeURIComponent(rigaJSON)) : null;
+        document.getElementById('modal-title').innerText = rigaJSON ? "Modifica" : "Nuovo";
+        cols.forEach(col => {
+            let val = RIGA_ORIGINALE_IN_MODIFICA && RIGA_ORIGINALE_IN_MODIFICA[col] !== undefined ? RIGA_ORIGINALE_IN_MODIFICA[col] : "";
+            const isFormula = formulaCols.has(col);
+            const tipo = isFormula ? 'text' : (formatiCol[col] || 'text');
+            let inputVal = String(val);
+            if (!isFormula) {
+                if (tipo === 'date' || tipo === 'datetime-local') {
+                    const m = inputVal.match(/^(\d{2})\/(\d{2})\/(\d{4})(?: (\d{2}):(\d{2}))?/);
+                    if (m) inputVal = tipo === 'date' ? `${m[3]}-${m[2]}-${m[1]}` : `${m[3]}-${m[2]}-${m[1]}T${m[4]||'00'}:${m[5]||'00'}`;
+                    else if (inputVal.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/)) inputVal = tipo === 'date' ? inputVal.slice(0,10) : inputVal.slice(0,16);
+                } else if (tipo === 'time') {
+                    const mt = inputVal.match(/(\d{2}:\d{2})/);
+                    if (mt) inputVal = mt[1];
                 }
-                sincronizza();
-            } catch(e) {
-                alert("Errore eliminazione: " + e.message);
             }
+            const formulaStyle = isFormula ? 'background:#f4f4f4;color:#aaa;cursor:not-allowed;border:1px dashed #ddd;' : '';
+            const formulaLabel = isFormula ? ' <span style="font-size:9px;color:#bbb;text-transform:uppercase;letter-spacing:0.5px;">(formula)</span>' : '';
+            container.innerHTML += `<div class="form-group">
+                <label>${col}${formulaLabel}</label>
+                <input type="${tipo}" id="input-${col}" value="${inputVal}"
+                    ${isFormula ? 'disabled readonly' : ''}
+                    style="width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:var(--radius);font-size:13px;${formulaStyle}">
+            </div>`;
+        });
+        document.getElementById('modal-form').style.display = "flex";
+    }
+
+    async function salvaDati() {
+        const intestazioni = DATABASE[FOGLIO_ATTIVO].intestazioni, config = APP_CONFIG[FOGLIO_ATTIVO] || {};
+        const formulaCols = FORMULA_FIELDS[FOGLIO_ATTIVO] || new Set();
+        let cols = config.colonneVisibili && config.colonneVisibili.length > 0
+            ? intestazioni.filter(h => config.colonneVisibili.includes(h)) : intestazioni;
+        const btn = document.getElementById('btn-save-modal');
+        const tableId = TABLE_MAP[FOGLIO_ATTIVO];
+        if (!tableId) { alert("Tabella non trovata per " + FOGLIO_ATTIVO); return; }
+
+        const payload = {};
+        intestazioni.forEach(col => {
+            if (formulaCols.has(col)) return;
+            payload[col] = cols.includes(col)
+                ? (document.getElementById(`input-${col}`)?.value ?? "")
+                : (RIGA_ORIGINALE_IN_MODIFICA ? RIGA_ORIGINALE_IN_MODIFICA[col] || "" : "");
+        });
+
+        const rigaId = RIGA_ORIGINALE_IN_MODIFICA?._rowIndex ?? null;
+        btn.innerText = "…"; btn.disabled = true;
+        try {
+            if (rigaId) await BR.patch(tableId, rigaId, payload);
+            else await BR.post(tableId, payload);
+
+            if (FOGLIO_ATTIVO === 'SAT') {
+                const generaApp = payload['GENERA APP'] ?? payload['GENERA APPUNTAMENTO IN CALENDARIO'] ?? '';
+                const appCerca  = payload['APP CERCA'] || (RIGA_ORIGINALE_IN_MODIFICA ? RIGA_ORIGINALE_IN_MODIFICA['APP CERCA'] : '') || '';
+                const targa     = payload['TARGA AUTO'] || (RIGA_ORIGINALE_IN_MODIFICA ? RIGA_ORIGINALE_IN_MODIFICA['TARGA AUTO'] : '') || '';
+                const isYes     = generaApp === true || String(generaApp).toUpperCase().trim() === 'YES' || generaApp === 1;
+                if (isYes && appCerca.trim() !== '' && targa) await eseguiAppCerca(appCerca.trim(), targa);
+            }
+
+            chiudiModal('modal-form');
+            sincronizza();
+        } catch(e) {
+            alert("Errore: " + e.message);
+        } finally {
+            btn.innerText = "Salva"; btn.disabled = false;
         }
+    }
 
-        // ============================================================
-        // IMPOSTAZIONI E MODALI
-        // ============================================================
-        function chiudiModal(id) { document.getElementById(id).style.display = "none"; }
-
-        function apriImpostazioni() {
-            if (!FOGLIO_ATTIVO) return alert("Seleziona un foglio.");
-            const config = APP_CONFIG[FOGLIO_ATTIVO] || {};
-            document.getElementById('settings-nome-foglio').innerText = FOGLIO_ATTIVO;
-            document.getElementById('set-display-name').value = config.displayName || "";
-            document.getElementById('set-add').checked    = config.puoAggiungere  || false;
-            document.getElementById('set-edit').checked   = config.puoModificare  || false;
-            document.getElementById('set-delete').checked = config.puoEliminare   || false;
-
-            // Ordinamento
-            const intestazioni = DATABASE[FOGLIO_ATTIVO].intestazioni;
-            const selCol = document.getElementById('set-sort-col');
-            selCol.innerHTML = `<option value="">-- Nessun ordinamento --</option>` +
-                intestazioni.map(c => `<option value="${c}" ${config.sortColonna===c?'selected':''}>${c}</option>`).join('');
-            document.getElementById('set-sort-dir').value = config.sortDirezione || 1;
-
-            // Colonne visibili
-            let colHtml = '<label><b>Colonne Visibili:</b> (Lascia vuoto per tutte)</label>';
-            intestazioni.forEach(col => {
-                const chk = config.colonneVisibili && config.colonneVisibili.includes(col) ? 'checked' : '';
-                colHtml += `<label class="checkbox-label"><input type="checkbox" class="chk-colonna" value="${col}" ${chk}> ${col}</label>`;
-            });
-            document.getElementById('settings-colonne').innerHTML = colHtml;
-
-            // Vista card
-            const cardCfg = config.cardConfig || {};
-            document.getElementById('set-card-attiva').checked = config.vistaCardAttiva || false;
-            const makeOpts = (sel) => `<option value="">-- Nessuna --</option>` +
-                intestazioni.map(c => `<option value="${c}" ${sel===c?'selected':''}>${c}</option>`).join('');
-            document.getElementById('card-col-data').innerHTML  = makeOpts(cardCfg.data  || "");
-            document.getElementById('card-col-badge').innerHTML = makeOpts(cardCfg.badge || "");
-            let corpoHtml = '';
-            intestazioni.forEach(col => {
-                const chk = (cardCfg.corpo||[]).includes(col) ? 'checked' : '';
-                corpoHtml += `<label class="checkbox-label"><input type="checkbox" class="chk-card-corpo" value="${col}" ${chk}> ${col}</label>`;
-            });
-            document.getElementById('card-col-corpo-list').innerHTML = corpoHtml;
-
-            // Format rules (5 righe)
-            const regole = config.formatRules || [{},{},{},{},{}];
-            while (regole.length < 5) regole.push({});
-            const ops = ['uguale','non uguale','contiene','inizia con','non vuoto','vuoto','data > (dopo)','data < (prima)'];
-            let rulesHtml = '';
-            regole.slice(0,5).forEach((r, i) => {
-                rulesHtml += `<div class="fmt-rule">
-                    <select class="fmt-col" data-i="${i}">
-                        <option value="">-- --</option>
-                        ${intestazioni.map(c=>`<option value="${c}" ${r.colonna===c?'selected':''}>${c}</option>`).join('')}
-                    </select>
-                    <select class="fmt-op" data-i="${i}">
-                        ${ops.map(o=>`<option value="${o}" ${r.operatore===o?'selected':''}>${o}</option>`).join('')}
-                    </select>
-                    <input type="text" class="fmt-val" data-i="${i}" value="${r.valore||''}" placeholder="gg/mm/aaaa o testo">
-                    <input type="color" class="fmt-color" data-i="${i}" value="${r.colore||'#e74c3c'}">
-                    <select class="fmt-target" data-i="${i}" style="padding:4px;border:1px solid #ccc;border-radius:4px;font-size:11px;">
-                        <option value="riga" ${(r.target||'riga')==='riga'?'selected':''}>Riga intera</option>
-                        <option value="cella" ${r.target==='cella'?'selected':''}>Solo cella</option>
-                    </select>
-                </div>`;
-            });
-            document.getElementById('format-rules-list').innerHTML = rulesHtml;
-
-            // Colori colonne
-            const coloriCol = config.coloriColonne || {};
-            let colColHtml = '';
-            intestazioni.forEach(col => {
-                const color = coloriCol[col] || '#ffffff';
-                colColHtml += `<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
-                    <input type="color" class="chk-col-color" data-col="${col}" value="${color}" style="width:40px;height:28px;border:1px solid #ccc;border-radius:4px;cursor:pointer;padding:2px;">
-                    <span style="font-size:13px;">${col}</span>
-                </div>`;
-            });
-            document.getElementById('colori-colonne-list').innerHTML = colColHtml;
-
-            // Kanban
-            document.getElementById('set-kanban-attiva').checked = config.vistaKanbanAttiva || false;
-            const selGruppo = document.getElementById('kanban-col-gruppo');
-            selGruppo.innerHTML = `<option value="">-- Nessuna --</option>` +
-                intestazioni.map(c => `<option value="${c}" ${config.kanbanGruppo===c?'selected':''}>${c}</option>`).join('');
-            document.getElementById('kanban-ordine').value = (config.kanbanOrdine || []).join('\n');
-
-            // Formati data/ora
-            const formatiCol = config.formatiColonne || {};
-            const tipiFormato = [
-                { v: '', l: '-- Testo libero --' },
-                { v: 'date', l: '📅 Data (gg/mm/aaaa)' },
-                { v: 'datetime-local', l: '📅🕐 Data e Ora' },
-                { v: 'time', l: '🕐 Solo Orario' },
+    async function eseguiAppCerca(appCerca, targa) {
+        const tableIdCal = BASEROW_TABLES['CALENDARIO'];
+        if (!tableIdCal) { alert('❌ APP CERCA: tabella CALENDARIO non trovata in config.js'); return; }
+        try {
+            console.log(`APP CERCA: cerco "${appCerca}" in LIB A/M/S, scriverò targa "${targa}"`);
+            const righe = await BR.getAll(tableIdCal);
+            const mappa = [
+                { cerca: 'LIB A', scrivi: 'ANDREA' },
+                { cerca: 'LIB M', scrivi: 'MATTEO' },
+                { cerca: 'LIB S', scrivi: 'SARA'   },
             ];
-            let formatiHtml = '';
-            intestazioni.forEach(col => {
-                const sel = formatiCol[col] || '';
-                formatiHtml += `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-                    <span style="flex:1;font-size:13px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${col}">${col}</span>
-                    <select class="chk-col-format" data-col="${col}" style="width:160px;padding:5px;border:1px solid #ccc;border-radius:4px;font-size:12px;">
-                        ${tipiFormato.map(t => `<option value="${t.v}" ${sel===t.v?'selected':''}>${t.l}</option>`).join('')}
-                    </select>
-                </div>`;
-            });
-            document.getElementById('formati-colonne-list').innerHTML = formatiHtml;
-
-            document.getElementById('modal-settings').style.display = "flex";
-        }
-
-        function salvaImpostazioni() {
-            const btn = document.getElementById('btn-save-settings');
-            btn.innerText = "⏳ Salvataggio..."; btn.disabled = true;
-
-            // Legge le 5 format rules
-            const formatRules = [];
-            for (let i = 0; i < 5; i++) {
-                const col    = document.querySelector(`.fmt-col[data-i="${i}"]`)?.value || '';
-                const op     = document.querySelector(`.fmt-op[data-i="${i}"]`)?.value  || 'uguale';
-                const val    = document.querySelector(`.fmt-val[data-i="${i}"]`)?.value || '';
-                const color  = document.querySelector(`.fmt-color[data-i="${i}"]`)?.value || '#e74c3c';
-                const target = document.querySelector(`.fmt-target[data-i="${i}"]`)?.value || 'riga';
-                if (col) formatRules.push({ colonna: col, operatore: op, valore: val, colore: color, target });
-            }
-
-            // Kanban ordine colonne
-            const kanbanOrdine = (document.getElementById('kanban-ordine').value || '')
-                .split('\n').map(s => s.trim()).filter(Boolean);
-
-            // Colori colonne
-            const coloriColonne = {};
-            document.querySelectorAll('.chk-col-color').forEach(el => {
-                if (el.value && el.value !== '#ffffff') coloriColonne[el.dataset.col] = el.value;
-            });
-
-            // Formati data/ora
-            const formatiColonne = {};
-            document.querySelectorAll('.chk-col-format').forEach(el => {
-                if (el.value) formatiColonne[el.dataset.col] = el.value;
-            });
-
-            APP_CONFIG[FOGLIO_ATTIVO] = {
-                displayName:       document.getElementById('set-display-name').value,
-                puoAggiungere:     document.getElementById('set-add').checked,
-                puoModificare:     document.getElementById('set-edit').checked,
-                puoEliminare:      document.getElementById('set-delete').checked,
-                sortColonna:       document.getElementById('set-sort-col').value || null,
-                sortDirezione:     parseInt(document.getElementById('set-sort-dir').value) || 1,
-                colonneVisibili:   Array.from(document.querySelectorAll('.chk-colonna:checked')).map(c => c.value),
-                vistaCardAttiva:   document.getElementById('set-card-attiva').checked,
-                vistaKanbanAttiva: document.getElementById('set-kanban-attiva').checked,
-                kanbanGruppo:      document.getElementById('kanban-col-gruppo').value || null,
-                kanbanOrdine,
-                cardConfig: {
-                    data:  document.getElementById('card-col-data').value  || null,
-                    badge: document.getElementById('card-col-badge').value || null,
-                    corpo: Array.from(document.querySelectorAll('.chk-card-corpo:checked')).map(c => c.value),
-                },
-                formatRules,
-                coloriColonne,
-                formatiColonne
-            };
-            const sessione = JSON.parse(localStorage.getItem('appSession'));
-            salvaConfig().then(() => {
-                chiudiModal('modal-settings'); renderMenu(); caricaDati(FOGLIO_ATTIVO);
-            }).catch(e => {
-                alert("Errore salvataggio: " + e.message);
-            }).finally(() => { btn.innerText = "Salva Impostazioni"; btn.disabled = false; });
-        }
-
-        // APP_CONFIG salvato su Baserow — condiviso tra tutti i dispositivi
-        async function salvaConfig() {
-            const tableId = BASEROW_TABLES['_CONFIG'];
-            if (!tableId) {
-                // Fallback localStorage se _CONFIG non configurato
-                localStorage.setItem('appConfig', JSON.stringify(APP_CONFIG));
-                return;
-            }
-            try {
-                const righe = await BR.getAll(tableId);
-                const json = JSON.stringify(APP_CONFIG);
-                if (righe.length > 0) {
-                    // Aggiorna la riga esistente
-                    await BR.patch(tableId, righe[0].id, { valore: json });
-                } else {
-                    // Crea la prima riga
-                    await BR.post(tableId, { valore: json });
+            let trovato = false;
+            for (const { cerca, scrivi } of mappa) {
+                if (trovato) break;
+                const rigaTarget = righe.find(r => String(r[cerca] || '').trim() === appCerca);
+                if (rigaTarget) {
+                    await BR.patch(tableIdCal, rigaTarget.id, { [scrivi]: targa });
+                    alert(`✅ APP CERCA: trovato "${appCerca}" in ${cerca}\n→ Scritto "${targa}" in colonna ${scrivi}`);
+                    trovato = true;
                 }
-                // Cache locale per accesso rapido
-                localStorage.setItem('appConfig', json);
-            } catch(e) {
-                console.error('Errore salvaConfig:', e.message);
-                // Fallback localStorage
-                localStorage.setItem('appConfig', JSON.stringify(APP_CONFIG));
             }
+            if (!trovato) alert(`⚠️ APP CERCA: nessuna corrispondenza per "${appCerca}"`);
+        } catch(e) {
+            alert(`❌ Errore APP CERCA:\n${e.message}`);
         }
-
-        function apriForm(rigaJSON) {
-            const config = APP_CONFIG[FOGLIO_ATTIVO] || {}, intestazioni = DATABASE[FOGLIO_ATTIVO].intestazioni;
-            const formatiCol = config.formatiColonne || {};
-            const formulaCols = FORMULA_FIELDS[FOGLIO_ATTIVO] || new Set();
-            let cols = config.colonneVisibili && config.colonneVisibili.length > 0 ? intestazioni.filter(h => config.colonneVisibili.includes(h)) : intestazioni;
-            const container = document.getElementById('modal-form-fields'); container.innerHTML = "";
-            RIGA_ORIGINALE_IN_MODIFICA = rigaJSON ? JSON.parse(decodeURIComponent(rigaJSON)) : null;
-            document.getElementById('modal-title').innerText = rigaJSON ? "Modifica Record" : "Nuovo Record";
-            cols.forEach(col => {
-                let val = RIGA_ORIGINALE_IN_MODIFICA && RIGA_ORIGINALE_IN_MODIFICA[col] !== undefined ? RIGA_ORIGINALE_IN_MODIFICA[col] : "";
-                const isFormula = formulaCols.has(col);
-                const tipo = isFormula ? 'text' : (formatiCol[col] || 'text');
-                let inputVal = String(val);
-                if (!isFormula) {
-                    if (tipo === 'date' || tipo === 'datetime-local') {
-                        const m = inputVal.match(/^(\d{2})\/(\d{2})\/(\d{4})(?: (\d{2}):(\d{2}))?/);
-                        if (m) inputVal = tipo === 'date' ? `${m[3]}-${m[2]}-${m[1]}` : `${m[3]}-${m[2]}-${m[1]}T${m[4]||'00'}:${m[5]||'00'}`;
-                        else if (inputVal.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/)) inputVal = tipo === 'date' ? inputVal.slice(0,10) : inputVal.slice(0,16);
-                    } else if (tipo === 'time') {
-                        const mt = inputVal.match(/(\d{2}:\d{2})/);
-                        if (mt) inputVal = mt[1];
-                    }
-                }
-                const formulaStyle = isFormula
-                    ? 'background:#f0f0f0; color:#999; cursor:not-allowed; border:1px dashed #ccc;'
-                    : 'border:1px solid #ccc;';
-                const formulaLabel = isFormula ? ' <span style="font-size:10px;color:#aaa;font-style:italic;">(formula)</span>' : '';
-                container.innerHTML += `<div class="form-group">
-                    <label>${col}${formulaLabel}</label>
-                    <input type="${tipo}" id="input-${col}" value="${inputVal}"
-                        ${isFormula ? 'disabled readonly' : ''}
-                        style="width:100%;padding:10px;border-radius:4px;box-sizing:border-box;${formulaStyle}">
-                </div>`;
-            });
-            document.getElementById('modal-form').style.display = "flex";
-        }
-
-        async function salvaDati() {
-            const intestazioni = DATABASE[FOGLIO_ATTIVO].intestazioni, config = APP_CONFIG[FOGLIO_ATTIVO] || {};
-            const formulaCols = FORMULA_FIELDS[FOGLIO_ATTIVO] || new Set();
-            let cols = config.colonneVisibili && config.colonneVisibili.length > 0
-                ? intestazioni.filter(h => config.colonneVisibili.includes(h)) : intestazioni;
-            const btn = document.getElementById('btn-save-modal');
-            const tableId = TABLE_MAP[FOGLIO_ATTIVO];
-            if (!tableId) { alert("Tabella non trovata per " + FOGLIO_ATTIVO); return; }
-
-            // Esclude i campi formula — sono read-only e Baserow rifiuta se li mandi
-            const payload = {};
-            intestazioni.forEach(col => {
-                if (formulaCols.has(col)) return; // salta campi formula
-                payload[col] = cols.includes(col)
-                    ? (document.getElementById(`input-${col}`)?.value ?? "")
-                    : (RIGA_ORIGINALE_IN_MODIFICA ? RIGA_ORIGINALE_IN_MODIFICA[col] || "" : "");
-            });
-
-            const rigaId = RIGA_ORIGINALE_IN_MODIFICA?._rowIndex ?? null;
-            btn.innerText = "⏳ Salvataggio..."; btn.disabled = true;
-            try {
-                if (rigaId) {
-                    await BR.patch(tableId, rigaId, payload);
-                } else {
-                    await BR.post(tableId, payload);
-                }
-
-                // ── LOGICA APP CERCA ──────────────────────────────────────
-                // Trigger: GENERA APP = YES (o true se checkbox Baserow)
-                if (FOGLIO_ATTIVO === 'SAT') {
-                    const generaApp = payload['GENERA APP'] ?? payload['GENERA APPUNTAMENTO IN CALENDARIO'] ?? '';
-                    const appCerca  = payload['APP CERCA'] || (RIGA_ORIGINALE_IN_MODIFICA ? RIGA_ORIGINALE_IN_MODIFICA['APP CERCA'] : '') || '';
-                    const targa     = payload['TARGA AUTO'] || (RIGA_ORIGINALE_IN_MODIFICA ? RIGA_ORIGINALE_IN_MODIFICA['TARGA AUTO'] : '') || '';
-                    const isYes     = generaApp === true || String(generaApp).toUpperCase().trim() === 'YES' || generaApp === 1;
-                    if (isYes && appCerca.trim() !== '' && targa) {
-                        await eseguiAppCerca(appCerca.trim(), targa);
-                    }
-                }
-                // ─────────────────────────────────────────────────────────
-
-                chiudiModal('modal-form');
-                sincronizza();
-            } catch(e) {
-                alert("Errore: " + e.message);
-            } finally {
-                btn.innerText = "Salva Dati"; btn.disabled = false;
-            }
-        }
-
-        // ============================================================
-        // LOGICA APP CERCA
-        // Cerca in CALENDARIO (LIB A → LIB M → LIB S) il valore appCerca
-        // e scrive la targa nella colonna del tecnico (ANDREA / MATTEO / SARA)
-        // Priorità: ANDREA prima, poi MATTEO, poi SARA — scrive solo una volta
-        // ============================================================
-        async function eseguiAppCerca(appCerca, targa) {
-            const tableIdCal = BASEROW_TABLES['CALENDARIO'];
-            if (!tableIdCal) {
-                alert('❌ APP CERCA: tabella CALENDARIO non trovata in config.js\nAggiungi "CALENDARIO": ID_TABELLA in BASEROW_TABLES');
-                return;
-            }
-
-            try {
-                // Debug: mostra cosa sta cercando
-                console.log(`APP CERCA: cerco "${appCerca}" in LIB A/M/S, scriverò targa "${targa}"`);
-
-                const righe = await BR.getAll(tableIdCal);
-                console.log(`APP CERCA: caricate ${righe.length} righe da CALENDARIO`);
-
-                // Debug: mostra i valori presenti in LIB A per confronto
-                const libAValues = righe.map(r => String(r['LIB A'] || '')).filter(Boolean);
-                console.log(`APP CERCA: valori LIB A trovati:`, libAValues.slice(0,10));
-
-                const mappa = [
-                    { cerca: 'LIB A', scrivi: 'ANDREA' },
-                    { cerca: 'LIB M', scrivi: 'MATTEO' },
-                    { cerca: 'LIB S', scrivi: 'SARA'   },
-                ];
-
-                let trovato = false;
-                for (const { cerca, scrivi } of mappa) {
-                    if (trovato) break;
-                    const rigaTarget = righe.find(r =>
-                        String(r[cerca] || '').trim() === appCerca
-                    );
-                    if (rigaTarget) {
-                        await BR.patch(tableIdCal, rigaTarget.id, { [scrivi]: targa });
-                        alert(`✅ APP CERCA: trovato "${appCerca}" in ${cerca}\n→ Scritto "${targa}" in colonna ${scrivi} (riga ID ${rigaTarget.id})`);
-                        trovato = true;
-                    }
-                }
-
-                if (!trovato) {
-                    // Mostra i primi valori di ogni colonna per debug
-                    const libMValues = righe.map(r => String(r['LIB M'] || '')).filter(Boolean).slice(0,5);
-                    const libSValues = righe.map(r => String(r['LIB S'] || '')).filter(Boolean).slice(0,5);
-                    alert(`⚠️ APP CERCA: nessuna corrispondenza per "${appCerca}"\n\nValori in LIB A: ${libAValues.slice(0,5).join(', ') || '(vuoto)'}\nValori in LIB M: ${libMValues.join(', ') || '(vuoto)'}\nValori in LIB S: ${libSValues.join(', ') || '(vuoto)'}`);
-                }
-            } catch(e) {
-                alert(`❌ Errore APP CERCA:\n${e.message}`);
-            }
-        }
-    </script>
+    }
+</script>
 </body>
 </html>
