@@ -16,8 +16,6 @@ const APP_PASSWORD = "segreto2026";
 // Fogli da NON mostrare nell'app
 const FOGLI_DA_ESCLUDERE = [
     "PROGRAMMAZIONE",
-    "CAL",
     "ORARI",
-    "AUTO",
-    "APP LIBERI"
+    "AUTO"
 ];
