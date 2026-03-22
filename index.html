@@ -6,139 +6,182 @@
     <title>PALAMINI AUTO</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#4f8bc4">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="config.js"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="https://apis.google.com/js/api.js" async defer></script>
     <style>
         :root {
-            --ink:#111111;--ink-2:#555555;--ink-3:#999999;--sheet:#ffffff;--bg:#f4f4f4;--line:#e5e5e5;
-            --sidebar:#4f8bc4;--sid-dark:#3b6d9c;--sid-txt:rgba(255,255,255,0.92);--sid-act:rgba(0,0,0,0.18);
-            --accent:#4f8bc4;--radius:6px;--sh:0 1px 2px rgba(0,0,0,0.06),0 1px 4px rgba(0,0,0,0.04);--sh2:0 2px 8px rgba(0,0,0,0.10),0 1px 3px rgba(0,0,0,0.06);
+            --ink:#111111;--ink-2:#4a4a4a;--ink-3:#888888;
+            --sheet:#ffffff;--bg:#e9e9e9;--line:#d8d8d8;
+            --sidebar:#4f8bc4;--sid-dark:#3b6d9c;--sid-txt:rgba(255,255,255,0.93);--sid-act:rgba(0,0,0,0.18);
+            --accent:#4f8bc4;--radius:6px;
+            --sh:0 1px 3px rgba(0,0,0,0.08),0 1px 4px rgba(0,0,0,0.05);
+            --sh2:0 3px 10px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.07);
+            --fs:14px; /* base font size */
         }
         *,*::before,*::after{box-sizing:border-box;}
-        body{font-family:'SF Pro Text',-apple-system,'Segoe UI',sans-serif;margin:0;background:var(--bg);height:100vh;overflow:hidden;font-size:13px;color:var(--ink);-webkit-font-smoothing:antialiased;}
+        body{font-family:'Roboto',sans-serif;margin:0;background:var(--bg);height:100vh;overflow:hidden;font-size:var(--fs);color:var(--ink);-webkit-font-smoothing:antialiased;}
+
+        /* LOGIN */
         #login-screen{display:flex;align-items:center;justify-content:center;height:100vh;background:var(--sid-dark);}
         .login-box{background:white;border:1px solid var(--line);padding:36px 32px;border-radius:10px;text-align:center;width:90%;max-width:300px;box-shadow:var(--sh2);}
         .login-box h2{font-size:15px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:var(--sidebar);margin:0 0 24px;}
         #google-btn-wrap{margin-top:4px;}
         #google-status{font-size:11px;color:var(--ink-3);margin-top:8px;}
+
+        /* APP */
         #app-screen{display:none;height:100vh;flex-direction:row;}
         #sidebar{width:160px;min-width:160px;background:var(--sidebar);padding:10px 6px;overflow-y:auto;flex-shrink:0;display:flex;flex-direction:column;}
         #sidebar h3{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.42);padding:6px 8px 8px;margin:0;}
         #buttons-container{flex-grow:1;overflow-y:auto;display:flex;flex-direction:column;gap:1px;}
-        #sidebar button{display:block;width:100%;padding:7px 10px;cursor:pointer;background:transparent;color:var(--sid-txt);border:none;text-align:left;border-radius:var(--radius);font-size:12px;font-weight:400;transition:background .12s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.4;}
+        #sidebar button{display:block;width:100%;padding:7px 10px;cursor:pointer;background:transparent;color:var(--sid-txt);border:none;text-align:left;border-radius:var(--radius);font-size:12px;font-weight:400;transition:background .12s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.4;font-family:'Roboto',sans-serif;}
         #sidebar button:hover{background:rgba(0,0,0,0.10);}
         #sidebar button.active{background:var(--sid-act);color:white;font-weight:600;}
+
+        /* HEADER */
         #main-container{flex-grow:1;display:flex;flex-direction:column;overflow:hidden;background:var(--sheet);}
         #header{background:var(--sheet);padding:0 14px;height:48px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);gap:10px;flex-shrink:0;}
-        #titolo-foglio{margin:0;font-size:14px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        #titolo-foglio{margin:0;font-size:15px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
         .header-right{display:flex;align-items:center;gap:4px;flex-shrink:0;}
-        .hb{width:34px;height:34px;border:none;background:transparent;cursor:pointer;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--ink-2);transition:background .12s;flex-shrink:0;}
+        .hb{width:34px;height:34px;border:none;background:transparent;cursor:pointer;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--ink-2);transition:background .12s;flex-shrink:0;font-family:'Roboto',sans-serif;}
         .hb:hover{background:var(--bg);}
         #btn-sync{padding:0 12px;width:auto;font-size:11px;font-weight:600;letter-spacing:.3px;color:var(--ink-2);border:1px solid var(--line);border-radius:20px;height:30px;}
         #hamburger-btn{display:none;}
+
+        /* TOOLBAR */
         #toolbar{display:none;align-items:center;gap:6px;padding:7px 12px;background:var(--sheet);border-bottom:1px solid var(--line);flex-shrink:0;flex-wrap:wrap;}
-        #search-input{flex:1;min-width:120px;max-width:240px;padding:6px 11px;border:1px solid var(--line);border-radius:20px;font-size:12px;outline:none;background:var(--bg);color:var(--ink);}
+        #search-input{flex:1;min-width:120px;max-width:240px;padding:6px 11px;border:1px solid var(--line);border-radius:20px;font-size:13px;outline:none;background:var(--bg);color:var(--ink);font-family:'Roboto',sans-serif;}
         #search-input:focus{border-color:#bbb;background:white;}
-        #btn-add-toolbar{padding:5px 14px;background:var(--sidebar);color:white;border:none;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;display:none;white-space:nowrap;}
-        #sort-column{padding:5px 8px;border:1px solid var(--line);border-radius:var(--radius);font-size:11px;background:white;color:var(--ink);cursor:pointer;}
-        .btn-sort{padding:5px 9px;border:1px solid var(--line);border-radius:var(--radius);background:white;font-size:11px;cursor:pointer;color:var(--ink-2);}
+        #btn-add-toolbar{padding:5px 14px;background:var(--sidebar);color:white;border:none;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;display:none;white-space:nowrap;font-family:'Roboto',sans-serif;}
+        #sort-column{padding:5px 8px;border:1px solid var(--line);border-radius:var(--radius);font-size:12px;background:white;color:var(--ink);cursor:pointer;font-family:'Roboto',sans-serif;}
+        .btn-sort{padding:5px 9px;border:1px solid var(--line);border-radius:var(--radius);background:white;font-size:12px;cursor:pointer;color:var(--ink-2);font-family:'Roboto',sans-serif;}
+
+        /* CONTENT */
         #content{overflow-y:auto;flex-grow:1;background:var(--sheet);display:flex;flex-direction:column;}
-        #status-message{padding:48px 20px;text-align:center;color:var(--ink-3);font-size:13px;}
+        #status-message{padding:48px 20px;text-align:center;color:var(--ink-3);font-size:14px;}
+
+        /* TABLE */
         .table-wrapper{overflow-x:auto;}
         table{border-collapse:collapse;width:100%;}
         @media(min-width:769px){table{table-layout:fixed;}}
-        th{padding:8px 12px;text-align:center;font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--ink-3);background:var(--sheet);border-bottom:2px solid var(--line);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:sticky;top:0;z-index:2;}
-        td{padding:9px 12px;border-bottom:1px solid var(--line);font-size:12.5px;text-align:center;vertical-align:middle;word-wrap:break-word;overflow-wrap:break-word;color:var(--ink);}
+        th{padding:8px 12px;text-align:center;font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--ink-3);background:var(--sheet);border-bottom:2px solid var(--line);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:sticky;top:0;z-index:2;}
+        td{padding:9px 12px;border-bottom:1px solid var(--line);font-size:var(--table-font,14px);text-align:center;vertical-align:middle;word-wrap:break-word;overflow-wrap:break-word;color:var(--ink);}
         tr:last-child td{border-bottom:none;}
-        tbody tr:hover td{background:#f8f8f8;}
+        tbody tr{transition:background .08s;}
         tbody tr.clickable-row{cursor:pointer;}
         tbody tr.clickable-row:hover td{background:#eef4fb;}
+        tbody tr:not(.clickable-row):hover td{background:#f5f5f5;}
         .sel-td{width:32px;text-align:center;padding:9px 8px;}
         tr.selected-row td{background:#ddeaf5!important;}
         .row-actions{text-align:right!important;vertical-align:middle!important;white-space:nowrap;}
-        td.virtual-col{color:var(--ink-2);font-style:italic;}
-        /* ACTION BUTTONS — unici per tutte le viste */
-        .act-btn{border:none;background:transparent;cursor:pointer;width:30px;height:30px;border-radius:6px;font-size:15px;display:inline-flex;align-items:center;justify-content:center;transition:background .12s,transform .08s,opacity .12s;padding:0;opacity:.5;line-height:1;}
-        .act-btn:hover{opacity:1;transform:scale(1.15);}
-        .act-btn.edit:hover{background:#e8f0ff;}
-        .act-btn.del:hover{background:#fff0f0;}
-        .act-btn.wa{opacity:.65;}
-        .act-btn.wa:hover{background:#e6f9ee;opacity:1;}
-        .act-btn.quick:hover{background:#fff8e0;opacity:1;}
-        /* CALENDARIO */
-        .cal-date-row td{background:var(--bg)!important;padding:9px 12px 7px!important;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-2);border-bottom:1px solid var(--line)!important;text-align:center!important;}
+        td.virtual-col{color:var(--ink-3);font-style:italic;}
+
+        /* CALENDARIO special */
+        .cal-date-row td{background:var(--bg)!important;padding:9px 12px 7px!important;font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-2);border-bottom:1px solid var(--line)!important;text-align:center!important;}
         .cal-orario{font-weight:600;color:var(--ink-2);width:62px;white-space:nowrap;}
+        td.cal-cell-colored{border-radius:4px;font-weight:600;}
+
+        /* ACTION BUTTONS */
+        .act-btn{border:1px solid transparent;background:rgba(0,0,0,0.04);cursor:pointer;width:32px;height:32px;border-radius:6px;font-size:16px;display:inline-flex;align-items:center;justify-content:center;transition:background .12s,transform .08s,border-color .12s;padding:0;opacity:.8;line-height:1;margin:0 1px;}
+        .act-btn:hover{opacity:1;transform:scale(1.08);border-color:var(--line);}
+        .act-btn.edit:hover{background:#e8f0ff;border-color:#b3c9f0;}
+        .act-btn.del:hover{background:#fff0f0;border-color:#f0b3b3;}
+        .act-btn.wa{background:rgba(39,174,96,0.08);}
+        .act-btn.wa:hover{background:#e6f9ee;border-color:#a8e6be;opacity:1;}
+        .act-btn.quick{background:rgba(241,196,15,0.10);}
+        .act-btn.quick:hover{background:#fff8e0;border-color:#f0d87a;opacity:1;}
+
         /* CARDS */
         .cards-grid{display:flex;flex-direction:column;}
-        .card{background:var(--sheet);padding:12px 16px 10px;cursor:pointer;border-bottom:1px solid var(--line);transition:background .10s;}
-        .card:hover{background:var(--bg);}
+        .card{background:var(--sheet);padding:13px 16px 10px;cursor:pointer;border-bottom:1px solid var(--line);transition:background .10s;}
+        .card:hover{background:#f0f6ff;}
         .card.card-selected{background:#ddeaf5!important;border-left:3px solid var(--accent);}
         .card-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:4px;}
-        .card-label{font-size:12px;font-weight:600;color:var(--ink);}
-        .card-badge-right{font-size:12px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;}
-        .card-corpo{font-size:12px;color:var(--ink-2);line-height:1.55;}
-        .card-actions{display:flex;gap:0;margin-top:6px;justify-content:flex-end;align-items:center;}
+        .card-label{font-size:var(--card-font,14px);font-weight:600;color:var(--ink);}
+        .card-badge-right{font-size:var(--card-font,14px);color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;}
+        .card-corpo{font-size:var(--card-font,14px);color:var(--ink-2);line-height:1.55;margin-top:2px;}
+        .card-actions{display:flex;gap:2px;margin-top:8px;justify-content:flex-end;align-items:center;}
+
         /* KANBAN */
         .kanban-board{display:flex;gap:0;overflow-x:auto;height:100%;background:var(--bg);}
-        .kanban-col{min-width:250px;max-width:285px;flex-shrink:0;display:flex;flex-direction:column;background:var(--bg);border-right:1px solid var(--line);}
-        .kanban-col-header{padding:11px 12px;font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--ink-2);display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);background:var(--bg);}
-        .kanban-col-count{font-size:10px;color:var(--ink-3);font-weight:500;}
+        .kanban-col{min-width:260px;max-width:295px;flex-shrink:0;display:flex;flex-direction:column;background:var(--bg);border-right:1px solid var(--line);}
+        .kanban-col-header{padding:11px 12px;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--ink-2);display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);}
+        .kanban-col-count{font-size:11px;color:var(--ink-3);font-weight:500;}
         .kanban-col-body{flex:1;overflow-y:auto;display:flex;flex-direction:column;padding:6px;}
         .kanban-card{background:var(--sheet);border-radius:var(--radius);padding:11px 12px;box-shadow:var(--sh);cursor:pointer;transition:box-shadow .12s;margin-bottom:4px;}
         .kanban-card:hover{box-shadow:var(--sh2);}
         .kanban-card.card-selected{border-left:3px solid var(--accent);background:#ddeaf5!important;}
-        .kanban-card-label{font-size:12px;font-weight:600;margin-bottom:4px;}
-        .kanban-card-body-line{font-size:12px;color:var(--ink-2);line-height:1.45;}
-        .kanban-card-meta{font-size:12px;color:var(--ink-3);margin-top:3px;}
-        .kanban-card-actions{display:flex;gap:0;margin-top:6px;justify-content:flex-end;}
-        /* MULTI DELETE */
-        #multi-delete-bar{display:none;position:sticky;bottom:0;background:var(--sid-dark);color:white;padding:10px 16px;z-index:200;align-items:center;gap:12px;font-size:12px;font-weight:500;flex-shrink:0;}
-        #multi-delete-bar button{background:rgba(255,255,255,0.15);color:white;border:none;border-radius:var(--radius);padding:6px 14px;font-size:11px;font-weight:500;cursor:pointer;}
+        .kanban-card-label{font-size:var(--card-font,14px);font-weight:600;margin-bottom:4px;}
+        .kanban-card-body-line{font-size:var(--card-font,14px);color:var(--ink-2);line-height:1.45;}
+        .kanban-card-meta{font-size:var(--card-font,14px);color:var(--ink-3);margin-top:3px;}
+        .kanban-card-actions{display:flex;gap:2px;margin-top:6px;justify-content:flex-end;}
+
+        /* MULTI DELETE BAR */
+        #multi-delete-bar{display:none;position:sticky;bottom:0;background:var(--sid-dark);color:white;padding:10px 16px;z-index:200;align-items:center;gap:12px;font-size:13px;font-weight:500;flex-shrink:0;}
+        #multi-delete-bar button{background:rgba(255,255,255,0.18);color:white;border:none;border-radius:var(--radius);padding:6px 14px;font-size:12px;font-weight:500;cursor:pointer;font-family:'Roboto',sans-serif;}
         #multi-delete-bar button.annulla{background:transparent;border:1px solid rgba(255,255,255,0.3);}
         #btn-toggle-selezione{width:30px;height:30px;border:1px solid var(--line);background:white;border-radius:var(--radius);cursor:pointer;display:none;align-items:center;justify-content:center;font-size:14px;color:var(--ink-3);}
         #btn-toggle-selezione.attivo{background:#fdecea;border-color:#e74c3c;color:#e74c3c;}
+
         /* MODALI */
         .modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;z-index:1000;}
         .modal-content{background:white;padding:24px;border-radius:10px;width:90%;max-width:520px;max-height:92vh;overflow-y:auto;box-shadow:0 16px 48px rgba(0,0,0,0.18);}
-        .modal-content h3{margin:0 0 14px;font-size:14px;font-weight:600;color:var(--ink);}
+        .modal-content h3{margin:0 0 14px;font-size:15px;font-weight:600;color:var(--ink);}
+
+        /* FORM MODIFICA */
         #modal-form .modal-content{max-width:860px;width:95%;display:flex;flex-direction:column;}
-        #modal-form-fields{display:grid;grid-template-columns:1fr 1fr;gap:4px 20px;}
-        .form-field-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #f6f6f6;}
-        .form-field-row label{min-width:120px;max-width:120px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-3);flex-shrink:0;line-height:1.3;}
-        .form-field-row input,.form-field-row select{flex:1;min-width:0;padding:6px 9px;border:1px solid var(--line);border-radius:var(--radius);font-size:12px;outline:none;color:var(--ink);}
-        .form-field-row input:focus{border-color:var(--accent);}
-        .form-field-row input[disabled]{background:#f0f0f0;color:#aaa;cursor:not-allowed;border:1px dashed #ccc;font-style:italic;}
+        #modal-form-fields{display:grid;grid-template-columns:1fr 1fr;gap:4px 24px;}
+        .form-field-row{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid #f0f0f0;}
+        .form-field-row label{min-width:110px;max-width:110px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-3);flex-shrink:0;line-height:1.3;padding-top:8px;}
+        .form-field-row input,.form-field-row textarea,.form-field-row select{flex:1;min-width:0;padding:6px 9px;border:1px solid var(--line);border-radius:var(--radius);font-size:13px;outline:none;color:var(--ink);font-family:'Roboto',sans-serif;resize:none;background:white;}
+        .form-field-row textarea{min-height:34px;overflow:hidden;line-height:1.45;}
+        .form-field-row input:focus,.form-field-row textarea:focus{border-color:var(--accent);}
+        .form-field-row input[disabled],.form-field-row textarea[disabled]{background:#f0f0f0;color:#aaa;cursor:not-allowed;border:1px dashed #ccc;font-style:italic;}
+
+        /* IMPOSTAZIONI */
         .form-group{margin-bottom:13px;}
         .form-group label{display:block;font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--ink-3);margin-bottom:5px;}
-        .form-group input,.form-group select,.form-group textarea{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:var(--radius);font-size:13px;outline:none;color:var(--ink);}
-        .checkbox-label{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:5px 0;color:var(--ink);}
+        .form-group input,.form-group select,.form-group textarea{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:var(--radius);font-size:14px;outline:none;color:var(--ink);font-family:'Roboto',sans-serif;}
+        .checkbox-label{display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer;padding:5px 0;color:var(--ink);}
         .checkbox-label input{width:auto!important;margin:0!important;cursor:pointer;}
         .modal-buttons{display:flex;justify-content:flex-end;gap:8px;margin-top:14px;flex-shrink:0;}
-        .btn{padding:8px 16px;border:none;border-radius:var(--radius);cursor:pointer;font-size:12px;font-weight:500;}
+        .btn{padding:8px 18px;border:none;border-radius:var(--radius);cursor:pointer;font-size:13px;font-weight:500;font-family:'Roboto',sans-serif;}
         .btn-save{background:var(--sidebar);color:white;}
         .btn-cancel{background:var(--bg);color:var(--ink);border:1px solid var(--line);}
         hr{border:0;border-top:1px solid var(--line);margin:16px 0;}
-        p{font-size:12px;color:var(--ink-2);margin:0;}
+        p{font-size:13px;color:var(--ink-2);margin:0;}
         .fmt-rule{display:grid;grid-template-columns:1fr 110px 1fr 46px 76px;gap:4px;align-items:center;padding:5px;background:var(--bg);border-radius:var(--radius);margin-bottom:5px;border:1px solid var(--line);}
-        .fmt-rule select,.fmt-rule input[type=text]{padding:4px;border:1px solid var(--line);border-radius:4px;font-size:11px;width:100%;}
+        .fmt-rule select,.fmt-rule input[type=text]{padding:4px;border:1px solid var(--line);border-radius:4px;font-size:11px;width:100%;font-family:'Roboto',sans-serif;}
         .fmt-rule input[type=color]{width:40px;height:28px;border:1px solid var(--line);border-radius:4px;cursor:pointer;padding:1px;}
-        .order-item{display:flex;justify-content:space-between;align-items:center;padding:9px 12px;border-radius:var(--radius);background:var(--bg);margin-bottom:4px;font-size:13px;}
-        .order-btns button{padding:4px 8px;border:1px solid var(--line);border-radius:4px;background:white;cursor:pointer;margin-left:4px;font-size:11px;}
+        .order-item{display:flex;justify-content:space-between;align-items:center;padding:9px 12px;border-radius:var(--radius);background:var(--bg);margin-bottom:4px;font-size:14px;}
+        .order-btns button{padding:4px 8px;border:1px solid var(--line);border-radius:4px;background:white;cursor:pointer;margin-left:4px;font-size:11px;font-family:'Roboto',sans-serif;}
         .order-btns button:disabled{opacity:.3;cursor:not-allowed;}
-        @media(max-width:768px){#sidebar{display:none!important;}#hamburger-btn{display:flex!important;}.desktop-only{display:none!important;}}
+
+        /* MOBILE */
+        @media(max-width:768px){
+            #sidebar{display:none!important;}
+            #hamburger-btn{display:flex!important;}
+            .desktop-only{display:none!important;}
+            /* Form a colonna singola su mobile */
+            #modal-form-fields{grid-template-columns:1fr;}
+            .form-field-row{flex-direction:column;align-items:stretch;gap:3px;}
+            .form-field-row label{min-width:unset;max-width:unset;padding-top:0;}
+        }
+
+        /* DRAWER */
         #drawer-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:5000;}
         #drawer-overlay.open{display:block;}
         #drawer{position:fixed;top:0;left:-280px;width:256px;height:100%;background:var(--sidebar);z-index:5001;transition:left .22s ease;display:flex;flex-direction:column;padding:16px 8px;overflow-y:auto;}
         #drawer.open{left:0;}
         #drawer h3{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.40);padding:0 8px 8px;margin:0;}
         #drawer-buttons{flex-grow:1;overflow-y:auto;display:flex;flex-direction:column;gap:1px;}
-        #drawer button{display:block;width:100%;padding:9px 12px;cursor:pointer;background:transparent;color:var(--sid-txt);border:none;text-align:left;border-radius:var(--radius);font-size:13px;}
+        #drawer button{display:block;width:100%;padding:9px 12px;cursor:pointer;background:transparent;color:var(--sid-txt);border:none;text-align:left;border-radius:var(--radius);font-size:14px;font-family:'Roboto',sans-serif;}
         #drawer button:hover,#drawer button.active{background:rgba(0,0,0,0.15);}
         #drawer-footer{margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.15);display:flex;gap:6px;}
         #drawer-footer button{flex:1;padding:10px;text-align:center;}
-        #tabella-container{--table-font:13px;flex-grow:1;}
-        #tabella-container td{font-size:var(--table-font);}
+
+        #tabella-container{flex-grow:1;}
         #config-saving{display:none;position:fixed;bottom:16px;right:16px;background:var(--sid-dark);color:white;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;z-index:9999;box-shadow:var(--sh2);}
     </style>
 </head>
@@ -168,7 +211,7 @@
                 <button id="hamburger-btn" class="hb" onclick="apriDrawer()">☰</button>
                 <button onclick="sincronizza()" id="btn-sync" class="hb btn-sync">↻ Sync</button>
                 <button onclick="cambiaFont(-1)" class="hb desktop-only" style="font-size:11px;font-weight:700;">A−</button>
-                <button onclick="cambiaFont(1)" class="hb desktop-only" style="font-size:11px;font-weight:700;">A+</button>
+                <button onclick="cambiaFont(1)"  class="hb desktop-only" style="font-size:11px;font-weight:700;">A+</button>
                 <button onclick="apriOrdinamento()" class="hb desktop-only">↕</button>
                 <button onclick="apriImpostazioni()" class="hb desktop-only">⚙</button>
             </div>
@@ -223,39 +266,39 @@
         <div id="settings-colonne"></div>
         <hr>
         <div>
-            <label style="font-weight:700;font-size:13px;display:block;margin-bottom:6px;">🔒 Colonne Sola Lettura</label>
-            <p style="margin-bottom:8px;font-size:11px;color:var(--ink-3);">Il valore di queste colonne non viene mai sovrascritto dal form (le formule Excel restano intatte).</p>
+            <label style="font-weight:700;font-size:14px;display:block;margin-bottom:6px;">🔒 Colonne Sola Lettura</label>
+            <p style="margin-bottom:8px;font-size:12px;color:var(--ink-3);">Il valore non viene mai sovrascritto dal form (le formule Excel restano intatte).</p>
             <div id="settings-readonly"></div>
         </div>
         <hr>
         <div>
-            <label style="font-weight:700;font-size:13px;display:block;margin-bottom:6px;">🧮 Colonne Virtuali</label>
-            <p style="margin-bottom:8px;font-size:11px;color:var(--ink-3);">Colonne calcolate lato app. Una per riga nel formato: <code style="background:#f4f4f4;padding:1px 5px;border-radius:3px;font-size:11px;">NOME = {COL1} {COL2}</code></p>
-            <textarea id="set-colonne-virtuali" rows="4" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:var(--radius);font-size:12px;font-family:monospace;resize:vertical;" placeholder="NOMINATIVO = {NOME} {COGNOME}&#10;INFO = {MARCA} {MODELLO} ({ANNO})"></textarea>
+            <label style="font-weight:700;font-size:14px;display:block;margin-bottom:6px;">🧮 Colonne Virtuali</label>
+            <p style="margin-bottom:8px;font-size:12px;color:var(--ink-3);">Una per riga. Usa <code style="background:#f0f0f0;padding:1px 4px;border-radius:3px;">{COLONNA}</code> e funzioni: <code style="background:#f0f0f0;padding:1px 4px;border-radius:3px;">ORA({...})</code> · <code style="background:#f0f0f0;padding:1px 4px;border-radius:3px;">DATA_ISO({...})</code> · <code style="background:#f0f0f0;padding:1px 4px;border-radius:3px;">IT2DATA({...})</code> · <code style="background:#f0f0f0;padding:1px 4px;border-radius:3px;">SE({COL},val,sì,no)</code> · <code style="background:#f0f0f0;padding:1px 4px;border-radius:3px;">UPPER</code> · <code style="background:#f0f0f0;padding:1px 4px;border-radius:3px;">PRIMA({COL},4)</code></p>
+            <textarea id="set-colonne-virtuali" rows="4" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:var(--radius);font-size:12px;font-family:monospace;resize:vertical;" placeholder="ORARIO = ORA({DATA e ORA})&#10;NOMINATIVO = {NOME} {COGNOME}"></textarea>
         </div>
         <hr>
         <div>
-            <label style="font-weight:700;font-size:13px;display:block;margin-bottom:8px;">💬 WhatsApp</label>
+            <label style="font-weight:700;font-size:14px;display:block;margin-bottom:8px;">💬 WhatsApp</label>
             <label class="checkbox-label"><input type="checkbox" id="set-wa-attivo"> Mostra pulsante WhatsApp</label>
             <div class="form-group" style="margin-top:8px;"><label>Colonna numero di telefono</label>
-                <select id="set-wa-colonna" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:var(--radius);font-size:13px;"></select>
+                <select id="set-wa-colonna" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:var(--radius);"></select>
             </div>
         </div>
         <hr>
         <div>
-            <label style="font-weight:700;font-size:13px;display:block;margin-bottom:6px;">⚡ Azione Rapida</label>
-            <p style="margin-bottom:8px;font-size:11px;color:var(--ink-3);">Pulsante extra per impostare un valore fisso in una colonna (es. segna come RITIRATE).</p>
+            <label style="font-weight:700;font-size:14px;display:block;margin-bottom:6px;">⚡ Azione Rapida</label>
+            <p style="margin-bottom:8px;font-size:12px;color:var(--ink-3);">Pulsante per impostare un valore fisso in una colonna.</p>
             <label class="checkbox-label"><input type="checkbox" id="set-qa-attiva"> Attiva</label>
             <div style="display:grid;grid-template-columns:1fr 1fr 60px;gap:8px;margin-top:8px;">
-                <div><label style="font-size:10px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px;">Colonna</label><select id="set-qa-colonna" style="width:100%;padding:7px;border:1px solid var(--line);border-radius:var(--radius);font-size:12px;"></select></div>
-                <div><label style="font-size:10px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px;">Valore</label><input type="text" id="set-qa-valore" placeholder="es. RITIRATE" style="width:100%;padding:7px;border:1px solid var(--line);border-radius:var(--radius);font-size:12px;"></div>
-                <div><label style="font-size:10px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px;">Icona</label><input type="text" id="set-qa-emoji" placeholder="✅" style="width:100%;padding:7px;border:1px solid var(--line);border-radius:var(--radius);font-size:14px;text-align:center;"></div>
+                <div><label style="font-size:10px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px;">Colonna</label><select id="set-qa-colonna" style="width:100%;padding:7px;border:1px solid var(--line);border-radius:var(--radius);font-size:13px;"></select></div>
+                <div><label style="font-size:10px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px;">Valore</label><input type="text" id="set-qa-valore" placeholder="es. RITIRATE" style="width:100%;padding:7px;border:1px solid var(--line);border-radius:var(--radius);font-size:13px;"></div>
+                <div><label style="font-size:10px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px;">Icona</label><input type="text" id="set-qa-emoji" placeholder="✅" style="width:100%;padding:7px;border:1px solid var(--line);border-radius:var(--radius);font-size:16px;text-align:center;"></div>
             </div>
         </div>
         <hr>
         <div>
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
-                <label style="font-weight:700;font-size:13px;margin:0;">📋 Vista Card</label>
+                <label style="font-weight:700;font-size:14px;margin:0;">📋 Vista Card</label>
                 <label class="checkbox-label" style="margin:0;"><input type="checkbox" id="set-card-attiva"> Attiva</label>
             </div>
             <div class="form-group"><label>Etichetta sup. sinistra</label><select id="card-col-data" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:var(--radius);"></select></div>
@@ -265,23 +308,23 @@
         <hr>
         <div>
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
-                <label style="font-weight:700;font-size:13px;margin:0;">🗂 Vista Kanban</label>
+                <label style="font-weight:700;font-size:14px;margin:0;">🗂 Vista Kanban</label>
                 <label class="checkbox-label" style="margin:0;"><input type="checkbox" id="set-kanban-attiva"> Attiva</label>
             </div>
             <div class="form-group"><label>Colonna di raggruppamento</label><select id="kanban-col-gruppo" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:var(--radius);"></select></div>
-            <div class="form-group"><label>Ordine colonne kanban (una per riga)</label><textarea id="kanban-ordine" rows="5" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:var(--radius);font-size:12px;font-family:inherit;"></textarea></div>
+            <div class="form-group"><label>Ordine colonne kanban (una per riga)</label><textarea id="kanban-ordine" rows="4" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:var(--radius);font-size:13px;font-family:inherit;"></textarea></div>
         </div>
         <hr>
-        <div><label style="font-weight:700;font-size:13px;display:block;margin-bottom:6px;">📅 Formato Data/Ora</label><div id="formati-colonne-list"></div></div>
+        <div><label style="font-weight:700;font-size:14px;display:block;margin-bottom:6px;">📅 Formato Data/Ora</label><div id="formati-colonne-list"></div></div>
         <hr>
         <div>
-            <label style="font-weight:700;font-size:13px;display:block;margin-bottom:6px;">🎨 Regole di Formattazione</label>
-            <p style="margin-bottom:8px;font-size:11px;color:var(--ink-3);">"Solo cella" colora il valore di quella specifica colonna ovunque appaia nella card.</p>
+            <label style="font-weight:700;font-size:14px;display:block;margin-bottom:6px;">🎨 Regole di Formattazione</label>
+            <p style="margin-bottom:8px;font-size:12px;color:var(--ink-3);">"Solo cella" colora il valore di quella colonna ovunque appaia (anche nelle etichette superiori della card).</p>
             <div style="display:grid;grid-template-columns:1fr 110px 1fr 46px 76px;gap:4px;margin-bottom:4px;font-size:10px;color:var(--ink-3);font-weight:700;padding:0 2px;"><span>Colonna</span><span>Operatore</span><span>Valore</span><span>Col.</span><span>Target</span></div>
             <div id="format-rules-list"></div>
         </div>
         <hr>
-        <div><label style="font-weight:700;font-size:13px;display:block;margin-bottom:6px;">🟦 Colore Sfondo Colonna</label><div id="colori-colonne-list"></div></div>
+        <div><label style="font-weight:700;font-size:14px;display:block;margin-bottom:6px;">🟦 Colore Sfondo Colonna</label><div id="colori-colonne-list"></div></div>
         <div class="modal-buttons">
             <button class="btn btn-cancel" onclick="chiudiModal('modal-settings')">Annulla</button>
             <button class="btn btn-save" onclick="salvaImpostazioni()" id="btn-save-settings">Salva</button>
@@ -311,7 +354,7 @@ function verificaPronte(){
     if(!_gapiReady||!_gisReady)return;
     const tok=localStorage.getItem('gs_token');
     if(tok){_accessToken=tok;gapi.client.setToken({access_token:tok});document.getElementById('login-screen').style.display='none';document.getElementById('app-screen').style.display='flex';sincronizza();return;}
-    document.getElementById('google-btn-wrap').innerHTML=`<button onclick="autorizzaGoogle()" style="width:100%;padding:10px;background:white;border:1px solid var(--line);border-radius:var(--radius);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px;"><svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.08 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-3.59-13.46-8.66l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>Accedi con Google</button>`;
+    document.getElementById('google-btn-wrap').innerHTML=`<button onclick="autorizzaGoogle()" style="width:100%;padding:10px;background:white;border:1px solid var(--line);border-radius:var(--radius);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px;font-family:'Roboto',sans-serif;"><svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.08 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-3.59-13.46-8.66l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>Accedi con Google</button>`;
 }
 async function autorizzaGoogle(){_tokenClient.callback=r=>{if(r.error){alert('Errore: '+r.error);return;}_accessToken=r.access_token;localStorage.setItem('gs_token',_accessToken);gapi.client.setToken({access_token:_accessToken});document.getElementById('login-screen').style.display='none';document.getElementById('app-screen').style.display='flex';sincronizza();};_tokenClient.requestAccessToken({prompt:'consent'});}
 function setGapiToken(){if(_accessToken)gapi.client.setToken({access_token:_accessToken});}
@@ -328,41 +371,127 @@ const GS={
 function colIndexToLetter(i){let s='',n=i;while(n>=0){s=String.fromCharCode(65+(n%26))+s;n=Math.floor(n/26)-1;}return s;}
 window.gapiLoaded=inizializzaGapi;window.gisLoaded=inizializzaGis;
 
-// ── STATE ────────────────────────────────────────────────────
+// ── STATE ─────────────────────────────────────────────────────
 let DATABASE={},APP_CONFIG={},FOGLIO_ATTIVO='',RIGA_ORIGINALE_IN_MODIFICA=null;
 let ORDINAMENTO={colonna:null,direzione:1},_sortFixed=false,autoSyncTimer=null;
 let _vistaCard=false,_vistaKanban=false,_selezioneAttiva=false,_selectedRows=new Set();
-let _fontSize=parseInt(localStorage.getItem('tableFontSize')||'13');
+let _fontSize=14; // default, verrà sovrascritto da APP_CONFIG
 const FOGLI_CON_DATE=['SAT','APP PNM','FLOTTE'],NOME_COLONNA_DATA='DATA e ORA';
 const CONFIG_KEY='appConfig_gs';
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 window.onload=()=>setTimeout(()=>{if(typeof google!=='undefined'&&google.accounts)inizializzaGis();if(typeof gapi!=='undefined')inizializzaGapi();},1500);
-function aggiornaFont(){document.getElementById('tabella-container').style.setProperty('--table-font',_fontSize+'px');}
-function cambiaFont(d){_fontSize=Math.min(22,Math.max(9,_fontSize+d));localStorage.setItem('tableFontSize',_fontSize);aggiornaFont();}
+
+function aggiornaFont(){
+    const fs=_fontSize+'px';
+    document.documentElement.style.setProperty('--table-font',fs);
+    document.documentElement.style.setProperty('--card-font',fs);
+}
+function cambiaFont(d){
+    _fontSize=Math.min(22,Math.max(9,_fontSize+d));
+    aggiornaFont();
+    APP_CONFIG._fontSize=_fontSize;
+    salvaConfig();
+}
 window.addEventListener('load',aggiornaFont);
 
 async function salvaConfig(){const ind=document.getElementById('config-saving');ind.style.display='block';try{await GS.saveConfig(APP_CONFIG);}finally{setTimeout(()=>{ind.style.display='none';},1200);}}
 
+// ── VIRTUAL COLUMNS ───────────────────────────────────────────
+function parseColonneVirtuali(testo){return(testo||'').split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{const eq=l.indexOf('=');if(eq<0)return null;return{nome:l.slice(0,eq).trim(),formula:l.slice(eq+1).trim()};}).filter(Boolean);}
+
+const _VF={
+    ORA(v){if(!v)return'';const iso=String(v).match(/T(\d{2}):(\d{2})/);if(iso)return`${iso[1]}:${iso[2]}`;const it=String(v).match(/\d{2}\/\d{2}\/\d{4}\s+(\d{2}):(\d{2})/);if(it)return`${it[1]}:${it[2]}`;const hm=String(v).match(/^(\d{2}):(\d{2})/);if(hm)return`${hm[1]}:${hm[2]}`;return v;},
+    DATA(v){if(!v)return'';const iso=String(v).match(/^(\d{4})-(\d{2})-(\d{2})/);if(iso)return`${iso[3]}/${iso[2]}/${iso[1]}`;const it=String(v).match(/^(\d{2})\/(\d{2})\/(\d{4})/);if(it)return`${it[1]}/${it[2]}/${it[3]}`;return v;},
+    DATA_ISO(v){if(!v)return'';const iso=String(v).match(/^(\d{4})-(\d{2})-(\d{2})/);if(iso)return`${iso[1]}-${iso[2]}-${iso[3]}`;const it=String(v).match(/^(\d{2})\/(\d{2})\/(\d{4})/);if(it)return`${it[3]}-${it[2]}-${it[1]}`;return v;},
+    IT2DATA(v){if(!v)return'';const mesi={gennaio:'01',febbraio:'02',marzo:'03',aprile:'04',maggio:'05',giugno:'06',luglio:'07',agosto:'08',settembre:'09',ottobre:'10',novembre:'11',dicembre:'12'};const s=String(v).toLowerCase().trim();const m=s.match(/(\d{1,2})\s+([a-zàèéìòù]+)(?:\s+(\d{2}:\d{2}))?/);if(!m)return v;const g=m[1].padStart(2,'0'),mes=mesi[m[2]],ora=m[3]||'';if(!mes)return v;const oggi=new Date();let anno=oggi.getFullYear();const dt=new Date(anno,parseInt(mes)-1,parseInt(g));if(dt<oggi&&(oggi-dt)>86400000)anno++;return`${g}/${mes}/${anno}${ora?' '+ora:''}`;},
+    IT2ISO(v){if(!v)return'';const mesi={gennaio:'01',febbraio:'02',marzo:'03',aprile:'04',maggio:'05',giugno:'06',luglio:'07',agosto:'08',settembre:'09',ottobre:'10',novembre:'11',dicembre:'12'};const s=String(v).toLowerCase().trim();const m=s.match(/(\d{1,2})\s+([a-zàèéìòù]+)(?:\s+(\d{2}:\d{2}))?/);if(!m)return v;const g=m[1].padStart(2,'0'),mes=mesi[m[2]],ora=m[3]||'00:00';if(!mes)return v;const oggi=new Date();let anno=oggi.getFullYear();const dt=new Date(anno,parseInt(mes)-1,parseInt(g));if(dt<oggi&&(oggi-dt)>86400000)anno++;return`${anno}-${mes}-${g} ${ora}`;},
+    IT2ORA(v){if(!v)return'';const m=String(v).match(/(\d{2}:\d{2})/);return m?m[1]:'';},
+    UPPER(v){return String(v||'').toUpperCase();},
+    LOWER(v){return String(v||'').toLowerCase();},
+    PRIMA(v,n){return String(v||'').slice(0,parseInt(n)||0);},
+    ULTIMA(v,n){const s=String(v||'');return s.slice(Math.max(0,s.length-(parseInt(n)||0)));},
+    SE(v,confronto,siTrue,siFalse){return String(v||'').trim()===String(confronto||'').trim()?(siTrue||''):(siFalse||'');},
+    CONTIENE(v,sub,siTrue,siFalse){return String(v||'').toLowerCase().includes(String(sub||'').toLowerCase())?(siTrue||'true'):(siFalse||'');},
+    LEN(v){return String(String(v||'').trim().length);},
+};
+function _applicaFunzione(nomeFn,argRaw,riga){
+    const risolvi=s=>s.replace(/\{([^}]+)\}/g,(_,c)=>String(riga[c]||'').trim());
+    const args=argRaw.split(/(?<!\\),/).map(a=>risolvi(a.trim()));
+    const fn=_VF[nomeFn.toUpperCase()];
+    if(!fn)return`[?${nomeFn}]`;
+    try{return fn(...args)||'';}catch(e){return'';}
+}
+function calcolaVirtuali(riga,config){
+    const extra={};
+    (config.colonneVirtuali||[]).forEach(v=>{
+        let f=v.formula;
+        f=f.replace(/([A-Z_]+)\(([^)]*)\)/gi,(match,fn,args)=>_applicaFunzione(fn,args,riga));
+        f=f.replace(/\{([^}]+)\}/g,(_,c)=>String(riga[c]||'').trim());
+        extra[v.nome]=f.trim();
+    });
+    return extra;
+}
+
 // ── UTILITIES ─────────────────────────────────────────────────
 function parsaData(s){if(!s)return null;const m=String(s).match(/^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}))?/);if(m)return new Date(`${m[3]}-${m[2]}-${m[1]}T${m[4]||'00'}:${m[5]||'00'}`).getTime();const d=new Date(s);return isNaN(d)?null:d.getTime();}
 function isRigaVuota(r,cols){return cols.every(c=>!String(r[c]||'').trim());}
+function getTelefono(riga,config){const col=config.whatsappColonna||'';if(col&&riga[col]!==undefined)return String(riga[col]||'');for(const c of['CONTATTO TELEFONICO','TELEFONO','TEL','CELLULARE','CELL']){if(riga[c]!==undefined)return String(riga[c]||'');}return'';}
+
+// ── FORMAT RULES ──────────────────────────────────────────────
 function valutaFormatRules(riga,config){
     for(const r of(config.formatRules||[])){
         if(!r.colonna||!r.colore)continue;
         const v=String(riga[r.colonna]||'').trim();let match=false;
-        switch(r.operatore){case'uguale':match=v===r.valore;break;case'non uguale':match=v!==r.valore;break;case'contiene':match=v.toLowerCase().includes((r.valore||'').toLowerCase());break;case'inizia con':match=v.toLowerCase().startsWith((r.valore||'').toLowerCase());break;case'non vuoto':match=v!=='';break;case'vuoto':match=v==='';break;case'data > (dopo)':{const a=parsaData(v),b=parsaData(r.valore);match=a!=null&&b!=null&&a>b;break;}case'data < (prima)':{const a=parsaData(v),b=parsaData(r.valore);match=a!=null&&b!=null&&a<b;break;}}
+        switch(r.operatore){
+            case'uguale':match=v===r.valore;break;case'non uguale':match=v!==r.valore;break;
+            case'contiene':match=v.toLowerCase().includes((r.valore||'').toLowerCase());break;
+            case'inizia con':match=v.toLowerCase().startsWith((r.valore||'').toLowerCase());break;
+            case'non vuoto':match=v!=='';break;case'vuoto':match=v==='';break;
+            case'data > (dopo)':{const a=parsaData(v),b=parsaData(r.valore);match=a!=null&&b!=null&&a>b;break;}
+            case'data < (prima)':{const a=parsaData(v),b=parsaData(r.valore);match=a!=null&&b!=null&&a<b;break;}
+        }
         if(match)return{colore:r.colore,target:r.target||'riga',colonna:r.colonna};
     }
     return null;
 }
-// Colore per un campo specifico nella card:
-// target 'riga' → applica a tutto; target 'cella' → SOLO se fieldName === colonna della regola
-function fieldColor(fieldName,fmt){if(!fmt)return null;if(fmt.target==='riga')return fmt.colore;if(fmt.target==='cella'&&fmt.colonna===fieldName)return fmt.colore;return null;}
 
-function parseColonneVirtuali(testo){return(testo||'').split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{const eq=l.indexOf('=');if(eq<0)return null;return{nome:l.slice(0,eq).trim(),formula:l.slice(eq+1).trim()};}).filter(Boolean);}
-function calcolaVirtuali(riga,config){const extra={};(config.colonneVirtuali||[]).forEach(v=>{extra[v.nome]=v.formula.replace(/\{([^}]+)\}/g,(_,c)=>String(riga[c]||'').trim());});return extra;}
-function getTelefono(riga,config){const col=config.whatsappColonna||'';if(col&&riga[col]!==undefined)return String(riga[col]||'');for(const c of['CONTATTO TELEFONICO','TELEFONO','TEL','CELLULARE','CELL']){if(riga[c]!==undefined)return String(riga[c]||'');}return'';}
+// fieldColor: colora un campo specifico nella card
+// BUGFIX: il confronto è case-insensitive e trimmed per sicurezza
+function fieldColor(fieldName,fmt){
+    if(!fmt||!fieldName)return null;
+    if(fmt.target==='riga')return fmt.colore;
+    if(fmt.target==='cella'&&String(fmt.colonna||'').trim()===String(fieldName||'').trim())return fmt.colore;
+    return null;
+}
 
+// ── CALENDARIO: formattazione condizionale hardcoded ──────────
+// Colonne tecnici: ANDREA, MATTEO, SARA
+// Prefissi → colori: ATT=rosso, PNM=giallo, SAT=verde, M=blu
+// Colonne veicoli: PANDA=arancio, CLIO=viola (se hanno un valore)
+const CAL_TECH_COLS=new Set(['ANDREA','MATTEO','SARA']);
+const CAL_PREFISSI=[
+    {prefix:'ATT',color:'#e74c3c'}, // rosso
+    {prefix:'PNM',color:'#e67e22'}, // arancio-giallo
+    {prefix:'SAT',color:'#27ae60'}, // verde
+    {prefix:'M',  color:'#2980b9'}, // blu
+];
+const CAL_VEICOLI={PANDA:'#e67e22',CLIO:'#8e44ad'};
+
+function getCalColorCell(colonna,valore,riga){
+    const col=String(colonna||'').toUpperCase().trim();
+    const val=String(valore||'').trim();
+    // Colonne tecnici → colora in base al prefisso
+    if(CAL_TECH_COLS.has(col)&&val){
+        for(const p of CAL_PREFISSI){
+            if(val.toUpperCase().startsWith(p.prefix))return p.color;
+        }
+    }
+    // Colonne veicoli → arancio/viola se c'è un valore
+    if(CAL_VEICOLI[col]&&val)return CAL_VEICOLI[col];
+    return null;
+}
+
+// ── DRAWERS ───────────────────────────────────────────────────
 function apriDrawer(){document.getElementById('drawer').classList.add('open');document.getElementById('drawer-overlay').classList.add('open');}
 function chiudiDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('drawer-overlay').classList.remove('open');}
 function toggleSelezione(){_selezioneAttiva=!_selezioneAttiva;document.getElementById('btn-toggle-selezione').classList.toggle('attivo',_selezioneAttiva);if(!_selezioneAttiva){deselezionaTutti();document.getElementById('multi-delete-bar').style.display='none';}renderTabella();}
@@ -375,6 +504,8 @@ async function sincronizza(){
         const sheets=await GS.getSheets();sheets.forEach(s=>{_sheetIds[s.name]=s.id;});
         const hasSet=sheets.some(s=>s.name===SETTINGS_SHEET);
         APP_CONFIG=hasSet?await GS.loadConfig():JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');
+        // Ripristina font size da config
+        if(APP_CONFIG._fontSize){_fontSize=APP_CONFIG._fontSize;aggiornaFont();}
         const escludi=new Set([...(typeof FOGLI_DA_ESCLUDERE!=='undefined'?FOGLI_DA_ESCLUDERE:[]),SETTINGS_SHEET]);
         const db={};
         await Promise.all(sheets.filter(s=>!escludi.has(s.name)).map(async s=>{try{const{headers,rows}=await GS.getAll(s.name);db[s.name]={intestazioni:headers,righe:rows};}catch(e){console.warn(s.name,e.message);db[s.name]={intestazioni:[],righe:[]};}}));
@@ -390,11 +521,11 @@ async function sincronizza(){
     }
 }
 
-// COUNT — conta solo righe non vuote
+function isRigaVuotaIntst(r,intst){return intst.every(c=>!String(r[c]||'').trim());}
 function getNomeDinamico(nome){
     const c=APP_CONFIG[nome]||{},t=c.displayName;if(!t)return nome;
     const intst=DATABASE[nome]?.intestazioni||[];
-    const righe=(DATABASE[nome]?.righe||[]).filter(r=>!isRigaVuota(r,intst));
+    const righe=(DATABASE[nome]?.righe||[]).filter(r=>!isRigaVuotaIntst(r,intst));
     return t.replace(/\{\{COUNT\}\}/g,righe.length).replace(/\{\{COUNT:(.*?)=(.*?)\}\}/g,(_,col,val)=>righe.filter(r=>String(r[col]).trim()===String(val).trim()).length);
 }
 
@@ -446,11 +577,8 @@ async function eseguiAzioneRapida(rowIndex){
     const config=APP_CONFIG[FOGLIO_ATTIVO]||{},qa=config.quickAction||{};
     if(!qa.colonna||!qa.valore)return;
     const intst=DATABASE[FOGLIO_ATTIVO].intestazioni,ci=intst.indexOf(qa.colonna);if(ci<0)return;
-    try{
-        await GS.updateCell(FOGLIO_ATTIVO,rowIndex,ci,qa.valore);
-        const r=DATABASE[FOGLIO_ATTIVO]?.righe.find(r=>r._rowIndex===rowIndex);if(r)r[qa.colonna]=qa.valore;
-        renderTabella();renderMenu();
-    }catch(e){alert('Errore: '+e.message);}
+    try{await GS.updateCell(FOGLIO_ATTIVO,rowIndex,ci,qa.valore);const r=DATABASE[FOGLIO_ATTIVO]?.righe.find(r=>r._rowIndex===rowIndex);if(r)r[qa.colonna]=qa.valore;renderTabella();renderMenu();}
+    catch(e){alert('Errore: '+e.message);}
 }
 function apriWhatsApp(tel){if(!tel){alert('Nessun numero.');return;}window.open(`https://api.whatsapp.com/send/?phone=%2B39${String(tel).replace(/\D/g,'')}&text&type=phone_number&app_absent=0`,'_blank');}
 
@@ -463,8 +591,11 @@ function renderCard(righe,config){
     righe.forEach(riga=>{
         const extra=calcolaVirtuali(riga,config),all={...riga,...extra};
         const fmt=valutaFormatRules(riga,config);
-        const valData=cc.data?formattaValoreCella(all[cc.data]):'',valBadge=cc.badge?formattaValoreCella(all[cc.badge]):'';
-        const cData=fieldColor(cc.data,fmt),cBadge=fieldColor(cc.badge,fmt);
+        // FIX: usa il nome colonna (cc.data, cc.badge) come chiave per fieldColor
+        const valData=cc.data?formattaValoreCella(all[cc.data]):'';
+        const valBadge=cc.badge?formattaValoreCella(all[cc.badge]):'';
+        const cData=fieldColor(cc.data,fmt);
+        const cBadge=fieldColor(cc.badge,fmt);
         const enc=encodeURIComponent(JSON.stringify(riga));
         const isSel=_selectedRows.has(riga._rowIndex);
         const clickFn=_selezioneAttiva?`toggleCardSelection(${riga._rowIndex},this.closest('.card'))`:`apriForm('${enc}')`;
@@ -475,11 +606,12 @@ function renderCard(righe,config){
                 ${valBadge?`<div class="card-badge-right"${cBadge?` style="color:${cBadge};"`:''} >${valBadge}</div>`:''}
             </div>
             <div class="card-corpo">`;
-        (cc.corpo||[]).forEach(col=>{
-            const v=formattaValoreCella(all[col]);if(!v)return;
+        const items=(cc.corpo||[]).map(col=>{
+            const v=formattaValoreCella(all[col]);if(!v)return null;
             const fc=fieldColor(col,fmt);
-            h+=`<span${fc?` style="color:${fc};font-weight:600;"`:''} >${v} </span>`;
-        });
+            return`<span${fc?` style="color:${fc};font-weight:600;"`:''} >${v}</span>`;
+        }).filter(Boolean);
+        h+=items.join('<span style="color:var(--ink-3);margin:0 4px;font-weight:400;">—</span>');
         h+=`</div>`;
         if(!_selezioneAttiva&&(config.puoModificare||config.puoEliminare||hasWA||(qa.attiva&&qa.colonna))){
             h+=`<div class="card-actions" onclick="event.stopPropagation()">
@@ -542,9 +674,7 @@ function renderTabella(){
     const colVirt=config.colonneVirtuali||[],colVirtNomi=colVirt.map(v=>v.nome);
     let colTab=isCal?colVis.filter(c=>c!==C0&&c!==C1):colVis;
 
-    // Salta righe vuote (su tutte le colonne visibili)
     righe=righe.filter(r=>!isRigaVuota(r,colVis));
-
     const q=document.getElementById('search-input').value.toLowerCase();
     if(q)righe=righe.filter(r=>[...colVis,...colVirtNomi].some(c=>{const v=colVirtNomi.includes(c)?(calcolaVirtuali(r,config)[c]||''):String(r[c]||'');return v.toLowerCase().includes(q);}));
     if(ORDINAMENTO.colonna){const col=ORDINAMENTO.colonna,dir=ORDINAMENTO.direzione,isV=colVirtNomi.includes(col);righe.sort((a,b)=>{let vA=isV?(calcolaVirtuali(a,config)[col]||''):String(a[col]||'');let vB=isV?(calcolaVirtuali(b,config)[col]||''):String(b[col]||'');if(!isNaN(vA)&&!isNaN(vB)&&vA!==''&&vB!=='')return(Number(vA)-Number(vB))*dir;return vA.toLowerCase().localeCompare(vB.toLowerCase())*dir;});}
@@ -555,28 +685,41 @@ function renderTabella(){
     const coloriCol=config.coloriColonne||{},mostraChk=_selezioneAttiva&&config.puoEliminare;
     const hasWA=!!(config.whatsappAttivo),qa=config.quickAction||{};
     const haAct=config.puoModificare||config.puoEliminare||hasWA||(qa.attiva&&qa.colonna);
+    const canClick=!!(config.puoModificare||config.puoAggiungere);
     let html='<div class="table-wrapper"><table><thead><tr>';
     if(mostraChk)html+=`<th style="width:32px;"><input type="checkbox" id="chk-all" onclick="selezionaTutti(this)"></th>`;
     if(isCal)html+=`<th style="width:62px;">Orario</th>`;
     colTab.forEach(c=>{const bg=coloriCol[c]||'';html+=`<th${bg?` style="background:${bg};color:#1a1a1a;"`:''} >${c}</th>`;});
     colVirtNomi.forEach(n=>html+=`<th style="color:#aaa;font-style:italic;">${n} ∿</th>`);
-    if(haAct)html+=`<th style="width:100px;"></th>`;
+    if(haAct)html+=`<th style="width:110px;"></th>`;
     html+='</tr></thead><tbody>';
     let ultData=null;
     righe.forEach(riga=>{
         const extra=calcolaVirtuali(riga,config);
         if(isCal){const dr=String(riga[C0]||'');if(dr!==ultData){ultData=dr;const tot=colTab.length+colVirtNomi.length+(haAct?1:0)+(isCal?1:0)+(mostraChk?1:0);html+=`<tr class="cal-date-row"><td colspan="${tot}">${formattaDataGruppo(dr)}</td></tr>`;}}
-        const fmt=valutaFormatRules(riga,config),rowColor=(fmt&&fmt.target!=='cella')?fmt.colore:null,cellaTgt=(fmt&&fmt.target==='cella')?fmt.colonna:null;
+        const fmt=valutaFormatRules(riga,config);
+        const rowColor=(fmt&&fmt.target!=='cella')?fmt.colore:null;
+        const cellaTgt=(fmt&&fmt.target==='cella')?fmt.colonna:null;
         const enc=encodeURIComponent(JSON.stringify(riga));
-        const trClick=!_selezioneAttiva?`onclick="apriForm('${enc}')"`:'' ;
-        html+=`<tr class="${!_selezioneAttiva?'clickable-row':''}" ${trClick}>${mostraChk?`<td class="sel-td" onclick="event.stopPropagation()"><input type="checkbox" class="row-chk" data-idx="${riga._rowIndex}"></td>`:''}`;
+        const trClick=!_selezioneAttiva&&(config.puoModificare)?`onclick="apriForm('${enc}')"` :'';
+        html+=`<tr class="${!_selezioneAttiva&&config.puoModificare?'clickable-row':''}" ${trClick}>`;
+        if(mostraChk)html+=`<td class="sel-td" onclick="event.stopPropagation()"><input type="checkbox" class="row-chk" data-idx="${riga._rowIndex}"></td>`;
         if(isCal)html+=`<td class="cal-orario"${rowColor?` style="color:${rowColor};"`:''} >${formattaOrario(riga[C1])}</td>`;
         colTab.forEach(c=>{
-            const cb=coloriCol[c]||'';let s='';
-            if(c===cellaTgt)s=`color:${fmt.colore};font-weight:700;${cb?`background:color-mix(in srgb,${cb} 25%,white 75%);`:''}`;
-            else if(rowColor)s=`color:${rowColor};font-weight:600;${cb?`background:color-mix(in srgb,${cb} 25%,white 75%);`:''}`;
-            else if(cb)s=`background:color-mix(in srgb,${cb} 12%,white 88%);`;
-            html+=`<td${s?` style="${s}"`:''}>${formattaValoreCella(riga[c])}</td>`;
+            const cb=coloriCol[c]||'';
+            let cellStyle='';
+            // Prima applica formato condizionale normale
+            if(c===cellaTgt)cellStyle=`color:${fmt.colore};font-weight:700;${cb?`background:color-mix(in srgb,${cb} 25%,white 75%);`:''}`;
+            else if(rowColor)cellStyle=`color:${rowColor};font-weight:600;${cb?`background:color-mix(in srgb,${cb} 25%,white 75%);`:''}`;
+            else if(cb)cellStyle=`background:color-mix(in srgb,${cb} 12%,white 88%);`;
+            // Poi per CALENDARIO: override con colore per-cella
+            if(isCal){
+                const calColor=getCalColorCell(c,riga[c],riga);
+                if(calColor){
+                    cellStyle=`background:${calColor}20;color:${calColor};font-weight:600;border-radius:4px;`;
+                }
+            }
+            html+=`<td${cellStyle?` style="${cellStyle}"`:''}>${formattaValoreCella(riga[c])}</td>`;
         });
         colVirtNomi.forEach(n=>html+=`<td class="virtual-col">${extra[n]||''}</td>`);
         if(haAct){
@@ -584,8 +727,8 @@ function renderTabella(){
             html+=`<td class="row-actions" onclick="event.stopPropagation()">`;
             if(hasWA&&tel)html+=`<button class="act-btn wa" onclick="apriWhatsApp('${String(tel).replace(/'/g,'&#39;')}')" title="WhatsApp">💬</button>`;
             if(qa.attiva&&qa.colonna)html+=`<button class="act-btn quick" onclick="eseguiAzioneRapida(${riga._rowIndex})" title="${qa.valore}">${qa.emoji||'⚡'}</button>`;
-            if(config.puoModificare)html+=`<button class="act-btn edit" onclick="apriForm('${enc}')" title="Modifica">✏️</button>`;
-            if(config.puoEliminare)html+=`<button class="act-btn del" onclick="eliminaRiga(${riga._rowIndex})" title="Elimina">🗑️</button>`;
+            if(config.puoModificare)html+=`<button class="act-btn edit" onclick="apriForm('${enc}');event.stopPropagation();" title="Modifica">✏️</button>`;
+            if(config.puoEliminare)html+=`<button class="act-btn del" onclick="eliminaRiga(${riga._rowIndex});event.stopPropagation();" title="Elimina">🗑️</button>`;
             html+=`</td>`;
         }
         html+='</tr>';
@@ -604,6 +747,7 @@ async function eliminaRiga(ri){if(!confirm('Eliminare questa riga?'))return;try{
 
 // ── FORM ──────────────────────────────────────────────────────
 function chiudiModal(id){document.getElementById(id).style.display='none';}
+
 function apriForm(rigaJSON){
     const config=APP_CONFIG[FOGLIO_ATTIVO]||{},intst=DATABASE[FOGLIO_ATTIVO].intestazioni;
     const fmtCol=config.formatiColonne||{},roSet=new Set(config.colonneReadOnly||[]);
@@ -614,13 +758,27 @@ function apriForm(rigaJSON){
     cols.forEach(col=>{
         let val=RIGA_ORIGINALE_IN_MODIFICA&&RIGA_ORIGINALE_IN_MODIFICA[col]!==undefined?RIGA_ORIGINALE_IN_MODIFICA[col]:'';
         const tipo=fmtCol[col]||'text';let inputVal=String(val);
-        if(tipo==='date'||tipo==='datetime-local'){const m=inputVal.match(/^(\d{2})\/(\d{2})\/(\d{4})(?: (\d{2}):(\d{2}))?/);if(m)inputVal=tipo==='date'?`${m[3]}-${m[2]}-${m[1]}`:`${m[3]}-${m[2]}-${m[1]}T${m[4]||'00'}:${m[5]||'00'}`;}
-        else if(tipo==='time'){const mt=inputVal.match(/(\d{2}:\d{2})/);if(mt)inputVal=mt[1];}
         const isRO=roSet.has(col);
-        cont.innerHTML+=`<div class="form-field-row"><label>${col}${isRO?' 🔒':''}</label><input type="${tipo}" id="input-${col}" value="${inputVal.replace(/"/g,'&quot;')}"${isRO?' disabled':''}></div>`;
+        let inputHtml='';
+        if(tipo==='text'||tipo===''){
+            // Usa textarea per testi, si auto-espande
+            const righe=Math.max(1,Math.ceil(inputVal.length/50));
+            inputHtml=`<textarea id="input-${col}" rows="${Math.min(righe,6)}"${isRO?' disabled':''}
+                oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"
+                style="height:auto;${righe>1?'min-height:'+(righe*22+12)+'px;':''}"
+            >${inputVal.replace(/</g,'&lt;')}</textarea>`;
+        } else {
+            if(tipo==='date'||tipo==='datetime-local'){const m=inputVal.match(/^(\d{2})\/(\d{2})\/(\d{4})(?: (\d{2}):(\d{2}))?/);if(m)inputVal=tipo==='date'?`${m[3]}-${m[2]}-${m[1]}`:`${m[3]}-${m[2]}-${m[1]}T${m[4]||'00'}:${m[5]||'00'}`;}
+            else if(tipo==='time'){const mt=inputVal.match(/(\d{2}:\d{2})/);if(mt)inputVal=mt[1];}
+            inputHtml=`<input type="${tipo}" id="input-${col}" value="${inputVal.replace(/"/g,'&quot;')}"${isRO?' disabled':''}>`
+        }
+        cont.innerHTML+=`<div class="form-field-row"><label>${col}${isRO?' 🔒':''}</label>${inputHtml}</div>`;
     });
     document.getElementById('modal-form').style.display='flex';
+    // Auto-resize tutte le textarea appena aperte
+    setTimeout(()=>document.querySelectorAll('#modal-form-fields textarea').forEach(t=>{t.style.height='auto';t.style.height=t.scrollHeight+'px';}),0);
 }
+
 async function salvaDati(){
     const intst=DATABASE[FOGLIO_ATTIVO].intestazioni,config=APP_CONFIG[FOGLIO_ATTIVO]||{};
     const roSet=new Set(config.colonneReadOnly||[]);
@@ -629,11 +787,11 @@ async function salvaDati(){
     try{
         const rigaId=RIGA_ORIGINALE_IN_MODIFICA?._rowIndex??null;
         if(rigaId){
-            // Aggiorna cella per cella, saltando le read-only (preserva formule Excel)
             for(const col of cols){
                 if(roSet.has(col))continue;
                 const ci=intst.indexOf(col);if(ci<0)continue;
-                const val=document.getElementById(`input-${col}`)?.value??'';
+                const el=document.getElementById(`input-${col}`);
+                const val=el?el.value:'';
                 await GS.updateCell(FOGLIO_ATTIVO,rigaId,ci,val);
             }
         }else{
@@ -658,49 +816,38 @@ function apriImpostazioni(){
     document.getElementById('set-add').checked=!!config.puoAggiungere;
     document.getElementById('set-edit').checked=!!config.puoModificare;
     document.getElementById('set-delete').checked=!!config.puoEliminare;
-    // Sort
     document.getElementById('set-sort-col').innerHTML=`<option value="">– Nessuno –</option>`+intst.map(c=>`<option value="${c}" ${config.sortColonna===c?'selected':''}>${c}</option>`).join('');
     document.getElementById('set-sort-dir').value=config.sortDirezione||1;
-    // Colonne visibili
     let cHtml=`<label style="font-weight:700;font-size:11px;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-3);display:block;margin-bottom:6px;">Colonne Visibili</label>`;
     intst.forEach(c=>{cHtml+=`<label class="checkbox-label"><input type="checkbox" class="chk-colonna" value="${c}" ${config.colonneVisibili&&config.colonneVisibili.includes(c)?'checked':''}> ${c}</label>`;});
     document.getElementById('settings-colonne').innerHTML=cHtml;
-    // Read-only
     const roSet=new Set(config.colonneReadOnly||[]);
     document.getElementById('settings-readonly').innerHTML=intst.map(c=>`<label class="checkbox-label"><input type="checkbox" class="chk-readonly" value="${c}" ${roSet.has(c)?'checked':''}> ${c}</label>`).join('');
-    // Virtuali
     document.getElementById('set-colonne-virtuali').value=(config.colonneVirtuali||[]).map(v=>`${v.nome} = ${v.formula}`).join('\n');
-    // WhatsApp
     document.getElementById('set-wa-attivo').checked=!!config.whatsappAttivo;
     document.getElementById('set-wa-colonna').innerHTML=`<option value="">– Auto-detect –</option>`+intst.map(c=>`<option value="${c}" ${config.whatsappColonna===c?'selected':''}>${c}</option>`).join('');
-    // Quick action
     const qa=config.quickAction||{};
     document.getElementById('set-qa-attiva').checked=!!qa.attiva;
     document.getElementById('set-qa-colonna').innerHTML=`<option value="">– Nessuna –</option>`+intst.map(c=>`<option value="${c}" ${qa.colonna===c?'selected':''}>${c}</option>`).join('');
     document.getElementById('set-qa-valore').value=qa.valore||'';
     document.getElementById('set-qa-emoji').value=qa.emoji||'⚡';
-    // Card
     const cc=config.cardConfig||{};
     document.getElementById('set-card-attiva').checked=!!config.vistaCardAttiva;
     const mkOpts=sel=>`<option value="">– Nessuna –</option>`+intst.map(c=>`<option value="${c}" ${sel===c?'selected':''}>${c}</option>`).join('');
     document.getElementById('card-col-data').innerHTML=mkOpts(cc.data||'');
     document.getElementById('card-col-badge').innerHTML=mkOpts(cc.badge||'');
     document.getElementById('card-col-corpo-list').innerHTML=intst.map(c=>`<label class="checkbox-label"><input type="checkbox" class="chk-card-corpo" value="${c}" ${(cc.corpo||[]).includes(c)?'checked':''}> ${c}</label>`).join('');
-    // Kanban
     document.getElementById('set-kanban-attiva').checked=!!config.vistaKanbanAttiva;
     document.getElementById('kanban-col-gruppo').innerHTML=`<option value="">– Nessuna –</option>`+intst.map(c=>`<option value="${c}" ${config.kanbanGruppo===c?'selected':''}>${c}</option>`).join('');
     document.getElementById('kanban-ordine').value=(config.kanbanOrdine||[]).join('\n');
-    // Formati
     const fmtCol=config.formatiColonne||{};
     const tipi=[{v:'',l:'– Testo libero –'},{v:'date',l:'📅 Data'},{v:'datetime-local',l:'📅 Data e Ora'},{v:'time',l:'🕐 Orario'}];
-    document.getElementById('formati-colonne-list').innerHTML=intst.map(c=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><span style="flex:1;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${c}</span><select class="chk-col-format" data-col="${c}" style="width:150px;padding:5px;border:1px solid var(--line);border-radius:4px;font-size:11px;">${tipi.map(t=>`<option value="${t.v}" ${fmtCol[c]===t.v?'selected':''}>${t.l}</option>`).join('')}</select></div>`).join('');
-    // Regole formattazione
+    document.getElementById('formati-colonne-list').innerHTML=intst.map(c=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><span style="flex:1;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${c}</span><select class="chk-col-format" data-col="${c}" style="width:150px;padding:5px;border:1px solid var(--line);border-radius:4px;font-size:12px;">${tipi.map(t=>`<option value="${t.v}" ${fmtCol[c]===t.v?'selected':''}>${t.l}</option>`).join('')}</select></div>`).join('');
     const regole=config.formatRules||[];while(regole.length<5)regole.push({});
     const ops=['uguale','non uguale','contiene','inizia con','non vuoto','vuoto','data > (dopo)','data < (prima)'];
     document.getElementById('format-rules-list').innerHTML=regole.slice(0,5).map((r,i)=>`<div class="fmt-rule"><select class="fmt-col" data-i="${i}"><option value="">– –</option>${intst.map(c=>`<option value="${c}" ${r.colonna===c?'selected':''}>${c}</option>`).join('')}</select><select class="fmt-op" data-i="${i}">${ops.map(o=>`<option value="${o}" ${r.operatore===o?'selected':''}>${o}</option>`).join('')}</select><input type="text" class="fmt-val" data-i="${i}" value="${r.valore||''}" placeholder="valore"><input type="color" class="fmt-color" data-i="${i}" value="${r.colore||'#e74c3c'}"><select class="fmt-target" data-i="${i}" style="padding:4px;border:1px solid var(--line);border-radius:4px;font-size:11px;"><option value="riga" ${(r.target||'riga')==='riga'?'selected':''}>Riga intera</option><option value="cella" ${r.target==='cella'?'selected':''}>Solo cella</option></select></div>`).join('');
-    // Colori colonne
     const coloriCol=config.coloriColonne||{};
-    document.getElementById('colori-colonne-list').innerHTML=intst.map(c=>`<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;"><input type="color" class="chk-col-color" data-col="${c}" value="${coloriCol[c]||'#ffffff'}" style="width:36px;height:26px;border:1px solid var(--line);border-radius:4px;"><span style="font-size:13px;">${c}</span></div>`).join('');
+    document.getElementById('colori-colonne-list').innerHTML=intst.map(c=>`<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;"><input type="color" class="chk-col-color" data-col="${c}" value="${coloriCol[c]||'#ffffff'}" style="width:36px;height:26px;border:1px solid var(--line);border-radius:4px;"><span style="font-size:14px;">${c}</span></div>`).join('');
     document.getElementById('modal-settings').style.display='flex';
 }
 
@@ -717,8 +864,7 @@ async function salvaImpostazioni(){
         colonneVisibili:Array.from(document.querySelectorAll('.chk-colonna:checked')).map(c=>c.value),
         colonneReadOnly:Array.from(document.querySelectorAll('.chk-readonly:checked')).map(c=>c.value),
         colonneVirtuali:parseColonneVirtuali(document.getElementById('set-colonne-virtuali').value),
-        whatsappAttivo:document.getElementById('set-wa-attivo').checked,
-        whatsappColonna:document.getElementById('set-wa-colonna').value||null,
+        whatsappAttivo:document.getElementById('set-wa-attivo').checked,whatsappColonna:document.getElementById('set-wa-colonna').value||null,
         quickAction:{attiva:document.getElementById('set-qa-attiva').checked,colonna:document.getElementById('set-qa-colonna').value||null,valore:document.getElementById('set-qa-valore').value||'',emoji:document.getElementById('set-qa-emoji').value||'⚡'},
         vistaCardAttiva:document.getElementById('set-card-attiva').checked,vistaKanbanAttiva:document.getElementById('set-kanban-attiva').checked,
         kanbanGruppo:document.getElementById('kanban-col-gruppo').value||null,kanbanOrdine:(document.getElementById('kanban-ordine').value||'').split('\n').map(s=>s.trim()).filter(Boolean),
