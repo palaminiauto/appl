@@ -446,7 +446,9 @@ function isRigaVuota(r,cols){return cols.every(c=>!String(r[c]||'').trim());}
 function getTelefono(riga,config){const col=config.whatsappColonna||'';if(col&&riga[col]!==undefined)return String(riga[col]||'');for(const c of['CONTATTO TELEFONICO','TELEFONO','TEL','CELLULARE','CELL']){if(riga[c]!==undefined)return String(riga[c]||'');}return'';}
 
 // ── FORMAT RULES ──────────────────────────────────────────────
-function valutaFormatRules(riga,config){
+// Ritorna TUTTE le regole che matchano (non solo la prima)
+function valutaFormatRulesAll(riga,config){
+    const matched=[];
     for(const r of(config.formatRules||[])){
         if(!r.colonna||!r.colore)continue;
         const v=String(riga[r.colonna]||'').trim();let match=false;
@@ -461,24 +463,30 @@ function valutaFormatRules(riga,config){
             case'scaduto da X giorni':{const a=parsaData(v);if(a!=null){const oggi=Date.now(),giorni=parseInt(r.valore)||7;match=a<oggi&&a>=(oggi-giorni*86400000);}break;}
             case'è oggi':{const a=parsaData(v);if(a!=null){const d=new Date(a),o=new Date();match=d.getFullYear()===o.getFullYear()&&d.getMonth()===o.getMonth()&&d.getDate()===o.getDate();}break;}
         }
-        if(match)return{colore:r.colore,target:r.target||'riga',colonna:r.colonna};
+        if(match)matched.push({colore:r.colore,target:r.target||'riga',colonna:r.colonna});
+    }
+    return matched;
+}
+// Compatibilità: ritorna solo la prima (usato dove serve un unico colore di riga)
+function valutaFormatRules(riga,config){return valutaFormatRulesAll(riga,config)[0]||null;}
+
+// Ritorna il colore per un campo specifico considerando TUTTE le regole attive
+// Priorità: regola 'cella' su quella 'riga'
+function fieldColorAll(fieldName,fmts){
+    if(!fmts||!fmts.length||!fieldName)return null;
+    const fn=String(fieldName||'').trim().toLowerCase();
+    // Prima cerca una regola cella specifica per questo campo
+    for(const fmt of fmts){
+        if(fmt.target==='cella'&&String(fmt.colonna||'').trim().toLowerCase()===fn)return fmt.colore;
+    }
+    // Poi usa la prima regola 'riga'
+    for(const fmt of fmts){
+        if(fmt.target==='riga')return fmt.colore;
     }
     return null;
 }
-
-// fieldColor: ritorna il colore per un campo nella card
-// target='riga' → colora tutto; target='cella' → colora QUALSIASI campo
-// che abbia lo stesso nome colonna della regola (inclusi label/badge)
-function fieldColor(fieldName,fmt){
-    if(!fmt||!fieldName)return null;
-    if(fmt.target==='riga')return fmt.colore;
-    // target='cella': colora il campo ovunque appaia, incluse etichette card
-    if(fmt.target==='cella'&&String(fmt.colonna||'').trim().toLowerCase()===String(fieldName||'').trim().toLowerCase())return fmt.colore;
-    return null;
-}
-// Colore bordo sinistro della card (riga intera)
-function cardBorderColor(fmt){
-    if(!fmt)return null;
+// Retrocompatibilità
+function fieldColor(fieldName,fmt){return fieldColorAll(fieldName,fmt?[fmt]:[]);}
     if(fmt.target==='riga')return fmt.colore;
     return null;
 }
@@ -609,15 +617,14 @@ function renderCard(righe,config){
     let h='<div class="cards-grid">';
     righe.forEach(riga=>{
         const extra=calcolaVirtuali(riga,config),all={...riga,...extra};
-        const fmt=valutaFormatRules(riga,config);
-        // FIX: usa il nome colonna (cc.data, cc.badge) come chiave per fieldColor
+        const fmts=valutaFormatRulesAll(riga,config);
         const valData=cc.data?formattaValoreCella(all[cc.data]):'';
         const valBadge=cc.badge?formattaValoreCella(all[cc.badge]):'';
-        const cData=fieldColor(cc.data,fmt);
-        const cBadge=fieldColor(cc.badge,fmt);
-        const enc=encodeURIComponent(JSON.stringify(riga));
-        const isSel=_selectedRows.has(riga._rowIndex);
-        const clickFn=_selezioneAttiva?`toggleCardSelection(${riga._rowIndex},this.closest('.card'))`:`apriForm('${enc}')`;
+        const cData=fieldColorAll(cc.data,fmts);
+        const cBadge=fieldColorAll(cc.badge,fmts);
+        const rowIdx=riga._rowIndex;
+        const isSel=_selectedRows.has(rowIdx);
+        const clickFn=_selezioneAttiva?`toggleCardSelection(${rowIdx},this.closest('.card'))`:`apriFormByIdx(${rowIdx})`;
         const tel=getTelefono(riga,config);
         h+=`<div class="card${isSel?' card-selected':''}" onclick="${clickFn}">
             <div class="card-top">
@@ -627,7 +634,7 @@ function renderCard(righe,config){
             <div class="card-corpo">`;
         const items=(cc.corpo||[]).map(col=>{
             const v=formattaValoreCella(all[col]);if(!v)return null;
-            const fc=fieldColor(col,fmt);
+            const fc=fieldColorAll(col,fmts);
             return`<span${fc?` style="color:${fc};font-weight:600;"`:''} >${v}</span>`;
         }).filter(Boolean);
         h+=items.join('<span style="color:var(--ink-3);margin:0 4px;font-weight:400;">—</span>');
@@ -635,9 +642,9 @@ function renderCard(righe,config){
         if(!_selezioneAttiva&&(config.puoModificare||config.puoEliminare||hasWA||(qa.attiva&&qa.colonna))){
             h+=`<div class="card-actions" onclick="event.stopPropagation()">
                 ${hasWA&&tel?`<button class="act-btn wa" onclick="apriWhatsApp('${String(tel).replace(/'/g,'&#39;')}')" title="WhatsApp">💬</button>`:''}
-                ${qa.attiva&&qa.colonna?`<button class="act-btn quick" onclick="eseguiAzioneRapida(${riga._rowIndex})" title="${qa.valore}">${qa.emoji||'⚡'}</button>`:''}
-                ${config.puoModificare?`<button class="act-btn edit" onclick="apriForm('${enc}')" title="Modifica">✏️</button>`:''}
-                ${config.puoEliminare?`<button class="act-btn del" onclick="eliminaRiga(${riga._rowIndex})" title="Elimina">🗑️</button>`:''}
+                ${qa.attiva&&qa.colonna?`<button class="act-btn quick" onclick="eseguiAzioneRapida(${rowIdx})" title="${qa.valore}">${qa.emoji||'⚡'}</button>`:''}
+                ${config.puoModificare?`<button class="act-btn edit" onclick="apriFormByIdx(${rowIdx})" title="Modifica">✏️</button>`:''}
+                ${config.puoEliminare?`<button class="act-btn del" onclick="eliminaRiga(${rowIdx})" title="Elimina">🗑️</button>`:''}
             </div>`;
         }
         h+=`</div>`;
@@ -665,22 +672,22 @@ function renderKanban(righe,config){
         h+=`<div class="kanban-col"><div class="kanban-col-header"><span>${g}</span><span class="kanban-col-count">${gruppi[g].length}</span></div><div class="kanban-col-body">`;
         gruppi[g].forEach(riga=>{
             const extra=calcolaVirtuali(riga,config),all={...riga,...extra};
-            const fmt=valutaFormatRules(riga,config);
-            const enc=encodeURIComponent(JSON.stringify(riga));
-            const isSel=_selectedRows.has(riga._rowIndex);
-            const clickFn=_selezioneAttiva?`toggleCardSelection(${riga._rowIndex},this.closest('.kanban-card'))`:`apriForm('${enc}')`;
-            const cLabel=fieldColor(cc.data,fmt);const tel=getTelefono(riga,config);
+            const fmts=valutaFormatRulesAll(riga,config);
+            const rowIdx=riga._rowIndex;
+            const isSel=_selectedRows.has(rowIdx);
+            const clickFn=_selezioneAttiva?`toggleCardSelection(${rowIdx},this.closest('.kanban-card'))`:`apriFormByIdx(${rowIdx})`;
+            const cLabel=fieldColorAll(cc.data,fmts);const tel=getTelefono(riga,config);
             h+=`<div class="kanban-card${isSel?' card-selected':''}" onclick="${clickFn}">
                 <div class="kanban-card-label"${cLabel?` style="color:${cLabel};"`:''} >${cc.data?formattaValoreCella(all[cc.data]):''}</div><div>`;
-            (cc.corpo||[]).forEach(col=>{const v=formattaValoreCella(all[col]);if(!v)return;const fc=fieldColor(col,fmt);h+=`<div class="kanban-card-body-line"${fc?` style="color:${fc};font-weight:600;"`:''} >${v}</div>`;});
+            (cc.corpo||[]).forEach(col=>{const v=formattaValoreCella(all[col]);if(!v)return;const fc=fieldColorAll(col,fmts);h+=`<div class="kanban-card-body-line"${fc?` style="color:${fc};font-weight:600;"`:''} >${v}</div>`;});
             h+=`</div>`;
-            const vb=cc.badge?formattaValoreCella(all[cc.badge]):'';if(vb){const fc=fieldColor(cc.badge,fmt);h+=`<div class="kanban-card-meta"${fc?` style="color:${fc};"`:''} >${vb}</div>`;}
+            const vb=cc.badge?formattaValoreCella(all[cc.badge]):'';if(vb){const fc=fieldColorAll(cc.badge,fmts);h+=`<div class="kanban-card-meta"${fc?` style="color:${fc};"`:''} >${vb}</div>`;}
             if(!_selezioneAttiva&&(config.puoModificare||config.puoEliminare||hasWA||(qa.attiva&&qa.colonna))){
                 h+=`<div class="kanban-card-actions" onclick="event.stopPropagation()">
                     ${hasWA&&tel?`<button class="act-btn wa" onclick="apriWhatsApp('${String(tel).replace(/'/g,'&#39;')}')" title="WhatsApp">💬</button>`:''}
-                    ${qa.attiva&&qa.colonna?`<button class="act-btn quick" onclick="eseguiAzioneRapida(${riga._rowIndex})" title="${qa.valore}">${qa.emoji||'⚡'}</button>`:''}
-                    ${config.puoModificare?`<button class="act-btn edit" onclick="apriForm('${enc}')">✏️</button>`:''}
-                    ${config.puoEliminare?`<button class="act-btn del" onclick="eliminaRiga(${riga._rowIndex})">🗑️</button>`:''}
+                    ${qa.attiva&&qa.colonna?`<button class="act-btn quick" onclick="eseguiAzioneRapida(${rowIdx})" title="${qa.valore}">${qa.emoji||'⚡'}</button>`:''}
+                    ${config.puoModificare?`<button class="act-btn edit" onclick="apriFormByIdx(${rowIdx})">✏️</button>`:''}
+                    ${config.puoEliminare?`<button class="act-btn del" onclick="eliminaRiga(${rowIdx})">🗑️</button>`:''}
                 </div>`;
             }
             h+=`</div>`;
@@ -697,69 +704,79 @@ function renderTabella(){
     let righe=[...DATABASE[FOGLIO_ATTIVO].righe];
     let colVis=intst;if(config.colonneVisibili&&config.colonneVisibili.length>0)colVis=intst.filter(h=>config.colonneVisibili.includes(h));
     const colVirt=config.colonneVirtuali||[],colVirtNomi=colVirt.map(v=>v.nome);
+    // Colonne tabella = visibili (esclusi data/ora cal) + virtuali come normali
     let colTab=isCal?colVis.filter(c=>c!==C0&&c!==C1):colVis;
+    const colTabAll=[...colTab,...colVirtNomi]; // tutte le colonne da mostrare
 
     righe=righe.filter(r=>!isRigaVuota(r,colVis));
     const q=document.getElementById('search-input').value.toLowerCase();
-    if(q)righe=righe.filter(r=>[...colVis,...colVirtNomi].some(c=>{const v=colVirtNomi.includes(c)?(calcolaVirtuali(r,config)[c]||''):String(r[c]||'');return v.toLowerCase().includes(q);}));
+    if(q)righe=righe.filter(r=>colTabAll.some(c=>{
+        const v=colVirtNomi.includes(c)?(calcolaVirtuali(r,config)[c]||''):String(r[c]||'');
+        return v.toLowerCase().includes(q);
+    }));
     if(ORDINAMENTO.colonna){const col=ORDINAMENTO.colonna,dir=ORDINAMENTO.direzione,isV=colVirtNomi.includes(col);righe.sort((a,b)=>{let vA=isV?(calcolaVirtuali(a,config)[col]||''):String(a[col]||'');let vB=isV?(calcolaVirtuali(b,config)[col]||''):String(b[col]||'');if(!isNaN(vA)&&!isNaN(vB)&&vA!==''&&vB!=='')return(Number(vA)-Number(vB))*dir;return vA.toLowerCase().localeCompare(vB.toLowerCase())*dir;});}
     if(isCal&&!ORDINAMENTO.colonna){righe.sort((a,b)=>{let tA=convertiDataAssoluta(String(a[C0]||'')),tB=convertiDataAssoluta(String(b[C0]||''));if(tA!==tB)return tA-tB;return formattaOrario(String(a[C1]||'')).localeCompare(formattaOrario(String(b[C1]||'')));});}
-    if(_vistaKanban&&config.kanbanGruppo){document.getElementById('tabella-container').innerHTML=renderKanban(righe,config);return;}
-    if(_vistaCard&&config.cardConfig?.data){document.getElementById('tabella-container').innerHTML=renderCard(righe,config);return;}
+    if(_vistaKanban&&config.kanbanGruppo){document.getElementById('tabella-container').innerHTML=renderKanban(righe,config);aggiornaRigheStore();return;}
+    if(_vistaCard&&config.cardConfig?.data){document.getElementById('tabella-container').innerHTML=renderCard(righe,config);aggiornaRigheStore();return;}
     if(!righe.length){document.getElementById('tabella-container').innerHTML='<p style="padding:32px;color:var(--ink-3);">Nessuna riga trovata.</p>';return;}
     const coloriCol=config.coloriColonne||{},mostraChk=_selezioneAttiva&&config.puoEliminare;
     const hasWA=!!(config.whatsappAttivo),qa=config.quickAction||{};
     const haAct=config.puoModificare||config.puoEliminare||hasWA||(qa.attiva&&qa.colonna);
-    const canClick=!!(config.puoModificare||config.puoAggiungere);
     let html='<div class="table-wrapper"><table><thead><tr>';
     if(mostraChk)html+=`<th style="width:32px;"><input type="checkbox" id="chk-all" onclick="selezionaTutti(this)"></th>`;
     if(isCal)html+=`<th style="width:62px;">Orario</th>`;
-    colTab.forEach(c=>{const bg=coloriCol[c]||'';html+=`<th${bg?` style="background:${bg};color:#1a1a1a;"`:''} >${c}</th>`;});
-    colVirtNomi.forEach(n=>html+=`<th style="color:#aaa;font-style:italic;">${n} ∿</th>`);
+    colTabAll.forEach(c=>{
+        const isV=colVirtNomi.includes(c);
+        const bg=coloriCol[c]||'';
+        html+=`<th${bg?` style="background:${bg};color:#1a1a1a;"`:isV?' style="color:#aaa;font-style:italic;"':''} >${c}${isV?' ∿':''}</th>`;
+    });
     if(haAct)html+=`<th style="width:110px;"></th>`;
     html+='</tr></thead><tbody>';
     let ultData=null;
     righe.forEach(riga=>{
         const extra=calcolaVirtuali(riga,config);
-        if(isCal){const dr=String(riga[C0]||'');if(dr!==ultData){ultData=dr;const tot=colTab.length+colVirtNomi.length+(haAct?1:0)+(isCal?1:0)+(mostraChk?1:0);html+=`<tr class="cal-date-row"><td colspan="${tot}">${formattaDataGruppo(dr)}</td></tr>`;}}
-        const fmt=valutaFormatRules(riga,config);
-        const rowColor=(fmt&&fmt.target!=='cella')?fmt.colore:null;
-        const cellaTgt=(fmt&&fmt.target==='cella')?fmt.colonna:null;
-        const enc=encodeURIComponent(JSON.stringify(riga));
-        const trClick=!_selezioneAttiva&&(config.puoModificare)?`onclick="apriForm('${enc}')"` :'';
+        const rowIdx=riga._rowIndex;
+        if(isCal){const dr=String(riga[C0]||'');if(dr!==ultData){ultData=dr;const tot=colTabAll.length+(haAct?1:0)+(isCal?1:0)+(mostraChk?1:0);html+=`<tr class="cal-date-row"><td colspan="${tot}">${formattaDataGruppo(dr)}</td></tr>`;}}
+        const fmts=valutaFormatRulesAll(riga,config);
+        // Colore di riga = prima regola 'riga' che matcha
+        const rowFmt=fmts.find(f=>f.target==='riga');
+        const rowColor=rowFmt?rowFmt.colore:null;
+        // Click su riga tramite data-store (evita problemi con enc e apici)
+        const trClick=!_selezioneAttiva&&config.puoModificare?`onclick="apriFormByIdx(${rowIdx})"` :'';
         html+=`<tr class="${!_selezioneAttiva&&config.puoModificare?'clickable-row':''}" ${trClick}>`;
-        if(mostraChk)html+=`<td class="sel-td" onclick="event.stopPropagation()"><input type="checkbox" class="row-chk" data-idx="${riga._rowIndex}"></td>`;
+        if(mostraChk)html+=`<td class="sel-td" onclick="event.stopPropagation()"><input type="checkbox" class="row-chk" data-idx="${rowIdx}"></td>`;
         if(isCal)html+=`<td class="cal-orario"${rowColor?` style="color:${rowColor};"`:''} >${formattaOrario(riga[C1])}</td>`;
-        colTab.forEach(c=>{
-            const cb=coloriCol[c]||'';
+        colTabAll.forEach(c=>{
+            const isV=colVirtNomi.includes(c);
+            const valRaw=isV?(extra[c]||''):riga[c];
+            const val=formattaValoreCella(valRaw);
+            const cb=isV?'':(coloriCol[c]||'');
+            // Colore cella: cerca regola 'cella' specifica per questa colonna
+            const cellFmt=fmts.find(f=>f.target==='cella'&&String(f.colonna||'').trim().toLowerCase()===c.trim().toLowerCase());
             let cellStyle='';
-            // Prima applica formato condizionale normale
-            if(c===cellaTgt)cellStyle=`color:${fmt.colore};font-weight:700;${cb?`background:color-mix(in srgb,${cb} 25%,white 75%);`:''}`;
+            if(cellFmt)cellStyle=`color:${cellFmt.colore};font-weight:700;${cb?`background:color-mix(in srgb,${cb} 25%,white 75%);`:''}`;
             else if(rowColor)cellStyle=`color:${rowColor};font-weight:600;${cb?`background:color-mix(in srgb,${cb} 25%,white 75%);`:''}`;
             else if(cb)cellStyle=`background:color-mix(in srgb,${cb} 12%,white 88%);`;
-            // Poi per CALENDARIO: override con colore per-cella
-            if(isCal){
+            if(isCal&&!isV){
                 const calColor=getCalColorCell(c,riga[c],riga);
-                if(calColor){
-                    cellStyle=`background:${calColor}20;color:${calColor};font-weight:600;border-radius:4px;`;
-                }
+                if(calColor)cellStyle=`background:${calColor}20;color:${calColor};font-weight:600;border-radius:4px;`;
             }
-            html+=`<td${cellStyle?` style="${cellStyle}"`:''}>${formattaValoreCella(riga[c])}</td>`;
+            html+=`<td${cellStyle?` style="${cellStyle}"`:''}${isV?' class="virtual-col"':''}>${val}</td>`;
         });
-        colVirtNomi.forEach(n=>html+=`<td class="virtual-col">${extra[n]||''}</td>`);
         if(haAct){
             const tel=getTelefono(riga,config);
             html+=`<td class="row-actions" onclick="event.stopPropagation()">`;
             if(hasWA&&tel)html+=`<button class="act-btn wa" onclick="apriWhatsApp('${String(tel).replace(/'/g,'&#39;')}')" title="WhatsApp">💬</button>`;
-            if(qa.attiva&&qa.colonna)html+=`<button class="act-btn quick" onclick="eseguiAzioneRapida(${riga._rowIndex})" title="${qa.valore}">${qa.emoji||'⚡'}</button>`;
-            if(config.puoModificare)html+=`<button class="act-btn edit" onclick="apriForm('${enc}');event.stopPropagation();" title="Modifica">✏️</button>`;
-            if(config.puoEliminare)html+=`<button class="act-btn del" onclick="eliminaRiga(${riga._rowIndex});event.stopPropagation();" title="Elimina">🗑️</button>`;
+            if(qa.attiva&&qa.colonna)html+=`<button class="act-btn quick" onclick="eseguiAzioneRapida(${rowIdx})" title="${qa.valore}">${qa.emoji||'⚡'}</button>`;
+            if(config.puoModificare)html+=`<button class="act-btn edit" onclick="apriFormByIdx(${rowIdx});event.stopPropagation();" title="Modifica">✏️</button>`;
+            if(config.puoEliminare)html+=`<button class="act-btn del" onclick="eliminaRiga(${rowIdx});event.stopPropagation();" title="Elimina">🗑️</button>`;
             html+=`</td>`;
         }
         html+='</tr>';
     });
     html+='</tbody></table></div>';
     document.getElementById('tabella-container').innerHTML=html;
+    aggiornaRigheStore();
 }
 
 // ── MULTI SELECT ──────────────────────────────────────────────
@@ -773,66 +790,90 @@ async function eliminaRiga(ri){if(!confirm('Eliminare questa riga?'))return;try{
 // ── FORM ──────────────────────────────────────────────────────
 function chiudiModal(id){document.getElementById(id).style.display='none';}
 
-function apriForm(rigaJSON){
+// Store globale delle righe correnti → evita enc/onclick fragile
+let _righeStore={};
+function aggiornaRigheStore(){
+    _righeStore={};
+    if(!FOGLIO_ATTIVO||!DATABASE[FOGLIO_ATTIVO])return;
+    DATABASE[FOGLIO_ATTIVO].righe.forEach(r=>{_righeStore[r._rowIndex]=r;});
+}
+function apriFormByIdx(rowIndex){
+    const riga=_righeStore[rowIndex];
+    if(!riga){console.warn('Riga non trovata:',rowIndex);return;}
+    apriForm(riga);
+}
+
+function apriForm(rigaObj){
     const config=APP_CONFIG[FOGLIO_ATTIVO]||{},intst=DATABASE[FOGLIO_ATTIVO].intestazioni;
     const fmtCol=config.formatiColonne||{},roSet=new Set(config.colonneReadOnly||[]);
     let cols=config.colonneVisibili&&config.colonneVisibili.length>0?intst.filter(h=>config.colonneVisibili.includes(h)):intst;
     const cont=document.getElementById('modal-form-fields');cont.innerHTML='';
-    RIGA_ORIGINALE_IN_MODIFICA=rigaJSON?JSON.parse(decodeURIComponent(rigaJSON)):null;
-    document.getElementById('modal-title').innerText=rigaJSON?'Modifica':'Nuovo';
+    // Supporta sia oggetto riga che JSON string (retrocompatibilità)
+    if(typeof rigaObj==='string'){try{rigaObj=JSON.parse(decodeURIComponent(rigaObj));}catch(e){rigaObj=null;}}
+    RIGA_ORIGINALE_IN_MODIFICA=rigaObj||null;
+    document.getElementById('modal-title').innerText=rigaObj?'Modifica':'Nuovo';
 
     const isCal=FOGLIO_ATTIVO==='CALENDARIO';
 
     function buildInput(col){
-        let val=RIGA_ORIGINALE_IN_MODIFICA&&RIGA_ORIGINALE_IN_MODIFICA[col]!==undefined?RIGA_ORIGINALE_IN_MODIFICA[col]:'';
+        const val=RIGA_ORIGINALE_IN_MODIFICA&&RIGA_ORIGINALE_IN_MODIFICA[col]!==undefined?RIGA_ORIGINALE_IN_MODIFICA[col]:'';
         const tipo=fmtCol[col]||'text';let inputVal=String(val);
         const isRO=roSet.has(col);
         if(tipo==='text'||tipo===''){
             const r=Math.max(1,Math.ceil(inputVal.length/50));
-            return`<textarea id="input-${col}" rows="${Math.min(r,6)}"${isRO?' disabled':''}
+            return`<textarea id="input-${col.replace(/[^a-zA-Z0-9]/g,'_')}" rows="${Math.min(r,6)}"${isRO?' disabled':''}
                 oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"
                 style="height:auto;width:100%;${r>1?'min-height:'+(r*22+12)+'px;':''}"
             >${inputVal.replace(/</g,'&lt;')}</textarea>`;
         }
         if(tipo==='date'||tipo==='datetime-local'){const m=inputVal.match(/^(\d{2})\/(\d{2})\/(\d{4})(?: (\d{2}):(\d{2}))?/);if(m)inputVal=tipo==='date'?`${m[3]}-${m[2]}-${m[1]}`:`${m[3]}-${m[2]}-${m[1]}T${m[4]||'00'}:${m[5]||'00'}`;}
         else if(tipo==='time'){const mt=inputVal.match(/(\d{2}:\d{2})/);if(mt)inputVal=mt[1];}
-        return`<input type="${tipo}" id="input-${col}" value="${inputVal.replace(/"/g,'&quot;')}"${isRO?' disabled':''}>`;
+        return`<input type="${tipo}" id="input-${col.replace(/[^a-zA-Z0-9]/g,'_')}" value="${inputVal.replace(/"/g,'&quot;')}"${isRO?' disabled':''}>`;
+    }
+    function fieldRow(col){
+        return`<div class="form-field-row"><label>${col}${roSet.has(col)?' 🔒':''}</label>${buildInput(col)}</div>`;
     }
 
     if(isCal){
         // Layout speciale CALENDARIO:
-        // - Riga 1: ANDREA, MATTEO, SARA (3 colonne inline su desktop)
-        // - Riga 2: CLIO, PANDA (2 colonne inline su desktop)
-        // - Resto: normale 2 colonne
+        // 1. Orario (C1) per primo
+        // 2. ANDREA, MATTEO, SARA sulla stessa riga (desktop)
+        // 3. CLIO, PANDA sulla stessa riga (desktop)
+        // 4. Resto in ordine
+        const C1col=intst[1]; // colonna orario
         const TECNICI=['ANDREA','MATTEO','SARA'];
         const VEICOLI=['CLIO','PANDA'];
-        const tecFound=TECNICI.filter(c=>cols.includes(c));
-        const veiFound=VEICOLI.filter(c=>cols.includes(c));
-        const resto=cols.filter(c=>!TECNICI.includes(c)&&!VEICOLI.includes(c));
+        const usati=new Set();
 
+        // Orario in cima
+        if(cols.includes(C1col)){
+            cont.innerHTML+=fieldRow(C1col);
+            usati.add(C1col);
+        }
+        // Tecnici in riga
+        const tecFound=TECNICI.filter(c=>cols.includes(c));
         if(tecFound.length){
-            cont.innerHTML+=`<div class="cal-group-row" style="grid-column:1/-1;display:flex;gap:10px;flex-wrap:wrap;">
-                ${tecFound.map(col=>`<div style="flex:1;min-width:120px;">
-                    <label style="display:block;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-3);margin-bottom:4px;">${col}</label>
-                    ${buildInput(col)}
-                </div>`).join('')}
-            </div>`;
+            cont.innerHTML+=`<div class="form-field-row" style="grid-column:1/-1;flex-wrap:wrap;">
+                <label style="width:100%;min-width:unset;max-width:unset;padding-top:0;margin-bottom:4px;">Tecnici</label>
+                <div style="display:flex;gap:8px;flex:1;flex-wrap:wrap;">
+                    ${tecFound.map(col=>`<div style="flex:1;min-width:100px;"><label style="display:block;font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px;">${col}</label>${buildInput(col)}</div>`).join('')}
+                </div></div>`;
+            tecFound.forEach(c=>usati.add(c));
         }
+        // Veicoli in riga
+        const veiFound=VEICOLI.filter(c=>cols.includes(c));
         if(veiFound.length){
-            cont.innerHTML+=`<div class="cal-group-row" style="grid-column:1/-1;display:flex;gap:10px;flex-wrap:wrap;">
-                ${veiFound.map(col=>`<div style="flex:1;min-width:140px;">
-                    <label style="display:block;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-3);margin-bottom:4px;">${col}</label>
-                    ${buildInput(col)}
-                </div>`).join('')}
-            </div>`;
+            cont.innerHTML+=`<div class="form-field-row" style="grid-column:1/-1;flex-wrap:wrap;">
+                <label style="width:100%;min-width:unset;max-width:unset;padding-top:0;margin-bottom:4px;">Veicoli</label>
+                <div style="display:flex;gap:8px;flex:1;flex-wrap:wrap;">
+                    ${veiFound.map(col=>`<div style="flex:1;min-width:120px;"><label style="display:block;font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px;">${col}</label>${buildInput(col)}</div>`).join('')}
+                </div></div>`;
+            veiFound.forEach(c=>usati.add(c));
         }
-        resto.forEach(col=>{
-            cont.innerHTML+=`<div class="form-field-row"><label>${col}${roSet.has(col)?' 🔒':''}</label>${buildInput(col)}</div>`;
-        });
+        // Resto
+        cols.filter(c=>!usati.has(c)).forEach(col=>{cont.innerHTML+=fieldRow(col);});
     } else {
-        cols.forEach(col=>{
-            cont.innerHTML+=`<div class="form-field-row"><label>${col}${roSet.has(col)?' 🔒':''}</label>${buildInput(col)}</div>`;
-        });
+        cols.forEach(col=>{cont.innerHTML+=fieldRow(col);});
     }
 
     document.getElementById('modal-form').style.display='flex';
@@ -844,21 +885,20 @@ async function salvaDati(){
     const roSet=new Set(config.colonneReadOnly||[]);
     let cols=config.colonneVisibili&&config.colonneVisibili.length>0?intst.filter(h=>config.colonneVisibili.includes(h)):intst;
     const btn=document.getElementById('btn-save-modal');btn.innerText='…';btn.disabled=true;
+    function getInputVal(col){const id='input-'+col.replace(/[^a-zA-Z0-9]/g,'_');const el=document.getElementById(id);return el?el.value:'';}
     try{
         const rigaId=RIGA_ORIGINALE_IN_MODIFICA?._rowIndex??null;
         if(rigaId){
             for(const col of cols){
                 if(roSet.has(col))continue;
                 const ci=intst.indexOf(col);if(ci<0)continue;
-                const el=document.getElementById(`input-${col}`);
-                const val=el?el.value:'';
-                await GS.updateCell(FOGLIO_ATTIVO,rigaId,ci,val);
+                await GS.updateCell(FOGLIO_ATTIVO,rigaId,ci,getInputVal(col));
             }
         }else{
             const payload={};
             intst.forEach(col=>{
                 if(roSet.has(col)&&RIGA_ORIGINALE_IN_MODIFICA){payload[col]=RIGA_ORIGINALE_IN_MODIFICA[col]||'';}
-                else{payload[col]=cols.includes(col)?(document.getElementById(`input-${col}`)?.value??''):(RIGA_ORIGINALE_IN_MODIFICA?RIGA_ORIGINALE_IN_MODIFICA[col]||'':'');}
+                else{payload[col]=cols.includes(col)?getInputVal(col):(RIGA_ORIGINALE_IN_MODIFICA?RIGA_ORIGINALE_IN_MODIFICA[col]||'':'');}
             });
             await GS.append(FOGLIO_ATTIVO,payload,intst);
         }
