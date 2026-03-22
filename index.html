@@ -104,7 +104,12 @@
         .card-actions{display:flex;gap:2px;margin-top:8px;justify-content:flex-end;align-items:center;}
 
         /* KANBAN */
-        .kanban-board{display:flex;gap:0;overflow-x:auto;height:100%;background:var(--bg);}
+        .kanban-wrapper{position:relative;display:flex;flex-direction:column;height:100%;overflow:hidden;}
+        .kanban-nav{display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--sheet);border-bottom:1px solid var(--line);flex-shrink:0;}
+        .kanban-nav button{border:1px solid var(--line);background:white;border-radius:var(--radius);padding:4px 12px;cursor:pointer;font-size:16px;color:var(--ink-2);transition:background .12s;}
+        .kanban-nav button:hover{background:var(--bg);}
+        .kanban-nav-label{font-size:11px;color:var(--ink-3);margin-left:4px;}
+        .kanban-board{display:flex;gap:0;overflow-x:auto;height:100%;background:var(--bg);scroll-behavior:smooth;}
         .kanban-col{min-width:260px;max-width:295px;flex-shrink:0;display:flex;flex-direction:column;background:var(--bg);border-right:1px solid var(--line);}
         .kanban-col-header{padding:11px 12px;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--ink-2);display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);}
         .kanban-col-count{font-size:11px;color:var(--ink-3);font-weight:500;}
@@ -121,7 +126,7 @@
         #multi-delete-bar{display:none;position:sticky;bottom:0;background:var(--sid-dark);color:white;padding:10px 16px;z-index:200;align-items:center;gap:12px;font-size:13px;font-weight:500;flex-shrink:0;}
         #multi-delete-bar button{background:rgba(255,255,255,0.18);color:white;border:none;border-radius:var(--radius);padding:6px 14px;font-size:12px;font-weight:500;cursor:pointer;font-family:'Roboto',sans-serif;}
         #multi-delete-bar button.annulla{background:transparent;border:1px solid rgba(255,255,255,0.3);}
-        #btn-toggle-selezione{width:30px;height:30px;border:1px solid var(--line);background:white;border-radius:var(--radius);cursor:pointer;display:none;align-items:center;justify-content:center;font-size:14px;color:var(--ink-3);}
+        #btn-toggle-selezione{min-width:30px;height:30px;border:1px solid var(--line);background:white;border-radius:var(--radius);cursor:pointer;display:none;align-items:center;justify-content:center;font-size:13px;color:var(--ink-3);padding:0 6px;gap:4px;font-family:'Roboto',sans-serif;}
         #btn-toggle-selezione.attivo{background:#fdecea;border-color:#e74c3c;color:#e74c3c;}
 
         /* MODALI */
@@ -138,6 +143,9 @@
         .form-field-row textarea{min-height:34px;overflow:hidden;line-height:1.45;}
         .form-field-row input:focus,.form-field-row textarea:focus{border-color:var(--accent);}
         .form-field-row input[disabled],.form-field-row textarea[disabled]{background:#f0f0f0;color:#aaa;cursor:not-allowed;border:1px dashed #ccc;font-style:italic;}
+        .cal-group-row input,.cal-group-row textarea{width:100%;padding:6px 9px;border:1px solid var(--line);border-radius:var(--radius);font-size:13px;outline:none;color:var(--ink);font-family:'Roboto',sans-serif;resize:none;background:white;}
+        .cal-group-row input:focus,.cal-group-row textarea:focus{border-color:var(--accent);}
+        .cal-group-row{padding-bottom:8px;border-bottom:1px solid #f0f0f0;}
 
         /* IMPOSTAZIONI */
         .form-group{margin-bottom:13px;}
@@ -221,7 +229,7 @@
             <div id="toolbar">
                 <input type="text" id="search-input" placeholder="🔍 Cerca…" oninput="renderTabella()">
                 <button id="btn-add-toolbar" onclick="apriForm(null)">+ Nuovo</button>
-                <button id="btn-toggle-selezione" onclick="toggleSelezione()">🗑️</button>
+                <button id="btn-toggle-selezione" onclick="toggleSelezione()" title="Seleziona per eliminare">☑ Seleziona</button>
                 <select id="sort-column" onchange="cambiaOrdinamento()"></select>
                 <button id="btn-sort-dir" class="btn-sort" onclick="cambiaDirezioneOrdinamento()">⬇ A–Z</button>
             </div>
@@ -449,18 +457,29 @@ function valutaFormatRules(riga,config){
             case'non vuoto':match=v!=='';break;case'vuoto':match=v==='';break;
             case'data > (dopo)':{const a=parsaData(v),b=parsaData(r.valore);match=a!=null&&b!=null&&a>b;break;}
             case'data < (prima)':{const a=parsaData(v),b=parsaData(r.valore);match=a!=null&&b!=null&&a<b;break;}
+            case'entro X giorni':{const a=parsaData(v);if(a!=null){const oggi=Date.now(),giorni=parseInt(r.valore)||7;match=a>=oggi&&a<=(oggi+giorni*86400000);}break;}
+            case'scaduto da X giorni':{const a=parsaData(v);if(a!=null){const oggi=Date.now(),giorni=parseInt(r.valore)||7;match=a<oggi&&a>=(oggi-giorni*86400000);}break;}
+            case'è oggi':{const a=parsaData(v);if(a!=null){const d=new Date(a),o=new Date();match=d.getFullYear()===o.getFullYear()&&d.getMonth()===o.getMonth()&&d.getDate()===o.getDate();}break;}
         }
         if(match)return{colore:r.colore,target:r.target||'riga',colonna:r.colonna};
     }
     return null;
 }
 
-// fieldColor: colora un campo specifico nella card
-// BUGFIX: il confronto è case-insensitive e trimmed per sicurezza
+// fieldColor: ritorna il colore per un campo nella card
+// target='riga' → colora tutto; target='cella' → colora QUALSIASI campo
+// che abbia lo stesso nome colonna della regola (inclusi label/badge)
 function fieldColor(fieldName,fmt){
     if(!fmt||!fieldName)return null;
     if(fmt.target==='riga')return fmt.colore;
-    if(fmt.target==='cella'&&String(fmt.colonna||'').trim()===String(fieldName||'').trim())return fmt.colore;
+    // target='cella': colora il campo ovunque appaia, incluse etichette card
+    if(fmt.target==='cella'&&String(fmt.colonna||'').trim().toLowerCase()===String(fieldName||'').trim().toLowerCase())return fmt.colore;
+    return null;
+}
+// Colore bordo sinistro della card (riga intera)
+function cardBorderColor(fmt){
+    if(!fmt)return null;
+    if(fmt.target==='riga')return fmt.colore;
     return null;
 }
 
@@ -513,7 +532,7 @@ async function sincronizza(){
         if(FOGLIO_ATTIVO&&DATABASE[FOGLIO_ATTIVO])caricaDati(FOGLIO_ATTIVO);
         document.getElementById('status-message').style.display='none';
         btn.innerText=`↻ ${new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}`;
-        if(autoSyncTimer)clearTimeout(autoSyncTimer);autoSyncTimer=setTimeout(sincronizza,30*60*1000);
+        if(autoSyncTimer)clearTimeout(autoSyncTimer);autoSyncTimer=setTimeout(sincronizza,5*60*1000);
     }catch(e){
         btn.innerText='↻ Errore';console.error(e);
         if(e.status===401||String(e.message).includes('401')||String(e.message).includes('invalid')){_accessToken=null;localStorage.removeItem('gs_token');document.getElementById('app-screen').style.display='none';document.getElementById('login-screen').style.display='flex';}
@@ -635,7 +654,13 @@ function renderKanban(righe,config){
     righe.forEach(r=>{const g=String(r[cg]||'—');if(!gruppi[g])gruppi[g]=[];gruppi[g].push(r);trovati.add(g);});
     const ordinati=[...ord.filter(g=>trovati.has(g)),...Array.from(trovati).filter(g=>!ord.includes(g))];
     const hasWA=!!(config.whatsappAttivo),qa=config.quickAction||{};
-    let h='<div class="kanban-board">';
+    let h=`<div class="kanban-wrapper">
+        <div class="kanban-nav">
+            <button onclick="kanbanScroll(-1)">◀</button>
+            <button onclick="kanbanScroll(1)">▶</button>
+            <span class="kanban-nav-label" id="kanban-pos"></span>
+        </div>
+        <div class="kanban-board" id="kanban-board-el" onscroll="aggiornaKanbanPos()">`;
     ordinati.forEach(g=>{
         h+=`<div class="kanban-col"><div class="kanban-col-header"><span>${g}</span><span class="kanban-col-count">${gruppi[g].length}</span></div><div class="kanban-col-body">`;
         gruppi[g].forEach(riga=>{
@@ -662,10 +687,10 @@ function renderKanban(righe,config){
         });
         h+=`</div></div>`;
     });
-    return h+'</div>';
+    return h+'</div></div></div>';
 }
-
-// ── TABELLA ───────────────────────────────────────────────────
+function kanbanScroll(dir){const el=document.getElementById('kanban-board-el');if(!el)return;el.scrollLeft+=dir*280;setTimeout(aggiornaKanbanPos,200);}
+function aggiornaKanbanPos(){const el=document.getElementById('kanban-board-el'),lbl=document.getElementById('kanban-pos');if(!el||!lbl)return;const cols=el.querySelectorAll('.kanban-col'),w=el.clientWidth,visibili=Math.round(w/280);lbl.innerText=cols.length?`${Math.min(visibili,cols.length)} / ${cols.length} colonne`:'';}
 function renderTabella(){
     const config=APP_CONFIG[FOGLIO_ATTIVO]||{},intst=DATABASE[FOGLIO_ATTIVO].intestazioni;
     const isCal=FOGLIO_ATTIVO==='CALENDARIO',C0=intst[0],C1=intst[1];
@@ -755,27 +780,62 @@ function apriForm(rigaJSON){
     const cont=document.getElementById('modal-form-fields');cont.innerHTML='';
     RIGA_ORIGINALE_IN_MODIFICA=rigaJSON?JSON.parse(decodeURIComponent(rigaJSON)):null;
     document.getElementById('modal-title').innerText=rigaJSON?'Modifica':'Nuovo';
-    cols.forEach(col=>{
+
+    const isCal=FOGLIO_ATTIVO==='CALENDARIO';
+
+    function buildInput(col){
         let val=RIGA_ORIGINALE_IN_MODIFICA&&RIGA_ORIGINALE_IN_MODIFICA[col]!==undefined?RIGA_ORIGINALE_IN_MODIFICA[col]:'';
         const tipo=fmtCol[col]||'text';let inputVal=String(val);
         const isRO=roSet.has(col);
-        let inputHtml='';
         if(tipo==='text'||tipo===''){
-            // Usa textarea per testi, si auto-espande
-            const righe=Math.max(1,Math.ceil(inputVal.length/50));
-            inputHtml=`<textarea id="input-${col}" rows="${Math.min(righe,6)}"${isRO?' disabled':''}
+            const r=Math.max(1,Math.ceil(inputVal.length/50));
+            return`<textarea id="input-${col}" rows="${Math.min(r,6)}"${isRO?' disabled':''}
                 oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"
-                style="height:auto;${righe>1?'min-height:'+(righe*22+12)+'px;':''}"
+                style="height:auto;width:100%;${r>1?'min-height:'+(r*22+12)+'px;':''}"
             >${inputVal.replace(/</g,'&lt;')}</textarea>`;
-        } else {
-            if(tipo==='date'||tipo==='datetime-local'){const m=inputVal.match(/^(\d{2})\/(\d{2})\/(\d{4})(?: (\d{2}):(\d{2}))?/);if(m)inputVal=tipo==='date'?`${m[3]}-${m[2]}-${m[1]}`:`${m[3]}-${m[2]}-${m[1]}T${m[4]||'00'}:${m[5]||'00'}`;}
-            else if(tipo==='time'){const mt=inputVal.match(/(\d{2}:\d{2})/);if(mt)inputVal=mt[1];}
-            inputHtml=`<input type="${tipo}" id="input-${col}" value="${inputVal.replace(/"/g,'&quot;')}"${isRO?' disabled':''}>`
         }
-        cont.innerHTML+=`<div class="form-field-row"><label>${col}${isRO?' 🔒':''}</label>${inputHtml}</div>`;
-    });
+        if(tipo==='date'||tipo==='datetime-local'){const m=inputVal.match(/^(\d{2})\/(\d{2})\/(\d{4})(?: (\d{2}):(\d{2}))?/);if(m)inputVal=tipo==='date'?`${m[3]}-${m[2]}-${m[1]}`:`${m[3]}-${m[2]}-${m[1]}T${m[4]||'00'}:${m[5]||'00'}`;}
+        else if(tipo==='time'){const mt=inputVal.match(/(\d{2}:\d{2})/);if(mt)inputVal=mt[1];}
+        return`<input type="${tipo}" id="input-${col}" value="${inputVal.replace(/"/g,'&quot;')}"${isRO?' disabled':''}>`;
+    }
+
+    if(isCal){
+        // Layout speciale CALENDARIO:
+        // - Riga 1: ANDREA, MATTEO, SARA (3 colonne inline su desktop)
+        // - Riga 2: CLIO, PANDA (2 colonne inline su desktop)
+        // - Resto: normale 2 colonne
+        const TECNICI=['ANDREA','MATTEO','SARA'];
+        const VEICOLI=['CLIO','PANDA'];
+        const tecFound=TECNICI.filter(c=>cols.includes(c));
+        const veiFound=VEICOLI.filter(c=>cols.includes(c));
+        const resto=cols.filter(c=>!TECNICI.includes(c)&&!VEICOLI.includes(c));
+
+        if(tecFound.length){
+            cont.innerHTML+=`<div class="cal-group-row" style="grid-column:1/-1;display:flex;gap:10px;flex-wrap:wrap;">
+                ${tecFound.map(col=>`<div style="flex:1;min-width:120px;">
+                    <label style="display:block;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-3);margin-bottom:4px;">${col}</label>
+                    ${buildInput(col)}
+                </div>`).join('')}
+            </div>`;
+        }
+        if(veiFound.length){
+            cont.innerHTML+=`<div class="cal-group-row" style="grid-column:1/-1;display:flex;gap:10px;flex-wrap:wrap;">
+                ${veiFound.map(col=>`<div style="flex:1;min-width:140px;">
+                    <label style="display:block;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-3);margin-bottom:4px;">${col}</label>
+                    ${buildInput(col)}
+                </div>`).join('')}
+            </div>`;
+        }
+        resto.forEach(col=>{
+            cont.innerHTML+=`<div class="form-field-row"><label>${col}${roSet.has(col)?' 🔒':''}</label>${buildInput(col)}</div>`;
+        });
+    } else {
+        cols.forEach(col=>{
+            cont.innerHTML+=`<div class="form-field-row"><label>${col}${roSet.has(col)?' 🔒':''}</label>${buildInput(col)}</div>`;
+        });
+    }
+
     document.getElementById('modal-form').style.display='flex';
-    // Auto-resize tutte le textarea appena aperte
     setTimeout(()=>document.querySelectorAll('#modal-form-fields textarea').forEach(t=>{t.style.height='auto';t.style.height=t.scrollHeight+'px';}),0);
 }
 
@@ -816,7 +876,7 @@ function apriImpostazioni(){
     document.getElementById('set-add').checked=!!config.puoAggiungere;
     document.getElementById('set-edit').checked=!!config.puoModificare;
     document.getElementById('set-delete').checked=!!config.puoEliminare;
-    document.getElementById('set-sort-col').innerHTML=`<option value="">– Nessuno –</option>`+intst.map(c=>`<option value="${c}" ${config.sortColonna===c?'selected':''}>${c}</option>`).join('');
+    document.getElementById('set-sort-col').innerHTML=`<option value="">– Nessuno –</option>`+[...intst,...(config.colonneVirtuali||[]).map(v=>v.nome)].map(c=>`<option value="${c}" ${config.sortColonna===c?'selected':''}>${c}</option>`).join('');
     document.getElementById('set-sort-dir').value=config.sortDirezione||1;
     let cHtml=`<label style="font-weight:700;font-size:11px;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-3);display:block;margin-bottom:6px;">Colonne Visibili</label>`;
     intst.forEach(c=>{cHtml+=`<label class="checkbox-label"><input type="checkbox" class="chk-colonna" value="${c}" ${config.colonneVisibili&&config.colonneVisibili.includes(c)?'checked':''}> ${c}</label>`;});
@@ -836,7 +896,8 @@ function apriImpostazioni(){
     const mkOpts=sel=>`<option value="">– Nessuna –</option>`+intst.map(c=>`<option value="${c}" ${sel===c?'selected':''}>${c}</option>`).join('');
     document.getElementById('card-col-data').innerHTML=mkOpts(cc.data||'');
     document.getElementById('card-col-badge').innerHTML=mkOpts(cc.badge||'');
-    document.getElementById('card-col-corpo-list').innerHTML=intst.map(c=>`<label class="checkbox-label"><input type="checkbox" class="chk-card-corpo" value="${c}" ${(cc.corpo||[]).includes(c)?'checked':''}> ${c}</label>`).join('');
+    const tutteColCard=[...intst,...(config.colonneVirtuali||[]).map(v=>v.nome)];
+    document.getElementById('card-col-corpo-list').innerHTML=tutteColCard.map(c=>`<label class="checkbox-label"><input type="checkbox" class="chk-card-corpo" value="${c}" ${(cc.corpo||[]).includes(c)?'checked':''}> ${c}${!(intst.includes(c))?' <em style="color:var(--ink-3);font-size:11px;">(virtuale)</em>':''}</label>`).join('');
     document.getElementById('set-kanban-attiva').checked=!!config.vistaKanbanAttiva;
     document.getElementById('kanban-col-gruppo').innerHTML=`<option value="">– Nessuna –</option>`+intst.map(c=>`<option value="${c}" ${config.kanbanGruppo===c?'selected':''}>${c}</option>`).join('');
     document.getElementById('kanban-ordine').value=(config.kanbanOrdine||[]).join('\n');
@@ -844,7 +905,7 @@ function apriImpostazioni(){
     const tipi=[{v:'',l:'– Testo libero –'},{v:'date',l:'📅 Data'},{v:'datetime-local',l:'📅 Data e Ora'},{v:'time',l:'🕐 Orario'}];
     document.getElementById('formati-colonne-list').innerHTML=intst.map(c=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><span style="flex:1;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${c}</span><select class="chk-col-format" data-col="${c}" style="width:150px;padding:5px;border:1px solid var(--line);border-radius:4px;font-size:12px;">${tipi.map(t=>`<option value="${t.v}" ${fmtCol[c]===t.v?'selected':''}>${t.l}</option>`).join('')}</select></div>`).join('');
     const regole=config.formatRules||[];while(regole.length<5)regole.push({});
-    const ops=['uguale','non uguale','contiene','inizia con','non vuoto','vuoto','data > (dopo)','data < (prima)'];
+    const ops=['uguale','non uguale','contiene','inizia con','non vuoto','vuoto','data > (dopo)','data < (prima)','entro X giorni','scaduto da X giorni','è oggi'];
     document.getElementById('format-rules-list').innerHTML=regole.slice(0,5).map((r,i)=>`<div class="fmt-rule"><select class="fmt-col" data-i="${i}"><option value="">– –</option>${intst.map(c=>`<option value="${c}" ${r.colonna===c?'selected':''}>${c}</option>`).join('')}</select><select class="fmt-op" data-i="${i}">${ops.map(o=>`<option value="${o}" ${r.operatore===o?'selected':''}>${o}</option>`).join('')}</select><input type="text" class="fmt-val" data-i="${i}" value="${r.valore||''}" placeholder="valore"><input type="color" class="fmt-color" data-i="${i}" value="${r.colore||'#e74c3c'}"><select class="fmt-target" data-i="${i}" style="padding:4px;border:1px solid var(--line);border-radius:4px;font-size:11px;"><option value="riga" ${(r.target||'riga')==='riga'?'selected':''}>Riga intera</option><option value="cella" ${r.target==='cella'?'selected':''}>Solo cella</option></select></div>`).join('');
     const coloriCol=config.coloriColonne||{};
     document.getElementById('colori-colonne-list').innerHTML=intst.map(c=>`<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;"><input type="color" class="chk-col-color" data-col="${c}" value="${coloriCol[c]||'#ffffff'}" style="width:36px;height:26px;border:1px solid var(--line);border-radius:4px;"><span style="font-size:14px;">${c}</span></div>`).join('');
