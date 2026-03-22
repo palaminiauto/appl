@@ -17,29 +17,19 @@
         }
         *,*::before,*::after{box-sizing:border-box;}
         body{font-family:'SF Pro Text',-apple-system,'Segoe UI',sans-serif;margin:0;background:var(--bg);height:100vh;overflow:hidden;font-size:13px;color:var(--ink);-webkit-font-smoothing:antialiased;}
-
-        /* LOGIN */
         #login-screen{display:flex;align-items:center;justify-content:center;height:100vh;background:var(--sid-dark);}
         .login-box{background:white;border:1px solid var(--line);padding:36px 32px;border-radius:10px;text-align:center;width:90%;max-width:300px;box-shadow:var(--sh2);}
         .login-box h2{font-size:15px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:var(--sidebar);margin:0 0 24px;}
         #google-btn-wrap{margin-top:4px;}
         #google-status{font-size:11px;color:var(--ink-3);margin-top:8px;}
-
-        /* APP */
         #app-screen{display:none;height:100vh;flex-direction:row;}
-
-        /* SIDEBAR */
         #sidebar{width:160px;min-width:160px;background:var(--sidebar);padding:10px 6px;overflow-y:auto;flex-shrink:0;display:flex;flex-direction:column;}
         #sidebar h3{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.42);padding:6px 8px 8px;margin:0;}
         #buttons-container{flex-grow:1;overflow-y:auto;display:flex;flex-direction:column;gap:1px;}
         #sidebar button{display:block;width:100%;padding:7px 10px;cursor:pointer;background:transparent;color:var(--sid-txt);border:none;text-align:left;border-radius:var(--radius);font-size:12px;font-weight:400;transition:background .12s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.4;}
         #sidebar button:hover{background:rgba(0,0,0,0.10);}
         #sidebar button.active{background:var(--sid-act);color:white;font-weight:600;}
-
-        /* MAIN */
         #main-container{flex-grow:1;display:flex;flex-direction:column;overflow:hidden;background:var(--sheet);}
-
-        /* HEADER */
         #header{background:var(--sheet);padding:0 14px;height:48px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);gap:10px;flex-shrink:0;}
         #titolo-foglio{margin:0;font-size:14px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
         .header-right{display:flex;align-items:center;gap:4px;flex-shrink:0;}
@@ -47,20 +37,14 @@
         .hb:hover{background:var(--bg);}
         #btn-sync{padding:0 12px;width:auto;font-size:11px;font-weight:600;letter-spacing:.3px;color:var(--ink-2);border:1px solid var(--line);border-radius:20px;height:30px;}
         #hamburger-btn{display:none;}
-
-        /* TOOLBAR */
         #toolbar{display:none;align-items:center;gap:6px;padding:7px 12px;background:var(--sheet);border-bottom:1px solid var(--line);flex-shrink:0;flex-wrap:wrap;}
         #search-input{flex:1;min-width:120px;max-width:240px;padding:6px 11px;border:1px solid var(--line);border-radius:20px;font-size:12px;outline:none;background:var(--bg);color:var(--ink);}
         #search-input:focus{border-color:#bbb;background:white;}
         #btn-add-toolbar{padding:5px 14px;background:var(--sidebar);color:white;border:none;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;display:none;white-space:nowrap;}
         #sort-column{padding:5px 8px;border:1px solid var(--line);border-radius:var(--radius);font-size:11px;background:white;color:var(--ink);cursor:pointer;}
         .btn-sort{padding:5px 9px;border:1px solid var(--line);border-radius:var(--radius);background:white;font-size:11px;cursor:pointer;color:var(--ink-2);}
-
-        /* CONTENT */
         #content{overflow-y:auto;flex-grow:1;background:var(--sheet);display:flex;flex-direction:column;}
         #status-message{padding:48px 20px;text-align:center;color:var(--ink-3);font-size:13px;}
-
-        /* TABLE */
         .table-wrapper{overflow-x:auto;}
         table{border-collapse:collapse;width:100%;}
         @media(min-width:769px){table{table-layout:fixed;}}
@@ -68,38 +52,33 @@
         td{padding:9px 12px;border-bottom:1px solid var(--line);font-size:12.5px;text-align:center;vertical-align:middle;word-wrap:break-word;overflow-wrap:break-word;color:var(--ink);}
         tr:last-child td{border-bottom:none;}
         tbody tr:hover td{background:#f8f8f8;}
+        tbody tr.clickable-row{cursor:pointer;}
+        tbody tr.clickable-row:hover td{background:#eef4fb;}
         .sel-td{width:32px;text-align:center;padding:9px 8px;}
         tr.selected-row td{background:#ddeaf5!important;}
-        .row-actions{text-align:right;vertical-align:middle;white-space:nowrap;}
-        .cal-date-row td{text-align:left!important;}
-
+        .row-actions{text-align:right!important;vertical-align:middle!important;white-space:nowrap;}
+        td.virtual-col{color:var(--ink-2);font-style:italic;}
         /* ACTION BUTTONS — unici per tutte le viste */
-        .act-btn{
-            border:none;background:transparent;cursor:pointer;
-            width:30px;height:30px;border-radius:6px;
-            font-size:15px;display:inline-flex;align-items:center;justify-content:center;
-            transition:background .12s,transform .08s;padding:0;opacity:0.5;line-height:1;
-        }
+        .act-btn{border:none;background:transparent;cursor:pointer;width:30px;height:30px;border-radius:6px;font-size:15px;display:inline-flex;align-items:center;justify-content:center;transition:background .12s,transform .08s,opacity .12s;padding:0;opacity:.5;line-height:1;}
         .act-btn:hover{opacity:1;transform:scale(1.15);}
         .act-btn.edit:hover{background:#e8f0ff;}
         .act-btn.del:hover{background:#fff0f0;}
+        .act-btn.wa{opacity:.65;}
         .act-btn.wa:hover{background:#e6f9ee;opacity:1;}
-
+        .act-btn.quick:hover{background:#fff8e0;opacity:1;}
         /* CALENDARIO */
-        .cal-date-row td{background:var(--bg)!important;padding:9px 12px 7px!important;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-2);border-bottom:1px solid var(--line)!important;}
-        .cal-orario{font-weight:600;color:var(--ink-2);width:62px;white-space:nowrap;text-align:center;}
-
+        .cal-date-row td{background:var(--bg)!important;padding:9px 12px 7px!important;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-2);border-bottom:1px solid var(--line)!important;text-align:center!important;}
+        .cal-orario{font-weight:600;color:var(--ink-2);width:62px;white-space:nowrap;}
         /* CARDS */
         .cards-grid{display:flex;flex-direction:column;}
         .card{background:var(--sheet);padding:12px 16px 10px;cursor:pointer;border-bottom:1px solid var(--line);transition:background .10s;}
         .card:hover{background:var(--bg);}
         .card.card-selected{background:#ddeaf5!important;border-left:3px solid var(--accent);}
-        .card-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:3px;}
-        .card-label{font-size:10.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;}
-        .card-badge-right{font-size:11px;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;}
-        .card-title{font-size:13.5px;font-weight:500;color:var(--ink);line-height:1.45;}
-        .card-actions{display:flex;gap:2px;margin-top:6px;justify-content:flex-end;}
-
+        .card-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:4px;}
+        .card-label{font-size:12px;font-weight:600;color:var(--ink);}
+        .card-badge-right{font-size:12px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;}
+        .card-corpo{font-size:12px;color:var(--ink-2);line-height:1.55;}
+        .card-actions{display:flex;gap:0;margin-top:6px;justify-content:flex-end;align-items:center;}
         /* KANBAN */
         .kanban-board{display:flex;gap:0;overflow-x:auto;height:100%;background:var(--bg);}
         .kanban-col{min-width:250px;max-width:285px;flex-shrink:0;display:flex;flex-direction:column;background:var(--bg);border-right:1px solid var(--line);}
@@ -109,18 +88,16 @@
         .kanban-card{background:var(--sheet);border-radius:var(--radius);padding:11px 12px;box-shadow:var(--sh);cursor:pointer;transition:box-shadow .12s;margin-bottom:4px;}
         .kanban-card:hover{box-shadow:var(--sh2);}
         .kanban-card.card-selected{border-left:3px solid var(--accent);background:#ddeaf5!important;}
-        .kanban-card-label{font-size:9.5px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;margin-bottom:5px;}
-        .kanban-card-body-line{font-size:11.5px;color:var(--ink-2);line-height:1.45;}
-        .kanban-card-meta{font-size:11px;color:var(--ink-3);margin-top:3px;}
-        .kanban-card-actions{display:flex;gap:2px;margin-top:6px;justify-content:flex-end;}
-
+        .kanban-card-label{font-size:12px;font-weight:600;margin-bottom:4px;}
+        .kanban-card-body-line{font-size:12px;color:var(--ink-2);line-height:1.45;}
+        .kanban-card-meta{font-size:12px;color:var(--ink-3);margin-top:3px;}
+        .kanban-card-actions{display:flex;gap:0;margin-top:6px;justify-content:flex-end;}
         /* MULTI DELETE */
         #multi-delete-bar{display:none;position:sticky;bottom:0;background:var(--sid-dark);color:white;padding:10px 16px;z-index:200;align-items:center;gap:12px;font-size:12px;font-weight:500;flex-shrink:0;}
         #multi-delete-bar button{background:rgba(255,255,255,0.15);color:white;border:none;border-radius:var(--radius);padding:6px 14px;font-size:11px;font-weight:500;cursor:pointer;}
         #multi-delete-bar button.annulla{background:transparent;border:1px solid rgba(255,255,255,0.3);}
         #btn-toggle-selezione{width:30px;height:30px;border:1px solid var(--line);background:white;border-radius:var(--radius);cursor:pointer;display:none;align-items:center;justify-content:center;font-size:14px;color:var(--ink-3);}
         #btn-toggle-selezione.attivo{background:#fdecea;border-color:#e74c3c;color:#e74c3c;}
-
         /* MODALI */
         .modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;z-index:1000;}
         .modal-content{background:white;padding:24px;border-radius:10px;width:90%;max-width:520px;max-height:92vh;overflow-y:auto;box-shadow:0 16px 48px rgba(0,0,0,0.18);}
@@ -131,10 +108,10 @@
         .form-field-row label{min-width:120px;max-width:120px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-3);flex-shrink:0;line-height:1.3;}
         .form-field-row input,.form-field-row select{flex:1;min-width:0;padding:6px 9px;border:1px solid var(--line);border-radius:var(--radius);font-size:12px;outline:none;color:var(--ink);}
         .form-field-row input:focus{border-color:var(--accent);}
-        .form-field-row input[disabled]{background:#f4f4f4;color:#bbb;cursor:not-allowed;border:1px dashed #ddd;}
+        .form-field-row input[disabled]{background:#f0f0f0;color:#aaa;cursor:not-allowed;border:1px dashed #ccc;font-style:italic;}
         .form-group{margin-bottom:13px;}
         .form-group label{display:block;font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--ink-3);margin-bottom:5px;}
-        .form-group input,.form-group select{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:var(--radius);font-size:13px;outline:none;color:var(--ink);}
+        .form-group input,.form-group select,.form-group textarea{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:var(--radius);font-size:13px;outline:none;color:var(--ink);}
         .checkbox-label{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:5px 0;color:var(--ink);}
         .checkbox-label input{width:auto!important;margin:0!important;cursor:pointer;}
         .modal-buttons{display:flex;justify-content:flex-end;gap:8px;margin-top:14px;flex-shrink:0;}
@@ -149,7 +126,6 @@
         .order-item{display:flex;justify-content:space-between;align-items:center;padding:9px 12px;border-radius:var(--radius);background:var(--bg);margin-bottom:4px;font-size:13px;}
         .order-btns button{padding:4px 8px;border:1px solid var(--line);border-radius:4px;background:white;cursor:pointer;margin-left:4px;font-size:11px;}
         .order-btns button:disabled{opacity:.3;cursor:not-allowed;}
-
         @media(max-width:768px){#sidebar{display:none!important;}#hamburger-btn{display:flex!important;}.desktop-only{display:none!important;}}
         #drawer-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:5000;}
         #drawer-overlay.open{display:block;}
@@ -163,8 +139,6 @@
         #drawer-footer button{flex:1;padding:10px;text-align:center;}
         #tabella-container{--table-font:13px;flex-grow:1;}
         #tabella-container td{font-size:var(--table-font);}
-
-        /* SAVING INDICATOR */
         #config-saving{display:none;position:fixed;bottom:16px;right:16px;background:var(--sid-dark);color:white;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;z-index:9999;box-shadow:var(--sh2);}
     </style>
 </head>
@@ -176,7 +150,6 @@
         <div id="google-status">In attesa di Google…</div>
     </div>
 </div>
-
 <div id="drawer-overlay" onclick="chiudiDrawer()"></div>
 <div id="drawer">
     <h3>Fogli</h3>
@@ -186,12 +159,8 @@
         <button style="background:rgba(0,0,0,0.15);color:white;" onclick="apriImpostazioni();chiudiDrawer()">⚙</button>
     </div>
 </div>
-
 <div id="app-screen">
-    <div id="sidebar">
-        <h3>Fogli</h3>
-        <div id="buttons-container"></div>
-    </div>
+    <div id="sidebar"><h3>Fogli</h3><div id="buttons-container"></div></div>
     <div id="main-container">
         <div id="header">
             <h2 id="titolo-foglio">Palamini Auto</h2>
@@ -199,7 +168,7 @@
                 <button id="hamburger-btn" class="hb" onclick="apriDrawer()">☰</button>
                 <button onclick="sincronizza()" id="btn-sync" class="hb btn-sync">↻ Sync</button>
                 <button onclick="cambiaFont(-1)" class="hb desktop-only" style="font-size:11px;font-weight:700;">A−</button>
-                <button onclick="cambiaFont(1)"  class="hb desktop-only" style="font-size:11px;font-weight:700;">A+</button>
+                <button onclick="cambiaFont(1)" class="hb desktop-only" style="font-size:11px;font-weight:700;">A+</button>
                 <button onclick="apriOrdinamento()" class="hb desktop-only">↕</button>
                 <button onclick="apriImpostazioni()" class="hb desktop-only">⚙</button>
             </div>
@@ -222,8 +191,6 @@
         </div>
     </div>
 </div>
-
-<!-- SAVING INDICATOR -->
 <div id="config-saving">💾 Salvataggio…</div>
 
 <!-- MODAL FORM -->
@@ -242,19 +209,49 @@
 <div id="modal-settings" class="modal-overlay">
     <div class="modal-content">
         <h3>⚙ Impostazioni — <span id="settings-nome-foglio"></span></h3>
-        <div class="form-group"><label>Nome nel Menu</label><input type="text" id="set-display-name" placeholder="Es. SAT ({{COUNT}})"></div>
+        <div class="form-group"><label>Nome nel Menu</label><input type="text" id="set-display-name" placeholder="Es. SAT ({{COUNT:STATO=Aperto}})"></div>
         <label class="checkbox-label"><input type="checkbox" id="set-add"> Permetti aggiunta righe</label>
         <label class="checkbox-label"><input type="checkbox" id="set-edit"> Permetti modifica righe</label>
         <label class="checkbox-label"><input type="checkbox" id="set-delete"> Permetti eliminazione righe</label>
         <div class="form-group" style="margin-top:12px;"><label>Ordinamento predefinito</label>
             <div style="display:flex;gap:8px;">
                 <select id="set-sort-col" style="flex:1;padding:8px;border:1px solid var(--line);border-radius:var(--radius);"></select>
-                <select id="set-sort-dir" style="width:90px;padding:8px;border:1px solid var(--line);border-radius:var(--radius);">
-                    <option value="1">A → Z</option><option value="-1">Z → A</option>
-                </select>
+                <select id="set-sort-dir" style="width:90px;padding:8px;border:1px solid var(--line);border-radius:var(--radius);"><option value="1">A → Z</option><option value="-1">Z → A</option></select>
             </div>
         </div>
-        <hr><div id="settings-colonne"></div>
+        <hr>
+        <div id="settings-colonne"></div>
+        <hr>
+        <div>
+            <label style="font-weight:700;font-size:13px;display:block;margin-bottom:6px;">🔒 Colonne Sola Lettura</label>
+            <p style="margin-bottom:8px;font-size:11px;color:var(--ink-3);">Il valore di queste colonne non viene mai sovrascritto dal form (le formule Excel restano intatte).</p>
+            <div id="settings-readonly"></div>
+        </div>
+        <hr>
+        <div>
+            <label style="font-weight:700;font-size:13px;display:block;margin-bottom:6px;">🧮 Colonne Virtuali</label>
+            <p style="margin-bottom:8px;font-size:11px;color:var(--ink-3);">Colonne calcolate lato app. Una per riga nel formato: <code style="background:#f4f4f4;padding:1px 5px;border-radius:3px;font-size:11px;">NOME = {COL1} {COL2}</code></p>
+            <textarea id="set-colonne-virtuali" rows="4" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:var(--radius);font-size:12px;font-family:monospace;resize:vertical;" placeholder="NOMINATIVO = {NOME} {COGNOME}&#10;INFO = {MARCA} {MODELLO} ({ANNO})"></textarea>
+        </div>
+        <hr>
+        <div>
+            <label style="font-weight:700;font-size:13px;display:block;margin-bottom:8px;">💬 WhatsApp</label>
+            <label class="checkbox-label"><input type="checkbox" id="set-wa-attivo"> Mostra pulsante WhatsApp</label>
+            <div class="form-group" style="margin-top:8px;"><label>Colonna numero di telefono</label>
+                <select id="set-wa-colonna" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:var(--radius);font-size:13px;"></select>
+            </div>
+        </div>
+        <hr>
+        <div>
+            <label style="font-weight:700;font-size:13px;display:block;margin-bottom:6px;">⚡ Azione Rapida</label>
+            <p style="margin-bottom:8px;font-size:11px;color:var(--ink-3);">Pulsante extra per impostare un valore fisso in una colonna (es. segna come RITIRATE).</p>
+            <label class="checkbox-label"><input type="checkbox" id="set-qa-attiva"> Attiva</label>
+            <div style="display:grid;grid-template-columns:1fr 1fr 60px;gap:8px;margin-top:8px;">
+                <div><label style="font-size:10px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px;">Colonna</label><select id="set-qa-colonna" style="width:100%;padding:7px;border:1px solid var(--line);border-radius:var(--radius);font-size:12px;"></select></div>
+                <div><label style="font-size:10px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px;">Valore</label><input type="text" id="set-qa-valore" placeholder="es. RITIRATE" style="width:100%;padding:7px;border:1px solid var(--line);border-radius:var(--radius);font-size:12px;"></div>
+                <div><label style="font-size:10px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px;">Icona</label><input type="text" id="set-qa-emoji" placeholder="✅" style="width:100%;padding:7px;border:1px solid var(--line);border-radius:var(--radius);font-size:14px;text-align:center;"></div>
+            </div>
+        </div>
         <hr>
         <div>
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
@@ -279,9 +276,8 @@
         <hr>
         <div>
             <label style="font-weight:700;font-size:13px;display:block;margin-bottom:6px;">🎨 Regole di Formattazione</label>
-            <div style="display:grid;grid-template-columns:1fr 110px 1fr 46px 76px;gap:4px;margin-bottom:4px;font-size:10px;color:var(--ink-3);font-weight:700;padding:0 2px;">
-                <span>Colonna</span><span>Operatore</span><span>Valore</span><span>Col.</span><span>Target</span>
-            </div>
+            <p style="margin-bottom:8px;font-size:11px;color:var(--ink-3);">"Solo cella" colora il valore di quella specifica colonna ovunque appaia nella card.</p>
+            <div style="display:grid;grid-template-columns:1fr 110px 1fr 46px 76px;gap:4px;margin-bottom:4px;font-size:10px;color:var(--ink-3);font-weight:700;padding:0 2px;"><span>Colonna</span><span>Operatore</span><span>Valore</span><span>Col.</span><span>Target</span></div>
             <div id="format-rules-list"></div>
         </div>
         <hr>
@@ -302,332 +298,132 @@
 </div>
 
 <script>
-// ============================================================
-// CONFIG CHECK
-// ============================================================
-if(typeof SPREADSHEET_ID==='undefined'||typeof GOOGLE_CLIENT_ID==='undefined')
-    alert("Manca config.js — controlla SPREADSHEET_ID e GOOGLE_CLIENT_ID");
+if(typeof SPREADSHEET_ID==='undefined'||typeof GOOGLE_CLIENT_ID==='undefined')alert("Manca config.js");
 
-// ============================================================
-// GOOGLE SHEETS API LAYER
-// ============================================================
 const SCOPES='https://www.googleapis.com/auth/spreadsheets';
-let _gapiReady=false,_gisReady=false,_tokenClient=null,_accessToken=null;
-let _sheetIds={};
-const SETTINGS_SHEET='IMPOSTAZIONI APP'; // foglio di sistema per config condivisa
+let _gapiReady=false,_gisReady=false,_tokenClient=null,_accessToken=null,_sheetIds={};
+const SETTINGS_SHEET='IMPOSTAZIONI APP';
 
-function richiediToken(){
-    return new Promise((resolve,reject)=>{
-        if(_accessToken){resolve(_accessToken);return;}
-        const cached=localStorage.getItem('gs_token');
-        if(cached){_accessToken=cached;if(typeof gapi!=='undefined')gapi.client.setToken({access_token:cached});resolve(cached);return;}
-        _tokenClient.callback=(resp)=>{
-            if(resp.error){reject(resp);return;}
-            _accessToken=resp.access_token;
-            localStorage.setItem('gs_token',_accessToken);
-            resolve(_accessToken);
-        };
-        _tokenClient.requestAccessToken({prompt:''});
-    });
-}
-
-function inizializzaGapi(){
-    gapi.load('client',async()=>{
-        await gapi.client.init({});
-        await gapi.client.load('https://sheets.googleapis.com/$discovery/rest?version=v4');
-        _gapiReady=true;verificaPronte();
-    });
-}
-
-function inizializzaGis(){
-    _tokenClient=google.accounts.oauth2.initTokenClient({client_id:GOOGLE_CLIENT_ID,scope:SCOPES,callback:()=>{}});
-    _gisReady=true;
-    document.getElementById('google-status').innerText='Clicca "Accedi con Google" per autorizzare';
-    verificaPronte();
-}
-
+function richiediToken(){return new Promise((res,rej)=>{if(_accessToken){res(_accessToken);return;}const c=localStorage.getItem('gs_token');if(c){_accessToken=c;if(typeof gapi!=='undefined')gapi.client.setToken({access_token:c});res(c);return;}_tokenClient.callback=r=>{if(r.error){rej(r);return;}_accessToken=r.access_token;localStorage.setItem('gs_token',_accessToken);res(_accessToken);};_tokenClient.requestAccessToken({prompt:''});});}
+function inizializzaGapi(){gapi.load('client',async()=>{await gapi.client.init({});await gapi.client.load('https://sheets.googleapis.com/$discovery/rest?version=v4');_gapiReady=true;verificaPronte();});}
+function inizializzaGis(){_tokenClient=google.accounts.oauth2.initTokenClient({client_id:GOOGLE_CLIENT_ID,scope:SCOPES,callback:()=>{}});_gisReady=true;document.getElementById('google-status').innerText='Clicca "Accedi con Google" per autorizzare';verificaPronte();}
 function verificaPronte(){
     if(!_gapiReady||!_gisReady)return;
     const tok=localStorage.getItem('gs_token');
-    if(tok){
-        _accessToken=tok;gapi.client.setToken({access_token:tok});
-        document.getElementById('login-screen').style.display='none';
-        document.getElementById('app-screen').style.display='flex';
-        sincronizza();return;
-    }
-    const wrap=document.getElementById('google-btn-wrap');
-    wrap.innerHTML=`<button onclick="autorizzaGoogle()" style="width:100%;padding:10px;background:white;border:1px solid var(--line);border-radius:var(--radius);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px;">
-        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.08 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-3.59-13.46-8.66l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-        Accedi con Google</button>`;
+    if(tok){_accessToken=tok;gapi.client.setToken({access_token:tok});document.getElementById('login-screen').style.display='none';document.getElementById('app-screen').style.display='flex';sincronizza();return;}
+    document.getElementById('google-btn-wrap').innerHTML=`<button onclick="autorizzaGoogle()" style="width:100%;padding:10px;background:white;border:1px solid var(--line);border-radius:var(--radius);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px;"><svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.08 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-3.59-13.46-8.66l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>Accedi con Google</button>`;
 }
-
-async function autorizzaGoogle(){
-    try{
-        _tokenClient.callback=(resp)=>{
-            if(resp.error){alert('Errore accesso Google: '+resp.error);return;}
-            _accessToken=resp.access_token;
-            localStorage.setItem('gs_token',_accessToken);
-            gapi.client.setToken({access_token:_accessToken});
-            document.getElementById('login-screen').style.display='none';
-            document.getElementById('app-screen').style.display='flex';
-            sincronizza();
-        };
-        _tokenClient.requestAccessToken({prompt:'consent'});
-    }catch(e){alert('Errore Google Auth: '+e.message);}
-}
-
+async function autorizzaGoogle(){_tokenClient.callback=r=>{if(r.error){alert('Errore: '+r.error);return;}_accessToken=r.access_token;localStorage.setItem('gs_token',_accessToken);gapi.client.setToken({access_token:_accessToken});document.getElementById('login-screen').style.display='none';document.getElementById('app-screen').style.display='flex';sincronizza();};_tokenClient.requestAccessToken({prompt:'consent'});}
 function setGapiToken(){if(_accessToken)gapi.client.setToken({access_token:_accessToken});}
 
-// ── SHEETS API ──────────────────────────────────────────────
 const GS={
-    async getSheets(){
-        await richiediToken();setGapiToken();
-        const r=await gapi.client.sheets.spreadsheets.get({spreadsheetId:SPREADSHEET_ID,fields:'sheets.properties'});
-        return r.result.sheets.map(s=>({name:s.properties.title,id:s.properties.sheetId}));
-    },
-    async getAll(sheetName){
-        await richiediToken();setGapiToken();
-        const r=await gapi.client.sheets.spreadsheets.values.get({spreadsheetId:SPREADSHEET_ID,range:sheetName,valueRenderOption:'FORMATTED_VALUE'});
-        const values=r.result.values||[];
-        if(values.length===0)return{headers:[],rows:[]};
-        const headers=values[0];
-        const rows=values.slice(1).map((row,idx)=>{
-            const obj={_rowIndex:idx+2};
-            headers.forEach((h,i)=>{obj[h]=row[i]!==undefined?String(row[i]):'';});
-            return obj;
-        });
-        return{headers,rows};
-    },
-    async append(sheetName,payload,headers){
-        await richiediToken();setGapiToken();
-        const values=[headers.map(h=>payload[h]!==undefined?payload[h]:'')];
-        await gapi.client.sheets.spreadsheets.values.append({spreadsheetId:SPREADSHEET_ID,range:`${sheetName}!A1`,valueInputOption:'USER_ENTERED',insertDataOption:'INSERT_ROWS',resource:{values}});
-    },
-    async update(sheetName,rowIndex,payload,headers){
-        await richiediToken();setGapiToken();
-        const values=[headers.map(h=>payload[h]!==undefined?payload[h]:'')];
-        await gapi.client.sheets.spreadsheets.values.update({spreadsheetId:SPREADSHEET_ID,range:`${sheetName}!A${rowIndex}`,valueInputOption:'USER_ENTERED',resource:{values}});
-    },
-    async deleteRows(sheetName,rowIndexes){
-        await richiediToken();setGapiToken();
-        const sheetId=_sheetIds[sheetName];
-        if(sheetId===undefined)throw new Error(`sheetId non trovato per ${sheetName}`);
-        const sorted=[...rowIndexes].sort((a,b)=>b-a);
-        const requests=sorted.map(r=>({deleteDimension:{range:{sheetId,dimension:'ROWS',startIndex:r-1,endIndex:r}}}));
-        await gapi.client.sheets.spreadsheets.batchUpdate({spreadsheetId:SPREADSHEET_ID,resource:{requests}});
-    },
-    // ── CONFIG su IMPOSTAZIONI APP ───────────────────────────
-    async loadConfig(){
-        await richiediToken();setGapiToken();
-        try{
-            const r=await gapi.client.sheets.spreadsheets.values.get({
-                spreadsheetId:SPREADSHEET_ID,range:`${SETTINGS_SHEET}!A1`,valueRenderOption:'FORMATTED_VALUE'
-            });
-            const val=r.result.values?.[0]?.[0];
-            if(val){const parsed=JSON.parse(val);localStorage.setItem(CONFIG_KEY,JSON.stringify(parsed));return parsed;}
-        }catch(e){console.warn('loadConfig fallback localStorage:',e.message);}
-        return JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');
-    },
-    async saveConfig(configObj){
-        const jsonStr=JSON.stringify(configObj);
-        localStorage.setItem(CONFIG_KEY,jsonStr);
-        try{
-            await richiediToken();setGapiToken();
-            await gapi.client.sheets.spreadsheets.values.update({
-                spreadsheetId:SPREADSHEET_ID,range:`${SETTINGS_SHEET}!A1`,
-                valueInputOption:'USER_ENTERED',resource:{values:[[jsonStr]]}
-            });
-        }catch(e){console.warn('saveConfig sheet error:',e.message);}
-    }
+    async getSheets(){await richiediToken();setGapiToken();const r=await gapi.client.sheets.spreadsheets.get({spreadsheetId:SPREADSHEET_ID,fields:'sheets.properties'});return r.result.sheets.map(s=>({name:s.properties.title,id:s.properties.sheetId}));},
+    async getAll(n){await richiediToken();setGapiToken();const r=await gapi.client.sheets.spreadsheets.values.get({spreadsheetId:SPREADSHEET_ID,range:n,valueRenderOption:'FORMATTED_VALUE'});const v=r.result.values||[];if(!v.length)return{headers:[],rows:[]};const h=v[0];const rows=v.slice(1).map((row,i)=>{const o={_rowIndex:i+2};h.forEach((hh,j)=>{o[hh]=row[j]!==undefined?String(row[j]):'';});return o;});return{headers:h,rows};},
+    async append(n,p,h){await richiediToken();setGapiToken();await gapi.client.sheets.spreadsheets.values.append({spreadsheetId:SPREADSHEET_ID,range:`${n}!A1`,valueInputOption:'USER_ENTERED',insertDataOption:'INSERT_ROWS',resource:{values:[h.map(hh=>p[hh]??'')]}});},
+    async updateCell(n,ri,ci,v){await richiediToken();setGapiToken();const l=colIndexToLetter(ci);await gapi.client.sheets.spreadsheets.values.update({spreadsheetId:SPREADSHEET_ID,range:`${n}!${l}${ri}`,valueInputOption:'USER_ENTERED',resource:{values:[[v]]}});},
+    async deleteRows(n,idxs){await richiediToken();setGapiToken();const sid=_sheetIds[n];if(sid===undefined)throw new Error('sheetId mancante');const reqs=[...idxs].sort((a,b)=>b-a).map(r=>({deleteDimension:{range:{sheetId:sid,dimension:'ROWS',startIndex:r-1,endIndex:r}}}));await gapi.client.sheets.spreadsheets.batchUpdate({spreadsheetId:SPREADSHEET_ID,resource:{requests:reqs}});},
+    async loadConfig(){await richiediToken();setGapiToken();try{const r=await gapi.client.sheets.spreadsheets.values.get({spreadsheetId:SPREADSHEET_ID,range:`${SETTINGS_SHEET}!A1`,valueRenderOption:'FORMATTED_VALUE'});const v=r.result.values?.[0]?.[0];if(v){const p=JSON.parse(v);localStorage.setItem(CONFIG_KEY,JSON.stringify(p));return p;}}catch(e){console.warn('loadConfig:',e.message);}return JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');},
+    async saveConfig(c){const s=JSON.stringify(c);localStorage.setItem(CONFIG_KEY,s);try{await richiediToken();setGapiToken();await gapi.client.sheets.spreadsheets.values.update({spreadsheetId:SPREADSHEET_ID,range:`${SETTINGS_SHEET}!A1`,valueInputOption:'USER_ENTERED',resource:{values:[[s]]}});}catch(e){console.warn('saveConfig:',e.message);}}
 };
+function colIndexToLetter(i){let s='',n=i;while(n>=0){s=String.fromCharCode(65+(n%26))+s;n=Math.floor(n/26)-1;}return s;}
+window.gapiLoaded=inizializzaGapi;window.gisLoaded=inizializzaGis;
 
-function colIndexToLetter(idx){let s='',n=idx;while(n>=0){s=String.fromCharCode(65+(n%26))+s;n=Math.floor(n/26)-1;}return s;}
-window.gapiLoaded=inizializzaGapi;
-window.gisLoaded=inizializzaGis;
-
-// ============================================================
-// APP STATE
-// ============================================================
-let DATABASE={},APP_CONFIG={},FOGLIO_ATTIVO="",RIGA_ORIGINALE_IN_MODIFICA=null;
+// ── STATE ────────────────────────────────────────────────────
+let DATABASE={},APP_CONFIG={},FOGLIO_ATTIVO='',RIGA_ORIGINALE_IN_MODIFICA=null;
 let ORDINAMENTO={colonna:null,direzione:1},_sortFixed=false,autoSyncTimer=null;
-let _vistaCard=false,_vistaKanban=false,_selezioneAttiva=false;
-let _selectedRows=new Set(); // per card/kanban selection
+let _vistaCard=false,_vistaKanban=false,_selezioneAttiva=false,_selectedRows=new Set();
 let _fontSize=parseInt(localStorage.getItem('tableFontSize')||'13');
-const FOGLI_CON_DATE=["SAT","APP PNM","FLOTTE"],NOME_COLONNA_DATA="DATA e ORA";
+const FOGLI_CON_DATE=['SAT','APP PNM','FLOTTE'],NOME_COLONNA_DATA='DATA e ORA';
 const CONFIG_KEY='appConfig_gs';
-
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
-
-window.onload=function(){
-    setTimeout(()=>{
-        if(typeof google!=='undefined'&&google.accounts)inizializzaGis();
-        if(typeof gapi!=='undefined')inizializzaGapi();
-    },1500);
-};
-
+window.onload=()=>setTimeout(()=>{if(typeof google!=='undefined'&&google.accounts)inizializzaGis();if(typeof gapi!=='undefined')inizializzaGapi();},1500);
 function aggiornaFont(){document.getElementById('tabella-container').style.setProperty('--table-font',_fontSize+'px');}
 function cambiaFont(d){_fontSize=Math.min(22,Math.max(9,_fontSize+d));localStorage.setItem('tableFontSize',_fontSize);aggiornaFont();}
 window.addEventListener('load',aggiornaFont);
 
-// ── SALVA CONFIG (condivisa su sheet) ─────────────────────────
-async function salvaConfig(){
-    const ind=document.getElementById('config-saving');
-    ind.style.display='block';
-    try{await GS.saveConfig(APP_CONFIG);}
-    finally{setTimeout(()=>{ind.style.display='none';},1200);}
-}
+async function salvaConfig(){const ind=document.getElementById('config-saving');ind.style.display='block';try{await GS.saveConfig(APP_CONFIG);}finally{setTimeout(()=>{ind.style.display='none';},1200);}}
 
-// ── UTILITIES ───────────────────────────────────────────────
-function parsaData(str){
-    if(!str)return null;
-    const m=String(str).match(/^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}))?/);
-    if(m)return new Date(`${m[3]}-${m[2]}-${m[1]}T${m[4]||'00'}:${m[5]||'00'}`).getTime();
-    const d=new Date(str);return isNaN(d)?null:d.getTime();
-}
+// ── UTILITIES ─────────────────────────────────────────────────
+function parsaData(s){if(!s)return null;const m=String(s).match(/^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}))?/);if(m)return new Date(`${m[3]}-${m[2]}-${m[1]}T${m[4]||'00'}:${m[5]||'00'}`).getTime();const d=new Date(s);return isNaN(d)?null:d.getTime();}
+function isRigaVuota(r,cols){return cols.every(c=>!String(r[c]||'').trim());}
 function valutaFormatRules(riga,config){
     for(const r of(config.formatRules||[])){
         if(!r.colonna||!r.colore)continue;
         const v=String(riga[r.colonna]||'').trim();let match=false;
-        switch(r.operatore){
-            case'uguale':match=v===r.valore;break;case'non uguale':match=v!==r.valore;break;
-            case'contiene':match=v.toLowerCase().includes((r.valore||'').toLowerCase());break;
-            case'inizia con':match=v.toLowerCase().startsWith((r.valore||'').toLowerCase());break;
-            case'non vuoto':match=v!=='';break;case'vuoto':match=v==='';break;
-            case'data > (dopo)':{const tA=parsaData(v),tB=parsaData(r.valore);match=tA!=null&&tB!=null&&tA>tB;break;}
-            case'data < (prima)':{const tA=parsaData(v),tB=parsaData(r.valore);match=tA!=null&&tB!=null&&tA<tB;break;}
-        }
+        switch(r.operatore){case'uguale':match=v===r.valore;break;case'non uguale':match=v!==r.valore;break;case'contiene':match=v.toLowerCase().includes((r.valore||'').toLowerCase());break;case'inizia con':match=v.toLowerCase().startsWith((r.valore||'').toLowerCase());break;case'non vuoto':match=v!=='';break;case'vuoto':match=v==='';break;case'data > (dopo)':{const a=parsaData(v),b=parsaData(r.valore);match=a!=null&&b!=null&&a>b;break;}case'data < (prima)':{const a=parsaData(v),b=parsaData(r.valore);match=a!=null&&b!=null&&a<b;break;}}
         if(match)return{colore:r.colore,target:r.target||'riga',colonna:r.colonna};
     }
     return null;
 }
-function isRigaVuota(riga,colonne){return colonne.every(c=>!String(riga[c]||'').trim());}
+// Colore per un campo specifico nella card:
+// target 'riga' → applica a tutto; target 'cella' → SOLO se fieldName === colonna della regola
+function fieldColor(fieldName,fmt){if(!fmt)return null;if(fmt.target==='riga')return fmt.colore;if(fmt.target==='cella'&&fmt.colonna===fieldName)return fmt.colore;return null;}
+
+function parseColonneVirtuali(testo){return(testo||'').split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{const eq=l.indexOf('=');if(eq<0)return null;return{nome:l.slice(0,eq).trim(),formula:l.slice(eq+1).trim()};}).filter(Boolean);}
+function calcolaVirtuali(riga,config){const extra={};(config.colonneVirtuali||[]).forEach(v=>{extra[v.nome]=v.formula.replace(/\{([^}]+)\}/g,(_,c)=>String(riga[c]||'').trim());});return extra;}
+function getTelefono(riga,config){const col=config.whatsappColonna||'';if(col&&riga[col]!==undefined)return String(riga[col]||'');for(const c of['CONTATTO TELEFONICO','TELEFONO','TEL','CELLULARE','CELL']){if(riga[c]!==undefined)return String(riga[c]||'');}return'';}
 
 function apriDrawer(){document.getElementById('drawer').classList.add('open');document.getElementById('drawer-overlay').classList.add('open');}
 function chiudiDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('drawer-overlay').classList.remove('open');}
-function toggleSelezione(){
-    _selezioneAttiva=!_selezioneAttiva;
-    document.getElementById('btn-toggle-selezione').classList.toggle('attivo',_selezioneAttiva);
-    if(!_selezioneAttiva){deselezionaTutti();document.getElementById('multi-delete-bar').style.display='none';}
-    renderTabella();
-}
+function toggleSelezione(){_selezioneAttiva=!_selezioneAttiva;document.getElementById('btn-toggle-selezione').classList.toggle('attivo',_selezioneAttiva);if(!_selezioneAttiva){deselezionaTutti();document.getElementById('multi-delete-bar').style.display='none';}renderTabella();}
 
-// ============================================================
-// SYNC
-// ============================================================
+// ── SYNC ──────────────────────────────────────────────────────
 async function sincronizza(){
-    const btn=document.getElementById('btn-sync');btn.innerText="…";
-    if(!_accessToken){
-        localStorage.removeItem('gs_token');
-        document.getElementById('app-screen').style.display='none';
-        document.getElementById('login-screen').style.display='flex';
-        return;
-    }
+    const btn=document.getElementById('btn-sync');btn.innerText='…';
+    if(!_accessToken){localStorage.removeItem('gs_token');document.getElementById('app-screen').style.display='none';document.getElementById('login-screen').style.display='flex';return;}
     try{
-        const sheets=await GS.getSheets();
-        sheets.forEach(s=>{_sheetIds[s.name]=s.id;});
-
-        // Carica config da IMPOSTAZIONI APP (condivisa)
-        const hasSettingsSheet=sheets.some(s=>s.name===SETTINGS_SHEET);
-        if(hasSettingsSheet){
-            APP_CONFIG=await GS.loadConfig();
-        }else{
-            APP_CONFIG=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');
-        }
-
-        // Fogli da escludere
-        const escludi=new Set([
-            ...(typeof FOGLI_DA_ESCLUDERE!=='undefined'?FOGLI_DA_ESCLUDERE:[]),
-            SETTINGS_SHEET
-        ]);
-        const fogliAttivi=sheets.filter(s=>!escludi.has(s.name));
-
+        const sheets=await GS.getSheets();sheets.forEach(s=>{_sheetIds[s.name]=s.id;});
+        const hasSet=sheets.some(s=>s.name===SETTINGS_SHEET);
+        APP_CONFIG=hasSet?await GS.loadConfig():JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');
+        const escludi=new Set([...(typeof FOGLI_DA_ESCLUDERE!=='undefined'?FOGLI_DA_ESCLUDERE:[]),SETTINGS_SHEET]);
         const db={};
-        await Promise.all(fogliAttivi.map(async s=>{
-            try{
-                const{headers,rows}=await GS.getAll(s.name);
-                db[s.name]={intestazioni:headers,righe:rows};
-            }catch(e){
-                console.warn(`Errore foglio ${s.name}:`,e.message);
-                db[s.name]={intestazioni:[],righe:[]};
-            }
-        }));
-        DATABASE=db;
-        renderMenu();
+        await Promise.all(sheets.filter(s=>!escludi.has(s.name)).map(async s=>{try{const{headers,rows}=await GS.getAll(s.name);db[s.name]={intestazioni:headers,righe:rows};}catch(e){console.warn(s.name,e.message);db[s.name]={intestazioni:[],righe:[]};}}));
+        DATABASE=db;renderMenu();
         if(FOGLIO_ATTIVO&&DATABASE[FOGLIO_ATTIVO])caricaDati(FOGLIO_ATTIVO);
         document.getElementById('status-message').style.display='none';
-        const ora=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-        btn.innerText=`↻ ${ora}`;
-        if(autoSyncTimer)clearTimeout(autoSyncTimer);
-        autoSyncTimer=setTimeout(sincronizza,30*60*1000);
+        btn.innerText=`↻ ${new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}`;
+        if(autoSyncTimer)clearTimeout(autoSyncTimer);autoSyncTimer=setTimeout(sincronizza,30*60*1000);
     }catch(e){
         btn.innerText='↻ Errore';console.error(e);
-        if(e.status===401||String(e.message).includes('401')||String(e.message).includes('invalid')){
-            _accessToken=null;localStorage.removeItem('gs_token');
-            document.getElementById('app-screen').style.display='none';
-            document.getElementById('login-screen').style.display='flex';
-        }else{
-            alert('Errore sync: '+e.message);
-        }
+        if(e.status===401||String(e.message).includes('401')||String(e.message).includes('invalid')){_accessToken=null;localStorage.removeItem('gs_token');document.getElementById('app-screen').style.display='none';document.getElementById('login-screen').style.display='flex';}
+        else alert('Errore sync: '+e.message);
     }
 }
 
+// COUNT — conta solo righe non vuote
 function getNomeDinamico(nome){
     const c=APP_CONFIG[nome]||{},t=c.displayName;if(!t)return nome;
-    const righe=DATABASE[nome].righe||[];
-    return t.replace(/\{\{COUNT\}\}/g,righe.length).replace(/\{\{COUNT:(.*?)=(.*?)\}\}/g,(_,col,val)=>righe.filter(r=>String(r[col]).trim()==String(val).trim()).length);
+    const intst=DATABASE[nome]?.intestazioni||[];
+    const righe=(DATABASE[nome]?.righe||[]).filter(r=>!isRigaVuota(r,intst));
+    return t.replace(/\{\{COUNT\}\}/g,righe.length).replace(/\{\{COUNT:(.*?)=(.*?)\}\}/g,(_,col,val)=>righe.filter(r=>String(r[col]).trim()===String(val).trim()).length);
 }
 
 function renderMenu(){
-    const cont=document.getElementById('buttons-container'),drw=document.getElementById('drawer-buttons');
-    cont.innerHTML='';drw.innerHTML='';
-    let disponibili=Object.keys(DATABASE);
-    let ordinati=(APP_CONFIG._sheetOrder||[]).filter(f=>disponibili.includes(f));
-    disponibili.forEach(f=>{if(!ordinati.includes(f))ordinati.push(f);});
-    APP_CONFIG._sheetOrder=ordinati;
-    ordinati.forEach(nome=>{
-        [[cont,false],[drw,true]].forEach(([c,isD])=>{
-            const btn=document.createElement('button');
-            btn.innerText=getNomeDinamico(nome);btn.setAttribute('data-foglio',nome);
-            btn.onclick=()=>{caricaDati(nome);if(isD)chiudiDrawer();};
-            if(nome===FOGLIO_ATTIVO)btn.classList.add('active');
-            c.appendChild(btn);
-        });
-    });
+    const cont=document.getElementById('buttons-container'),drw=document.getElementById('drawer-buttons');cont.innerHTML='';drw.innerHTML='';
+    let disp=Object.keys(DATABASE),ord=(APP_CONFIG._sheetOrder||[]).filter(f=>disp.includes(f));
+    disp.forEach(f=>{if(!ord.includes(f))ord.push(f);});APP_CONFIG._sheetOrder=ord;
+    ord.forEach(nome=>{[[cont,false],[drw,true]].forEach(([c,isD])=>{const b=document.createElement('button');b.innerText=getNomeDinamico(nome);b.setAttribute('data-foglio',nome);b.onclick=()=>{caricaDati(nome);if(isD)chiudiDrawer();};if(nome===FOGLIO_ATTIVO)b.classList.add('active');c.appendChild(b);});});
 }
 
 function apriOrdinamento(){aggiornaListaOrdinamento();document.getElementById('modal-order').style.display='flex';}
-function aggiornaListaOrdinamento(){
-    document.getElementById('order-list').innerHTML=APP_CONFIG._sheetOrder.map((f,i)=>
-        `<div class="order-item"><span>${f}</span><div class="order-btns">
-        <button onclick="spostaFoglio(${i},-1)" ${i===0?'disabled':''}>⬆</button>
-        <button onclick="spostaFoglio(${i},1)" ${i===APP_CONFIG._sheetOrder.length-1?'disabled':''}>⬇</button>
-        </div></div>`).join('');
-}
-async function spostaFoglio(i,d){
-    const a=APP_CONFIG._sheetOrder,t=a[i];a[i]=a[i+d];a[i+d]=t;
-    aggiornaListaOrdinamento();renderMenu();
-    await salvaConfig();
-}
+function aggiornaListaOrdinamento(){document.getElementById('order-list').innerHTML=APP_CONFIG._sheetOrder.map((f,i)=>`<div class="order-item"><span>${f}</span><div class="order-btns"><button onclick="spostaFoglio(${i},-1)" ${i===0?'disabled':''}>⬆</button><button onclick="spostaFoglio(${i},1)" ${i===APP_CONFIG._sheetOrder.length-1?'disabled':''}>⬇</button></div></div>`).join('');}
+async function spostaFoglio(i,d){const a=APP_CONFIG._sheetOrder,t=a[i];a[i]=a[i+d];a[i+d]=t;aggiornaListaOrdinamento();renderMenu();await salvaConfig();}
 
 function caricaDati(nome){
-    FOGLIO_ATTIVO=nome;
-    document.getElementById('titolo-foglio').innerText=getNomeDinamico(nome);
+    FOGLIO_ATTIVO=nome;document.getElementById('titolo-foglio').innerText=getNomeDinamico(nome);
     document.querySelectorAll('#sidebar button[data-foglio]').forEach(b=>b.classList.toggle('active',b.getAttribute('data-foglio')===nome));
-    _selezioneAttiva=false;_selectedRows.clear();
-    document.getElementById('btn-toggle-selezione').classList.remove('attivo');
-    document.getElementById('multi-delete-bar').style.display='none';
+    _selezioneAttiva=false;_selectedRows.clear();document.getElementById('btn-toggle-selezione').classList.remove('attivo');document.getElementById('multi-delete-bar').style.display='none';
     const config=APP_CONFIG[nome]||{};
     document.getElementById('btn-add-toolbar').style.display=config.puoAggiungere?'inline-block':'none';
     document.getElementById('btn-toggle-selezione').style.display=config.puoEliminare?'flex':'none';
     const intestazioni=DATABASE[nome].intestazioni;
     if(!intestazioni.length){document.getElementById('toolbar').style.display='none';document.getElementById('tabella-container').innerHTML='<p style="padding:32px;color:var(--ink-3);">Foglio vuoto.</p>';return;}
-    let colVis=intestazioni;
-    if(config.colonneVisibili&&config.colonneVisibili.length>0)colVis=intestazioni.filter(h=>config.colonneVisibili.includes(h));
-    document.getElementById('toolbar').style.display='flex';
-    document.getElementById('search-input').value='';
+    let colVis=intestazioni;if(config.colonneVisibili&&config.colonneVisibili.length>0)colVis=intestazioni.filter(h=>config.colonneVisibili.includes(h));
+    document.getElementById('toolbar').style.display='flex';document.getElementById('search-input').value='';
     const sortSel=document.getElementById('sort-column');
-    sortSel.innerHTML=`<option value="">– Ordina –</option>`+colVis.map(c=>`<option value="${c}">${c}</option>`).join('');
-    if(config.sortColonna&&colVis.includes(config.sortColonna)){ORDINAMENTO.colonna=config.sortColonna;ORDINAMENTO.direzione=config.sortDirezione||1;sortSel.value=config.sortColonna;_sortFixed=true;}
+    const colVirtNomi=(config.colonneVirtuali||[]).map(v=>v.nome);
+    sortSel.innerHTML=`<option value="">– Ordina –</option>`+[...colVis,...colVirtNomi].map(c=>`<option value="${c}">${c}</option>`).join('');
+    if(config.sortColonna){ORDINAMENTO.colonna=config.sortColonna;ORDINAMENTO.direzione=config.sortDirezione||1;sortSel.value=config.sortColonna;_sortFixed=true;}
     else if(FOGLI_CON_DATE.includes(nome)&&intestazioni.includes(NOME_COLONNA_DATA)){ORDINAMENTO.colonna=NOME_COLONNA_DATA;ORDINAMENTO.direzione=1;_sortFixed=false;}
     else{ORDINAMENTO.colonna=null;ORDINAMENTO.direzione=1;sortSel.value='';_sortFixed=false;}
     document.getElementById('sort-column').style.display=_sortFixed?'none':'';
@@ -638,59 +434,57 @@ function caricaDati(nome){
     renderTabella();
 }
 
-function convertiDataAssoluta(val){
-    if(!val)return 0;const s=String(val);
-    const iso=s.match(/^(\d{4})-(\d{2})-(\d{2})/);if(iso)return new Date(iso[1],iso[2]-1,iso[3]).getTime();
-    const mesi={gennaio:0,febbraio:1,marzo:2,aprile:3,maggio:4,giugno:5,luglio:6,agosto:7,settembre:8,ottobre:9,novembre:10,dicembre:11};
-    const parts=s.toLowerCase().split(' ');let mi=-1,g=1;
-    for(let i=0;i<parts.length;i++){if(mesi[parts[i]]!==undefined){mi=mesi[parts[i]];g=parseInt(parts[i-1])||1;}}
-    if(mi===-1)return 0;return new Date(new Date().getFullYear(),mi,g).getTime();
-}
-function formattaValoreCella(val){
-    if(!val)return'';const s=String(val);
-    const m=s.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);if(m)return`${m[3]}/${m[2]}/${m[1]} ${m[4]}:${m[5]}`;
-    return s;
-}
-function formattaOrario(val){
-    if(!val)return'';const s=String(val);
-    if(s.includes('T')&&s.includes('-')){const d=new Date(s);if(!isNaN(d))return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');}
-    const m1=s.match(/1899[^\d]*(\d{1,2}):(\d{2})/);if(m1)return`${m1[1].padStart(2,'0')}:${m1[2]}`;
-    const m2=s.match(/^(\d{1,2}):(\d{2})/);if(m2)return`${m2[1].padStart(2,'0')}:${m2[2]}`;
-    return s;
-}
-function formattaDataGruppo(val){
-    if(!val)return'';const s=String(val);
-    const giorni=["Domenica","Lunedì","Martedì","Mercoledì","Giovedì","Venerdì","Sabato"];
-    const mesi=["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
-    const iso=s.match(/^(\d{4})-(\d{2})-(\d{2})/);
-    if(iso){const d=new Date(iso[1],iso[2]-1,iso[3]);return`${giorni[d.getDay()]} ${d.getDate()} ${mesi[d.getMonth()]}`;}
-    return s.replace(/^\w/,c=>c.toUpperCase());
-}
+function convertiDataAssoluta(val){if(!val)return 0;const s=String(val);const iso=s.match(/^(\d{4})-(\d{2})-(\d{2})/);if(iso)return new Date(iso[1],iso[2]-1,iso[3]).getTime();const mesi={gennaio:0,febbraio:1,marzo:2,aprile:3,maggio:4,giugno:5,luglio:6,agosto:7,settembre:8,ottobre:9,novembre:10,dicembre:11};const pts=s.toLowerCase().split(' ');let mi=-1,g=1;for(let i=0;i<pts.length;i++){if(mesi[pts[i]]!==undefined){mi=mesi[pts[i]];g=parseInt(pts[i-1])||1;}}if(mi===-1)return 0;return new Date(new Date().getFullYear(),mi,g).getTime();}
+function formattaValoreCella(val){if(!val)return'';const s=String(val);const m=s.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);if(m)return`${m[3]}/${m[2]}/${m[1]} ${m[4]}:${m[5]}`;return s;}
+function formattaOrario(val){if(!val)return'';const s=String(val);if(s.includes('T')&&s.includes('-')){const d=new Date(s);if(!isNaN(d))return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');}const m1=s.match(/1899[^\d]*(\d{1,2}):(\d{2})/);if(m1)return`${m1[1].padStart(2,'0')}:${m1[2]}`;const m2=s.match(/^(\d{1,2}):(\d{2})/);if(m2)return`${m2[1].padStart(2,'0')}:${m2[2]}`;return s;}
+function formattaDataGruppo(val){if(!val)return'';const s=String(val);const gg=["Domenica","Lunedì","Martedì","Mercoledì","Giovedì","Venerdì","Sabato"];const mm=["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];const iso=s.match(/^(\d{4})-(\d{2})-(\d{2})/);if(iso){const d=new Date(iso[1],iso[2]-1,iso[3]);return`${gg[d.getDay()]} ${d.getDate()} ${mm[d.getMonth()]}`;}return s.replace(/^\w/,c=>c.toUpperCase());}
 function cambiaOrdinamento(){if(_sortFixed)return;ORDINAMENTO.colonna=document.getElementById('sort-column').value||null;renderTabella();}
 function cambiaDirezioneOrdinamento(){if(_sortFixed)return;ORDINAMENTO.direzione*=-1;document.getElementById('btn-sort-dir').innerText=ORDINAMENTO.direzione===1?'⬇ A–Z':'⬆ Z–A';renderTabella();}
 
-// ── CARD ────────────────────────────────────────────────────
+// ── AZIONE RAPIDA ─────────────────────────────────────────────
+async function eseguiAzioneRapida(rowIndex){
+    const config=APP_CONFIG[FOGLIO_ATTIVO]||{},qa=config.quickAction||{};
+    if(!qa.colonna||!qa.valore)return;
+    const intst=DATABASE[FOGLIO_ATTIVO].intestazioni,ci=intst.indexOf(qa.colonna);if(ci<0)return;
+    try{
+        await GS.updateCell(FOGLIO_ATTIVO,rowIndex,ci,qa.valore);
+        const r=DATABASE[FOGLIO_ATTIVO]?.righe.find(r=>r._rowIndex===rowIndex);if(r)r[qa.colonna]=qa.valore;
+        renderTabella();renderMenu();
+    }catch(e){alert('Errore: '+e.message);}
+}
+function apriWhatsApp(tel){if(!tel){alert('Nessun numero.');return;}window.open(`https://api.whatsapp.com/send/?phone=%2B39${String(tel).replace(/\D/g,'')}&text&type=phone_number&app_absent=0`,'_blank');}
+
+// ── CARD ──────────────────────────────────────────────────────
 function renderCard(righe,config){
     const cc=config.cardConfig||{};
     if(!righe.length)return'<p style="padding:32px;color:var(--ink-3);">Nessuna riga trovata.</p>';
+    const hasWA=!!(config.whatsappAttivo),qa=config.quickAction||{};
     let h='<div class="cards-grid">';
     righe.forEach(riga=>{
-        const fmt=valutaFormatRules(riga,config),lc=fmt?fmt.colore:'var(--accent)',tc=(fmt&&fmt.target!=='cella')?fmt.colore:'var(--ink)';
-        const valData=cc.data?formattaValoreCella(riga[cc.data]):'',valBadge=cc.badge?formattaValoreCella(riga[cc.badge]):'';
-        const valCorpo=(cc.corpo||[]).map(c=>formattaValoreCella(riga[c])).filter(Boolean).join(' · ');
+        const extra=calcolaVirtuali(riga,config),all={...riga,...extra};
+        const fmt=valutaFormatRules(riga,config);
+        const valData=cc.data?formattaValoreCella(all[cc.data]):'',valBadge=cc.badge?formattaValoreCella(all[cc.badge]):'';
+        const cData=fieldColor(cc.data,fmt),cBadge=fieldColor(cc.badge,fmt);
         const enc=encodeURIComponent(JSON.stringify(riga));
         const isSel=_selectedRows.has(riga._rowIndex);
-        const clickFn=_selezioneAttiva
-            ?`toggleCardSelection(${riga._rowIndex},this.closest('.card'))`
-            :`apriForm('${enc}')`;
+        const clickFn=_selezioneAttiva?`toggleCardSelection(${riga._rowIndex},this.closest('.card'))`:`apriForm('${enc}')`;
+        const tel=getTelefono(riga,config);
         h+=`<div class="card${isSel?' card-selected':''}" onclick="${clickFn}">
             <div class="card-top">
-                <div class="card-label" style="color:${lc};">${valData}</div>
-                ${valBadge?`<div class="card-badge-right">${valBadge}</div>`:''}
+                <div class="card-label"${cData?` style="color:${cData};"`:''} >${valData}</div>
+                ${valBadge?`<div class="card-badge-right"${cBadge?` style="color:${cBadge};"`:''} >${valBadge}</div>`:''}
             </div>
-            <div class="card-title" style="color:${tc};font-weight:${fmt?'600':'500'};">${valCorpo}</div>`;
-        if(!_selezioneAttiva&&(config.puoModificare||config.puoEliminare)){
+            <div class="card-corpo">`;
+        (cc.corpo||[]).forEach(col=>{
+            const v=formattaValoreCella(all[col]);if(!v)return;
+            const fc=fieldColor(col,fmt);
+            h+=`<span${fc?` style="color:${fc};font-weight:600;"`:''} >${v} </span>`;
+        });
+        h+=`</div>`;
+        if(!_selezioneAttiva&&(config.puoModificare||config.puoEliminare||hasWA||(qa.attiva&&qa.colonna))){
             h+=`<div class="card-actions" onclick="event.stopPropagation()">
+                ${hasWA&&tel?`<button class="act-btn wa" onclick="apriWhatsApp('${String(tel).replace(/'/g,'&#39;')}')" title="WhatsApp">💬</button>`:''}
+                ${qa.attiva&&qa.colonna?`<button class="act-btn quick" onclick="eseguiAzioneRapida(${riga._rowIndex})" title="${qa.valore}">${qa.emoji||'⚡'}</button>`:''}
                 ${config.puoModificare?`<button class="act-btn edit" onclick="apriForm('${enc}')" title="Modifica">✏️</button>`:''}
                 ${config.puoEliminare?`<button class="act-btn del" onclick="eliminaRiga(${riga._rowIndex})" title="Elimina">🗑️</button>`:''}
             </div>`;
@@ -699,38 +493,35 @@ function renderCard(righe,config){
     });
     return h+'</div>';
 }
+function toggleCardSelection(rowIndex,el){if(_selectedRows.has(rowIndex)){_selectedRows.delete(rowIndex);el.classList.remove('card-selected');}else{_selectedRows.add(rowIndex);el.classList.add('card-selected');}aggiornaBarraMulti();}
 
-function toggleCardSelection(rowIndex,cardEl){
-    if(_selectedRows.has(rowIndex)){_selectedRows.delete(rowIndex);cardEl.classList.remove('card-selected');}
-    else{_selectedRows.add(rowIndex);cardEl.classList.add('card-selected');}
-    aggiornaBarraMulti();
-}
-
-// ── KANBAN ───────────────────────────────────────────────────
+// ── KANBAN ────────────────────────────────────────────────────
 function renderKanban(righe,config){
-    const cc=config.cardConfig||{},colGruppo=config.kanbanGruppo,ordine=config.kanbanOrdine||[];
+    const cc=config.cardConfig||{},cg=config.kanbanGruppo,ord=config.kanbanOrdine||[];
     if(!righe.length)return'<p style="padding:32px;color:var(--ink-3);">Nessuna riga trovata.</p>';
     const gruppi={},trovati=new Set();
-    righe.forEach(r=>{const g=String(r[colGruppo]||'—');if(!gruppi[g])gruppi[g]=[];gruppi[g].push(r);trovati.add(g);});
-    const ordinati=[...ordine.filter(g=>trovati.has(g)),...Array.from(trovati).filter(g=>!ordine.includes(g))];
+    righe.forEach(r=>{const g=String(r[cg]||'—');if(!gruppi[g])gruppi[g]=[];gruppi[g].push(r);trovati.add(g);});
+    const ordinati=[...ord.filter(g=>trovati.has(g)),...Array.from(trovati).filter(g=>!ord.includes(g))];
+    const hasWA=!!(config.whatsappAttivo),qa=config.quickAction||{};
     let h='<div class="kanban-board">';
     ordinati.forEach(g=>{
         h+=`<div class="kanban-col"><div class="kanban-col-header"><span>${g}</span><span class="kanban-col-count">${gruppi[g].length}</span></div><div class="kanban-col-body">`;
         gruppi[g].forEach(riga=>{
-            const fmt=valutaFormatRules(riga,config),lc=fmt?fmt.colore:'var(--accent)',tc=(fmt&&fmt.target!=='cella')?fmt.colore:'var(--ink)';
+            const extra=calcolaVirtuali(riga,config),all={...riga,...extra};
+            const fmt=valutaFormatRules(riga,config);
             const enc=encodeURIComponent(JSON.stringify(riga));
             const isSel=_selectedRows.has(riga._rowIndex);
-            const clickFn=_selezioneAttiva
-                ?`toggleCardSelection(${riga._rowIndex},this.closest('.kanban-card'))`
-                :`apriForm('${enc}')`;
+            const clickFn=_selezioneAttiva?`toggleCardSelection(${riga._rowIndex},this.closest('.kanban-card'))`:`apriForm('${enc}')`;
+            const cLabel=fieldColor(cc.data,fmt);const tel=getTelefono(riga,config);
             h+=`<div class="kanban-card${isSel?' card-selected':''}" onclick="${clickFn}">
-                <div class="kanban-card-label" style="color:${lc};">${cc.data?formattaValoreCella(riga[cc.data]):''}</div>
-                <div class="kanban-card-body">`;
-            (cc.corpo||[]).forEach((col,i)=>{const v=formattaValoreCella(riga[col]);if(!v)return;h+=`<div class="kanban-card-body-line" style="color:${i===0?tc:'var(--ink-2)'};">${v}</div>`;});
+                <div class="kanban-card-label"${cLabel?` style="color:${cLabel};"`:''} >${cc.data?formattaValoreCella(all[cc.data]):''}</div><div>`;
+            (cc.corpo||[]).forEach(col=>{const v=formattaValoreCella(all[col]);if(!v)return;const fc=fieldColor(col,fmt);h+=`<div class="kanban-card-body-line"${fc?` style="color:${fc};font-weight:600;"`:''} >${v}</div>`;});
             h+=`</div>`;
-            const valBadge=cc.badge?formattaValoreCella(riga[cc.badge]):'';if(valBadge)h+=`<div class="kanban-card-meta">${valBadge}</div>`;
-            if(!_selezioneAttiva&&(config.puoModificare||config.puoEliminare)){
+            const vb=cc.badge?formattaValoreCella(all[cc.badge]):'';if(vb){const fc=fieldColor(cc.badge,fmt);h+=`<div class="kanban-card-meta"${fc?` style="color:${fc};"`:''} >${vb}</div>`;}
+            if(!_selezioneAttiva&&(config.puoModificare||config.puoEliminare||hasWA||(qa.attiva&&qa.colonna))){
                 h+=`<div class="kanban-card-actions" onclick="event.stopPropagation()">
+                    ${hasWA&&tel?`<button class="act-btn wa" onclick="apriWhatsApp('${String(tel).replace(/'/g,'&#39;')}')" title="WhatsApp">💬</button>`:''}
+                    ${qa.attiva&&qa.colonna?`<button class="act-btn quick" onclick="eseguiAzioneRapida(${riga._rowIndex})" title="${qa.valore}">${qa.emoji||'⚡'}</button>`:''}
                     ${config.puoModificare?`<button class="act-btn edit" onclick="apriForm('${enc}')">✏️</button>`:''}
                     ${config.puoEliminare?`<button class="act-btn del" onclick="eliminaRiga(${riga._rowIndex})">🗑️</button>`:''}
                 </div>`;
@@ -742,70 +533,57 @@ function renderKanban(righe,config){
     return h+'</div>';
 }
 
-// ── RENDER TABELLA ───────────────────────────────────────────
+// ── TABELLA ───────────────────────────────────────────────────
 function renderTabella(){
-    const config=APP_CONFIG[FOGLIO_ATTIVO]||{},intestazioni=DATABASE[FOGLIO_ATTIVO].intestazioni;
-    const isCalendario=FOGLIO_ATTIVO==='CALENDARIO';
-    const COL_DATA_CAL=intestazioni[0],COL_ORA_CAL=intestazioni[1];
-    const formatiCol=config.formatiColonne||{};
+    const config=APP_CONFIG[FOGLIO_ATTIVO]||{},intst=DATABASE[FOGLIO_ATTIVO].intestazioni;
+    const isCal=FOGLIO_ATTIVO==='CALENDARIO',C0=intst[0],C1=intst[1];
     let righe=[...DATABASE[FOGLIO_ATTIVO].righe];
-    let colVis=intestazioni;
-    if(config.colonneVisibili&&config.colonneVisibili.length>0)colVis=intestazioni.filter(h=>config.colonneVisibili.includes(h));
-    let colonneTabella=colVis;
-    if(isCalendario)colonneTabella=colVis.filter(c=>c!==COL_DATA_CAL&&c!==COL_ORA_CAL);
+    let colVis=intst;if(config.colonneVisibili&&config.colonneVisibili.length>0)colVis=intst.filter(h=>config.colonneVisibili.includes(h));
+    const colVirt=config.colonneVirtuali||[],colVirtNomi=colVirt.map(v=>v.nome);
+    let colTab=isCal?colVis.filter(c=>c!==C0&&c!==C1):colVis;
 
-    // Salta righe totalmente vuote
+    // Salta righe vuote (su tutte le colonne visibili)
     righe=righe.filter(r=>!isRigaVuota(r,colVis));
 
-    const query=document.getElementById('search-input').value.toLowerCase();
-    if(query)righe=righe.filter(r=>colVis.some(c=>String(r[c]||'').toLowerCase().includes(query)));
-    if(ORDINAMENTO.colonna){
-        const col=ORDINAMENTO.colonna,dir=ORDINAMENTO.direzione;
-        righe.sort((a,b)=>{
-            let vA=String(a[col]||''),vB=String(b[col]||'');
-            if(!isNaN(vA)&&!isNaN(vB)&&vA!==''&&vB!=='')return(Number(vA)-Number(vB))*dir;
-            return vA.toLowerCase().localeCompare(vB.toLowerCase())*dir;
-        });
-    }
-    if(isCalendario&&!ORDINAMENTO.colonna){
-        righe.sort((a,b)=>{
-            let tA=convertiDataAssoluta(String(a[COL_DATA_CAL]||'')),tB=convertiDataAssoluta(String(b[COL_DATA_CAL]||''));
-            if(tA!==tB)return tA-tB;
-            return formattaOrario(String(a[COL_ORA_CAL]||'')).localeCompare(formattaOrario(String(b[COL_ORA_CAL]||'')));
-        });
-    }
+    const q=document.getElementById('search-input').value.toLowerCase();
+    if(q)righe=righe.filter(r=>[...colVis,...colVirtNomi].some(c=>{const v=colVirtNomi.includes(c)?(calcolaVirtuali(r,config)[c]||''):String(r[c]||'');return v.toLowerCase().includes(q);}));
+    if(ORDINAMENTO.colonna){const col=ORDINAMENTO.colonna,dir=ORDINAMENTO.direzione,isV=colVirtNomi.includes(col);righe.sort((a,b)=>{let vA=isV?(calcolaVirtuali(a,config)[col]||''):String(a[col]||'');let vB=isV?(calcolaVirtuali(b,config)[col]||''):String(b[col]||'');if(!isNaN(vA)&&!isNaN(vB)&&vA!==''&&vB!=='')return(Number(vA)-Number(vB))*dir;return vA.toLowerCase().localeCompare(vB.toLowerCase())*dir;});}
+    if(isCal&&!ORDINAMENTO.colonna){righe.sort((a,b)=>{let tA=convertiDataAssoluta(String(a[C0]||'')),tB=convertiDataAssoluta(String(b[C0]||''));if(tA!==tB)return tA-tB;return formattaOrario(String(a[C1]||'')).localeCompare(formattaOrario(String(b[C1]||'')));});}
     if(_vistaKanban&&config.kanbanGruppo){document.getElementById('tabella-container').innerHTML=renderKanban(righe,config);return;}
     if(_vistaCard&&config.cardConfig?.data){document.getElementById('tabella-container').innerHTML=renderCard(righe,config);return;}
     if(!righe.length){document.getElementById('tabella-container').innerHTML='<p style="padding:32px;color:var(--ink-3);">Nessuna riga trovata.</p>';return;}
-    const isSAT=FOGLIO_ATTIVO==='SAT';
-    const coloriCol=config.coloriColonne||{};
-    const mostraChk=_selezioneAttiva&&config.puoEliminare;
-    const haActions=config.puoModificare||config.puoEliminare||isSAT;
+    const coloriCol=config.coloriColonne||{},mostraChk=_selezioneAttiva&&config.puoEliminare;
+    const hasWA=!!(config.whatsappAttivo),qa=config.quickAction||{};
+    const haAct=config.puoModificare||config.puoEliminare||hasWA||(qa.attiva&&qa.colonna);
     let html='<div class="table-wrapper"><table><thead><tr>';
     if(mostraChk)html+=`<th style="width:32px;"><input type="checkbox" id="chk-all" onclick="selezionaTutti(this)"></th>`;
-    if(isCalendario)html+=`<th style="width:62px;">Orario</th>`;
-    colonneTabella.forEach(c=>{const bg=coloriCol[c]||'';html+=`<th${bg?` style="background:${bg};color:#1a1a1a;"`:''} >${c}</th>`;});
-    if(haActions)html+=`<th style="width:80px;"></th>`;
+    if(isCal)html+=`<th style="width:62px;">Orario</th>`;
+    colTab.forEach(c=>{const bg=coloriCol[c]||'';html+=`<th${bg?` style="background:${bg};color:#1a1a1a;"`:''} >${c}</th>`;});
+    colVirtNomi.forEach(n=>html+=`<th style="color:#aaa;font-style:italic;">${n} ∿</th>`);
+    if(haAct)html+=`<th style="width:100px;"></th>`;
     html+='</tr></thead><tbody>';
-    let ultimaData=null;
+    let ultData=null;
     righe.forEach(riga=>{
-        if(isCalendario){const dr=String(riga[COL_DATA_CAL]||'');if(dr!==ultimaData){ultimaData=dr;html+=`<tr class="cal-date-row"><td colspan="${colonneTabella.length+3}">${formattaDataGruppo(dr)}</td></tr>`;}}
-        const fmt=valutaFormatRules(riga,config),rowColor=(fmt&&fmt.target!=='cella')?fmt.colore:null,cellaTarget=(fmt&&fmt.target==='cella')?fmt.colonna:null;
+        const extra=calcolaVirtuali(riga,config);
+        if(isCal){const dr=String(riga[C0]||'');if(dr!==ultData){ultData=dr;const tot=colTab.length+colVirtNomi.length+(haAct?1:0)+(isCal?1:0)+(mostraChk?1:0);html+=`<tr class="cal-date-row"><td colspan="${tot}">${formattaDataGruppo(dr)}</td></tr>`;}}
+        const fmt=valutaFormatRules(riga,config),rowColor=(fmt&&fmt.target!=='cella')?fmt.colore:null,cellaTgt=(fmt&&fmt.target==='cella')?fmt.colonna:null;
         const enc=encodeURIComponent(JSON.stringify(riga));
-        const chk=mostraChk?`<td class="sel-td"><input type="checkbox" class="row-chk" data-idx="${riga._rowIndex}"></td>`:'';
-        html+=`<tr>${chk}`;
-        if(isCalendario)html+=`<td class="cal-orario"${rowColor?` style="color:${rowColor};"`:''} >${formattaOrario(riga[COL_ORA_CAL])}</td>`;
-        colonneTabella.forEach(c=>{
-            const cellBg=coloriCol[c]||'';let s='';
-            if(c===cellaTarget)s=`color:${fmt.colore};font-weight:700;${cellBg?`background:color-mix(in srgb,${cellBg} 25%,white 75%);`:''}`;
-            else if(rowColor)s=`color:${rowColor};font-weight:600;${cellBg?`background:color-mix(in srgb,${cellBg} 25%,white 75%);`:''}`;
-            else if(cellBg)s=`background:color-mix(in srgb,${cellBg} 12%,white 88%);`;
+        const trClick=!_selezioneAttiva?`onclick="apriForm('${enc}')"`:'' ;
+        html+=`<tr class="${!_selezioneAttiva?'clickable-row':''}" ${trClick}>${mostraChk?`<td class="sel-td" onclick="event.stopPropagation()"><input type="checkbox" class="row-chk" data-idx="${riga._rowIndex}"></td>`:''}`;
+        if(isCal)html+=`<td class="cal-orario"${rowColor?` style="color:${rowColor};"`:''} >${formattaOrario(riga[C1])}</td>`;
+        colTab.forEach(c=>{
+            const cb=coloriCol[c]||'';let s='';
+            if(c===cellaTgt)s=`color:${fmt.colore};font-weight:700;${cb?`background:color-mix(in srgb,${cb} 25%,white 75%);`:''}`;
+            else if(rowColor)s=`color:${rowColor};font-weight:600;${cb?`background:color-mix(in srgb,${cb} 25%,white 75%);`:''}`;
+            else if(cb)s=`background:color-mix(in srgb,${cb} 12%,white 88%);`;
             html+=`<td${s?` style="${s}"`:''}>${formattaValoreCella(riga[c])}</td>`;
         });
-        if(haActions){
-            const tel=riga['CONTATTO TELEFONICO']||riga['TELEFONO']||'';
+        colVirtNomi.forEach(n=>html+=`<td class="virtual-col">${extra[n]||''}</td>`);
+        if(haAct){
+            const tel=getTelefono(riga,config);
             html+=`<td class="row-actions" onclick="event.stopPropagation()">`;
-            if(isSAT)html+=`<button class="act-btn wa" onclick="apriWhatsApp('${String(tel).replace(/'/g,"&#39;")}')" title="WhatsApp">💬</button>`;
+            if(hasWA&&tel)html+=`<button class="act-btn wa" onclick="apriWhatsApp('${String(tel).replace(/'/g,'&#39;')}')" title="WhatsApp">💬</button>`;
+            if(qa.attiva&&qa.colonna)html+=`<button class="act-btn quick" onclick="eseguiAzioneRapida(${riga._rowIndex})" title="${qa.valore}">${qa.emoji||'⚡'}</button>`;
             if(config.puoModificare)html+=`<button class="act-btn edit" onclick="apriForm('${enc}')" title="Modifica">✏️</button>`;
             if(config.puoEliminare)html+=`<button class="act-btn del" onclick="eliminaRiga(${riga._rowIndex})" title="Elimina">🗑️</button>`;
             html+=`</td>`;
@@ -816,138 +594,120 @@ function renderTabella(){
     document.getElementById('tabella-container').innerHTML=html;
 }
 
-// ── MULTI SELECT ─────────────────────────────────────────────
+// ── MULTI SELECT ──────────────────────────────────────────────
 function selezionaTutti(chk){document.querySelectorAll('.row-chk').forEach(c=>{c.checked=chk.checked;c.closest('tr').classList.toggle('selected-row',chk.checked);});aggiornaBarraMulti();}
-function aggiornaBarraMulti(){
-    const chkSel=document.querySelectorAll('.row-chk:checked').length;
-    const total=chkSel+_selectedRows.size;
-    const bar=document.getElementById('multi-delete-bar');
-    bar.style.display=total>0?'flex':'none';
-    document.getElementById('multi-count-label').innerText=`${total} rig${total===1?'a':'he'}`;
-}
-function deselezionaTutti(){
-    document.querySelectorAll('.row-chk').forEach(c=>{c.checked=false;c.closest('tr').classList.remove('selected-row');});
-    _selectedRows.clear();
-    const all=document.getElementById('chk-all');if(all)all.checked=false;
-    aggiornaBarraMulti();
-}
+function aggiornaBarraMulti(){const n=document.querySelectorAll('.row-chk:checked').length+_selectedRows.size;const bar=document.getElementById('multi-delete-bar');bar.style.display=n>0?'flex':'none';document.getElementById('multi-count-label').innerText=`${n} rig${n===1?'a':'he'}`;}
+function deselezionaTutti(){document.querySelectorAll('.row-chk').forEach(c=>{c.checked=false;c.closest('tr').classList.remove('selected-row');});_selectedRows.clear();const a=document.getElementById('chk-all');if(a)a.checked=false;aggiornaBarraMulti();}
 document.addEventListener('change',e=>{if(e.target.classList.contains('row-chk')){e.target.closest('tr').classList.toggle('selected-row',e.target.checked);aggiornaBarraMulti();}});
+async function eliminaSelezionate(){const idxs=[...new Set([...Array.from(document.querySelectorAll('.row-chk:checked')).map(c=>parseInt(c.dataset.idx)),..._selectedRows])];if(!idxs.length)return;if(!confirm(`Eliminare ${idxs.length} rig${idxs.length===1?'a':'he'}?`))return;try{await GS.deleteRows(FOGLIO_ATTIVO,idxs);_selectedRows.clear();deselezionaTutti();sincronizza();}catch(e){alert('Errore: '+e.message);}}
+async function eliminaRiga(ri){if(!confirm('Eliminare questa riga?'))return;try{await GS.deleteRows(FOGLIO_ATTIVO,[ri]);sincronizza();}catch(e){alert('Errore: '+e.message);}}
 
-async function eliminaSelezionate(){
-    const fromTable=Array.from(document.querySelectorAll('.row-chk:checked')).map(c=>parseInt(c.dataset.idx));
-    const fromCards=Array.from(_selectedRows);
-    const indici=[...new Set([...fromTable,...fromCards])];
-    if(!indici.length)return;
-    if(!confirm(`Eliminare ${indici.length} rig${indici.length===1?'a':'he'}?`))return;
-    try{
-        await GS.deleteRows(FOGLIO_ATTIVO,indici);
-        _selectedRows.clear();deselezionaTutti();sincronizza();
-    }catch(e){alert('Errore eliminazione: '+e.message);}
-}
-async function eliminaRiga(rowIndex){
-    if(!confirm('Eliminare questa riga?'))return;
-    try{await GS.deleteRows(FOGLIO_ATTIVO,[rowIndex]);sincronizza();}
-    catch(e){alert('Errore eliminazione: '+e.message);}
-}
-
-function apriWhatsApp(tel){if(!tel){alert('Nessun numero.');return;}const n=String(tel).replace(/\D/g,'');window.open(`https://api.whatsapp.com/send/?phone=%2B39${n}&text&type=phone_number&app_absent=0`,'_blank');}
-
-// ── FORM ─────────────────────────────────────────────────────
+// ── FORM ──────────────────────────────────────────────────────
 function chiudiModal(id){document.getElementById(id).style.display='none';}
-
 function apriForm(rigaJSON){
-    const config=APP_CONFIG[FOGLIO_ATTIVO]||{},intestazioni=DATABASE[FOGLIO_ATTIVO].intestazioni;
-    const formatiCol=config.formatiColonne||{};
-    let cols=config.colonneVisibili&&config.colonneVisibili.length>0?intestazioni.filter(h=>config.colonneVisibili.includes(h)):intestazioni;
+    const config=APP_CONFIG[FOGLIO_ATTIVO]||{},intst=DATABASE[FOGLIO_ATTIVO].intestazioni;
+    const fmtCol=config.formatiColonne||{},roSet=new Set(config.colonneReadOnly||[]);
+    let cols=config.colonneVisibili&&config.colonneVisibili.length>0?intst.filter(h=>config.colonneVisibili.includes(h)):intst;
     const cont=document.getElementById('modal-form-fields');cont.innerHTML='';
     RIGA_ORIGINALE_IN_MODIFICA=rigaJSON?JSON.parse(decodeURIComponent(rigaJSON)):null;
     document.getElementById('modal-title').innerText=rigaJSON?'Modifica':'Nuovo';
     cols.forEach(col=>{
         let val=RIGA_ORIGINALE_IN_MODIFICA&&RIGA_ORIGINALE_IN_MODIFICA[col]!==undefined?RIGA_ORIGINALE_IN_MODIFICA[col]:'';
-        const tipo=formatiCol[col]||'text';let inputVal=String(val);
+        const tipo=fmtCol[col]||'text';let inputVal=String(val);
         if(tipo==='date'||tipo==='datetime-local'){const m=inputVal.match(/^(\d{2})\/(\d{2})\/(\d{4})(?: (\d{2}):(\d{2}))?/);if(m)inputVal=tipo==='date'?`${m[3]}-${m[2]}-${m[1]}`:`${m[3]}-${m[2]}-${m[1]}T${m[4]||'00'}:${m[5]||'00'}`;}
         else if(tipo==='time'){const mt=inputVal.match(/(\d{2}:\d{2})/);if(mt)inputVal=mt[1];}
-        cont.innerHTML+=`<div class="form-field-row"><label>${col}</label><input type="${tipo}" id="input-${col}" value="${inputVal.replace(/"/g,'&quot;')}"></div>`;
+        const isRO=roSet.has(col);
+        cont.innerHTML+=`<div class="form-field-row"><label>${col}${isRO?' 🔒':''}</label><input type="${tipo}" id="input-${col}" value="${inputVal.replace(/"/g,'&quot;')}"${isRO?' disabled':''}></div>`;
     });
     document.getElementById('modal-form').style.display='flex';
 }
-
 async function salvaDati(){
-    const intestazioni=DATABASE[FOGLIO_ATTIVO].intestazioni,config=APP_CONFIG[FOGLIO_ATTIVO]||{};
-    let cols=config.colonneVisibili&&config.colonneVisibili.length>0?intestazioni.filter(h=>config.colonneVisibili.includes(h)):intestazioni;
-    const btn=document.getElementById('btn-save-modal');
-    const payload={};
-    intestazioni.forEach(col=>{
-        payload[col]=cols.includes(col)?(document.getElementById(`input-${col}`)?.value??''):(RIGA_ORIGINALE_IN_MODIFICA?RIGA_ORIGINALE_IN_MODIFICA[col]||'':'');
-    });
-    const rigaId=RIGA_ORIGINALE_IN_MODIFICA?._rowIndex??null;
-    btn.innerText='…';btn.disabled=true;
+    const intst=DATABASE[FOGLIO_ATTIVO].intestazioni,config=APP_CONFIG[FOGLIO_ATTIVO]||{};
+    const roSet=new Set(config.colonneReadOnly||[]);
+    let cols=config.colonneVisibili&&config.colonneVisibili.length>0?intst.filter(h=>config.colonneVisibili.includes(h)):intst;
+    const btn=document.getElementById('btn-save-modal');btn.innerText='…';btn.disabled=true;
     try{
-        if(rigaId)await GS.update(FOGLIO_ATTIVO,rigaId,payload,intestazioni);
-        else await GS.append(FOGLIO_ATTIVO,payload,intestazioni);
+        const rigaId=RIGA_ORIGINALE_IN_MODIFICA?._rowIndex??null;
+        if(rigaId){
+            // Aggiorna cella per cella, saltando le read-only (preserva formule Excel)
+            for(const col of cols){
+                if(roSet.has(col))continue;
+                const ci=intst.indexOf(col);if(ci<0)continue;
+                const val=document.getElementById(`input-${col}`)?.value??'';
+                await GS.updateCell(FOGLIO_ATTIVO,rigaId,ci,val);
+            }
+        }else{
+            const payload={};
+            intst.forEach(col=>{
+                if(roSet.has(col)&&RIGA_ORIGINALE_IN_MODIFICA){payload[col]=RIGA_ORIGINALE_IN_MODIFICA[col]||'';}
+                else{payload[col]=cols.includes(col)?(document.getElementById(`input-${col}`)?.value??''):(RIGA_ORIGINALE_IN_MODIFICA?RIGA_ORIGINALE_IN_MODIFICA[col]||'':'');}
+            });
+            await GS.append(FOGLIO_ATTIVO,payload,intst);
+        }
         chiudiModal('modal-form');sincronizza();
     }catch(e){alert('Errore: '+e.message);}
     finally{btn.innerText='Salva';btn.disabled=false;}
 }
 
-// ── CONFIG / IMPOSTAZIONI ────────────────────────────────────
+// ── IMPOSTAZIONI ──────────────────────────────────────────────
 function apriImpostazioni(){
     if(!FOGLIO_ATTIVO)return alert('Seleziona un foglio.');
-    const config=APP_CONFIG[FOGLIO_ATTIVO]||{},intestazioni=DATABASE[FOGLIO_ATTIVO].intestazioni;
+    const config=APP_CONFIG[FOGLIO_ATTIVO]||{},intst=DATABASE[FOGLIO_ATTIVO].intestazioni;
     document.getElementById('settings-nome-foglio').innerText=FOGLIO_ATTIVO;
     document.getElementById('set-display-name').value=config.displayName||'';
-    document.getElementById('set-add').checked=config.puoAggiungere||false;
-    document.getElementById('set-edit').checked=config.puoModificare||false;
-    document.getElementById('set-delete').checked=config.puoEliminare||false;
-    const selCol=document.getElementById('set-sort-col');
-    selCol.innerHTML=`<option value="">– Nessun ordinamento –</option>`+intestazioni.map(c=>`<option value="${c}" ${config.sortColonna===c?'selected':''}>${c}</option>`).join('');
+    document.getElementById('set-add').checked=!!config.puoAggiungere;
+    document.getElementById('set-edit').checked=!!config.puoModificare;
+    document.getElementById('set-delete').checked=!!config.puoEliminare;
+    // Sort
+    document.getElementById('set-sort-col').innerHTML=`<option value="">– Nessuno –</option>`+intst.map(c=>`<option value="${c}" ${config.sortColonna===c?'selected':''}>${c}</option>`).join('');
     document.getElementById('set-sort-dir').value=config.sortDirezione||1;
-    let colHtml=`<label style="font-weight:700;font-size:11px;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-3);display:block;margin-bottom:6px;">Colonne Visibili</label>`;
-    intestazioni.forEach(c=>{const chk=config.colonneVisibili&&config.colonneVisibili.includes(c)?'checked':'';colHtml+=`<label class="checkbox-label"><input type="checkbox" class="chk-colonna" value="${c}" ${chk}> ${c}</label>`;});
-    document.getElementById('settings-colonne').innerHTML=colHtml;
+    // Colonne visibili
+    let cHtml=`<label style="font-weight:700;font-size:11px;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-3);display:block;margin-bottom:6px;">Colonne Visibili</label>`;
+    intst.forEach(c=>{cHtml+=`<label class="checkbox-label"><input type="checkbox" class="chk-colonna" value="${c}" ${config.colonneVisibili&&config.colonneVisibili.includes(c)?'checked':''}> ${c}</label>`;});
+    document.getElementById('settings-colonne').innerHTML=cHtml;
+    // Read-only
+    const roSet=new Set(config.colonneReadOnly||[]);
+    document.getElementById('settings-readonly').innerHTML=intst.map(c=>`<label class="checkbox-label"><input type="checkbox" class="chk-readonly" value="${c}" ${roSet.has(c)?'checked':''}> ${c}</label>`).join('');
+    // Virtuali
+    document.getElementById('set-colonne-virtuali').value=(config.colonneVirtuali||[]).map(v=>`${v.nome} = ${v.formula}`).join('\n');
+    // WhatsApp
+    document.getElementById('set-wa-attivo').checked=!!config.whatsappAttivo;
+    document.getElementById('set-wa-colonna').innerHTML=`<option value="">– Auto-detect –</option>`+intst.map(c=>`<option value="${c}" ${config.whatsappColonna===c?'selected':''}>${c}</option>`).join('');
+    // Quick action
+    const qa=config.quickAction||{};
+    document.getElementById('set-qa-attiva').checked=!!qa.attiva;
+    document.getElementById('set-qa-colonna').innerHTML=`<option value="">– Nessuna –</option>`+intst.map(c=>`<option value="${c}" ${qa.colonna===c?'selected':''}>${c}</option>`).join('');
+    document.getElementById('set-qa-valore').value=qa.valore||'';
+    document.getElementById('set-qa-emoji').value=qa.emoji||'⚡';
+    // Card
     const cc=config.cardConfig||{};
-    document.getElementById('set-card-attiva').checked=config.vistaCardAttiva||false;
-    const makeOpts=sel=>`<option value="">– Nessuna –</option>`+intestazioni.map(c=>`<option value="${c}" ${sel===c?'selected':''}>${c}</option>`).join('');
-    document.getElementById('card-col-data').innerHTML=makeOpts(cc.data||'');
-    document.getElementById('card-col-badge').innerHTML=makeOpts(cc.badge||'');
-    document.getElementById('card-col-corpo-list').innerHTML=intestazioni.map(c=>{const chk=(cc.corpo||[]).includes(c)?'checked':'';return`<label class="checkbox-label"><input type="checkbox" class="chk-card-corpo" value="${c}" ${chk}> ${c}</label>`;}).join('');
-    const regole=config.formatRules||[{},{},{},{},{}];while(regole.length<5)regole.push({});
-    const ops=['uguale','non uguale','contiene','inizia con','non vuoto','vuoto','data > (dopo)','data < (prima)'];
-    document.getElementById('format-rules-list').innerHTML=regole.slice(0,5).map((r,i)=>`<div class="fmt-rule">
-        <select class="fmt-col" data-i="${i}"><option value="">– –</option>${intestazioni.map(c=>`<option value="${c}" ${r.colonna===c?'selected':''}>${c}</option>`).join('')}</select>
-        <select class="fmt-op" data-i="${i}">${ops.map(o=>`<option value="${o}" ${r.operatore===o?'selected':''}>${o}</option>`).join('')}</select>
-        <input type="text" class="fmt-val" data-i="${i}" value="${r.valore||''}" placeholder="valore">
-        <input type="color" class="fmt-color" data-i="${i}" value="${r.colore||'#e74c3c'}">
-        <select class="fmt-target" data-i="${i}" style="padding:4px;border:1px solid var(--line);border-radius:4px;font-size:11px;">
-            <option value="riga" ${(r.target||'riga')==='riga'?'selected':''}>Riga intera</option>
-            <option value="cella" ${r.target==='cella'?'selected':''}>Solo cella</option>
-        </select>
-    </div>`).join('');
-    const coloriCol=config.coloriColonne||{};
-    document.getElementById('colori-colonne-list').innerHTML=intestazioni.map(c=>`<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
-        <input type="color" class="chk-col-color" data-col="${c}" value="${coloriCol[c]||'#ffffff'}" style="width:36px;height:26px;border:1px solid var(--line);border-radius:4px;">
-        <span style="font-size:13px;">${c}</span></div>`).join('');
-    document.getElementById('set-kanban-attiva').checked=config.vistaKanbanAttiva||false;
-    document.getElementById('kanban-col-gruppo').innerHTML=`<option value="">– Nessuna –</option>`+intestazioni.map(c=>`<option value="${c}" ${config.kanbanGruppo===c?'selected':''}>${c}</option>`).join('');
+    document.getElementById('set-card-attiva').checked=!!config.vistaCardAttiva;
+    const mkOpts=sel=>`<option value="">– Nessuna –</option>`+intst.map(c=>`<option value="${c}" ${sel===c?'selected':''}>${c}</option>`).join('');
+    document.getElementById('card-col-data').innerHTML=mkOpts(cc.data||'');
+    document.getElementById('card-col-badge').innerHTML=mkOpts(cc.badge||'');
+    document.getElementById('card-col-corpo-list').innerHTML=intst.map(c=>`<label class="checkbox-label"><input type="checkbox" class="chk-card-corpo" value="${c}" ${(cc.corpo||[]).includes(c)?'checked':''}> ${c}</label>`).join('');
+    // Kanban
+    document.getElementById('set-kanban-attiva').checked=!!config.vistaKanbanAttiva;
+    document.getElementById('kanban-col-gruppo').innerHTML=`<option value="">– Nessuna –</option>`+intst.map(c=>`<option value="${c}" ${config.kanbanGruppo===c?'selected':''}>${c}</option>`).join('');
     document.getElementById('kanban-ordine').value=(config.kanbanOrdine||[]).join('\n');
-    const formatiCol=config.formatiColonne||{};
-    const tipiFormato=[{v:'',l:'– Testo libero –'},{v:'date',l:'📅 Data'},{v:'datetime-local',l:'📅 Data e Ora'},{v:'time',l:'🕐 Orario'}];
-    document.getElementById('formati-colonne-list').innerHTML=intestazioni.map(c=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-        <span style="flex:1;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${c}</span>
-        <select class="chk-col-format" data-col="${c}" style="width:150px;padding:5px;border:1px solid var(--line);border-radius:4px;font-size:11px;">
-            ${tipiFormato.map(t=>`<option value="${t.v}" ${formatiCol[c]===t.v?'selected':''}>${t.l}</option>`).join('')}
-        </select></div>`).join('');
+    // Formati
+    const fmtCol=config.formatiColonne||{};
+    const tipi=[{v:'',l:'– Testo libero –'},{v:'date',l:'📅 Data'},{v:'datetime-local',l:'📅 Data e Ora'},{v:'time',l:'🕐 Orario'}];
+    document.getElementById('formati-colonne-list').innerHTML=intst.map(c=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><span style="flex:1;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${c}</span><select class="chk-col-format" data-col="${c}" style="width:150px;padding:5px;border:1px solid var(--line);border-radius:4px;font-size:11px;">${tipi.map(t=>`<option value="${t.v}" ${fmtCol[c]===t.v?'selected':''}>${t.l}</option>`).join('')}</select></div>`).join('');
+    // Regole formattazione
+    const regole=config.formatRules||[];while(regole.length<5)regole.push({});
+    const ops=['uguale','non uguale','contiene','inizia con','non vuoto','vuoto','data > (dopo)','data < (prima)'];
+    document.getElementById('format-rules-list').innerHTML=regole.slice(0,5).map((r,i)=>`<div class="fmt-rule"><select class="fmt-col" data-i="${i}"><option value="">– –</option>${intst.map(c=>`<option value="${c}" ${r.colonna===c?'selected':''}>${c}</option>`).join('')}</select><select class="fmt-op" data-i="${i}">${ops.map(o=>`<option value="${o}" ${r.operatore===o?'selected':''}>${o}</option>`).join('')}</select><input type="text" class="fmt-val" data-i="${i}" value="${r.valore||''}" placeholder="valore"><input type="color" class="fmt-color" data-i="${i}" value="${r.colore||'#e74c3c'}"><select class="fmt-target" data-i="${i}" style="padding:4px;border:1px solid var(--line);border-radius:4px;font-size:11px;"><option value="riga" ${(r.target||'riga')==='riga'?'selected':''}>Riga intera</option><option value="cella" ${r.target==='cella'?'selected':''}>Solo cella</option></select></div>`).join('');
+    // Colori colonne
+    const coloriCol=config.coloriColonne||{};
+    document.getElementById('colori-colonne-list').innerHTML=intst.map(c=>`<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;"><input type="color" class="chk-col-color" data-col="${c}" value="${coloriCol[c]||'#ffffff'}" style="width:36px;height:26px;border:1px solid var(--line);border-radius:4px;"><span style="font-size:13px;">${c}</span></div>`).join('');
     document.getElementById('modal-settings').style.display='flex';
 }
 
 async function salvaImpostazioni(){
     const btn=document.getElementById('btn-save-settings');btn.innerText='…';btn.disabled=true;
     const formatRules=[];
-    for(let i=0;i<5;i++){
-        const col=document.querySelector(`.fmt-col[data-i="${i}"]`)?.value||'';
-        if(col)formatRules.push({colonna:col,operatore:document.querySelector(`.fmt-op[data-i="${i}"]`)?.value||'uguale',valore:document.querySelector(`.fmt-val[data-i="${i}"]`)?.value||'',colore:document.querySelector(`.fmt-color[data-i="${i}"]`)?.value||'#e74c3c',target:document.querySelector(`.fmt-target[data-i="${i}"]`)?.value||'riga'});
-    }
-    const kanbanOrdine=(document.getElementById('kanban-ordine').value||'').split('\n').map(s=>s.trim()).filter(Boolean);
+    for(let i=0;i<5;i++){const col=document.querySelector(`.fmt-col[data-i="${i}"]`)?.value||'';if(col)formatRules.push({colonna:col,operatore:document.querySelector(`.fmt-op[data-i="${i}"]`)?.value||'uguale',valore:document.querySelector(`.fmt-val[data-i="${i}"]`)?.value||'',colore:document.querySelector(`.fmt-color[data-i="${i}"]`)?.value||'#e74c3c',target:document.querySelector(`.fmt-target[data-i="${i}"]`)?.value||'riga'});}
     const coloriColonne={};document.querySelectorAll('.chk-col-color').forEach(el=>{if(el.value&&el.value!=='#ffffff')coloriColonne[el.dataset.col]=el.value;});
     const formatiColonne={};document.querySelectorAll('.chk-col-format').forEach(el=>{if(el.value)formatiColonne[el.dataset.col]=el.value;});
     APP_CONFIG[FOGLIO_ATTIVO]={
@@ -955,20 +715,21 @@ async function salvaImpostazioni(){
         puoAggiungere:document.getElementById('set-add').checked,puoModificare:document.getElementById('set-edit').checked,puoEliminare:document.getElementById('set-delete').checked,
         sortColonna:document.getElementById('set-sort-col').value||null,sortDirezione:parseInt(document.getElementById('set-sort-dir').value)||1,
         colonneVisibili:Array.from(document.querySelectorAll('.chk-colonna:checked')).map(c=>c.value),
+        colonneReadOnly:Array.from(document.querySelectorAll('.chk-readonly:checked')).map(c=>c.value),
+        colonneVirtuali:parseColonneVirtuali(document.getElementById('set-colonne-virtuali').value),
+        whatsappAttivo:document.getElementById('set-wa-attivo').checked,
+        whatsappColonna:document.getElementById('set-wa-colonna').value||null,
+        quickAction:{attiva:document.getElementById('set-qa-attiva').checked,colonna:document.getElementById('set-qa-colonna').value||null,valore:document.getElementById('set-qa-valore').value||'',emoji:document.getElementById('set-qa-emoji').value||'⚡'},
         vistaCardAttiva:document.getElementById('set-card-attiva').checked,vistaKanbanAttiva:document.getElementById('set-kanban-attiva').checked,
-        kanbanGruppo:document.getElementById('kanban-col-gruppo').value||null,kanbanOrdine,
+        kanbanGruppo:document.getElementById('kanban-col-gruppo').value||null,kanbanOrdine:(document.getElementById('kanban-ordine').value||'').split('\n').map(s=>s.trim()).filter(Boolean),
         cardConfig:{data:document.getElementById('card-col-data').value||null,badge:document.getElementById('card-col-badge').value||null,corpo:Array.from(document.querySelectorAll('.chk-card-corpo:checked')).map(c=>c.value)},
         formatRules,coloriColonne,formatiColonne
     };
-    await salvaConfig();
-    chiudiModal('modal-settings');renderMenu();caricaDati(FOGLIO_ATTIVO);
+    await salvaConfig();chiudiModal('modal-settings');renderMenu();caricaDati(FOGLIO_ATTIVO);
     btn.innerText='Salva';btn.disabled=false;
 }
 </script>
-<script>
-    function gapiLoaded(){inizializzaGapi();}
-    function gisLoaded(){inizializzaGis();}
-</script>
+<script>function gapiLoaded(){inizializzaGapi();}function gisLoaded(){inizializzaGis();}</script>
 <script src="https://apis.google.com/js/api.js?onload=gapiLoaded"></script>
 <script src="https://accounts.google.com/gsi/client" onload="gisLoaded()" async defer></script>
 </body>
