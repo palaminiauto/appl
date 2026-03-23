@@ -8,8 +8,6 @@
     <meta name="theme-color" content="#4f8bc4">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="config.js"></script>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <script src="https://apis.google.com/js/api.js" async defer></script>
     <style>
         :root {
             --ink:#111111;--ink-2:#4a4a4a;--ink-3:#888888;
@@ -23,15 +21,8 @@
         *,*::before,*::after{box-sizing:border-box;}
         body{font-family:'Roboto',sans-serif;margin:0;background:var(--bg);height:100vh;overflow:hidden;font-size:var(--fs);color:var(--ink);-webkit-font-smoothing:antialiased;}
 
-        /* LOGIN */
-        #login-screen{display:flex;align-items:center;justify-content:center;height:100vh;background:var(--sid-dark);}
-        .login-box{background:white;border:1px solid var(--line);padding:36px 32px;border-radius:10px;text-align:center;width:90%;max-width:300px;box-shadow:var(--sh2);}
-        .login-box h2{font-size:15px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:var(--sidebar);margin:0 0 24px;}
-        #google-btn-wrap{margin-top:4px;}
-        #google-status{font-size:11px;color:var(--ink-3);margin-top:8px;}
-
         /* APP */
-        #app-screen{display:none;height:100vh;flex-direction:row;}
+        #app-screen{display:flex;height:100vh;flex-direction:row;}
         #sidebar{width:160px;min-width:160px;background:var(--sidebar);padding:10px 6px;overflow-y:auto;flex-shrink:0;display:flex;flex-direction:column;}
         #sidebar h3{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.42);padding:6px 8px 8px;margin:0;}
         #buttons-container{flex-grow:1;overflow-y:auto;display:flex;flex-direction:column;gap:1px;}
@@ -194,13 +185,6 @@
     </style>
 </head>
 <body>
-<div id="login-screen">
-    <div class="login-box">
-        <h2>Palamini Auto</h2>
-        <div id="google-btn-wrap"></div>
-        <div id="google-status">In attesa di Google…</div>
-    </div>
-</div>
 <div id="drawer-overlay" onclick="chiudiDrawer()"></div>
 <div id="drawer">
     <h3>Fogli</h3>
@@ -349,35 +333,63 @@
 </div>
 
 <script>
-if(typeof SPREADSHEET_ID==='undefined'||typeof GOOGLE_CLIENT_ID==='undefined')alert("Manca config.js");
+if(typeof SPREADSHEET_ID==='undefined'||typeof WORKER_URL==='undefined'||typeof APP_SECRET==='undefined')
+    alert("Manca config.js — controlla SPREADSHEET_ID, WORKER_URL e APP_SECRET");
 
-const SCOPES='https://www.googleapis.com/auth/spreadsheets';
-let _gapiReady=false,_gisReady=false,_tokenClient=null,_accessToken=null,_sheetIds={};
 const SETTINGS_SHEET='IMPOSTAZIONI APP';
 
-function richiediToken(){return new Promise((res,rej)=>{if(_accessToken){res(_accessToken);return;}const c=localStorage.getItem('gs_token');if(c){_accessToken=c;if(typeof gapi!=='undefined')gapi.client.setToken({access_token:c});res(c);return;}_tokenClient.callback=r=>{if(r.error){rej(r);return;}_accessToken=r.access_token;localStorage.setItem('gs_token',_accessToken);res(_accessToken);};_tokenClient.requestAccessToken({prompt:''});});}
-function inizializzaGapi(){gapi.load('client',async()=>{await gapi.client.init({});await gapi.client.load('https://sheets.googleapis.com/$discovery/rest?version=v4');_gapiReady=true;verificaPronte();});}
-function inizializzaGis(){_tokenClient=google.accounts.oauth2.initTokenClient({client_id:GOOGLE_CLIENT_ID,scope:SCOPES,callback:()=>{}});_gisReady=true;document.getElementById('google-status').innerText='Clicca "Accedi con Google" per autorizzare';verificaPronte();}
-function verificaPronte(){
-    if(!_gapiReady||!_gisReady)return;
-    const tok=localStorage.getItem('gs_token');
-    if(tok){_accessToken=tok;gapi.client.setToken({access_token:tok});document.getElementById('login-screen').style.display='none';document.getElementById('app-screen').style.display='flex';sincronizza();return;}
-    document.getElementById('google-btn-wrap').innerHTML=`<button onclick="autorizzaGoogle()" style="width:100%;padding:10px;background:white;border:1px solid var(--line);border-radius:var(--radius);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px;font-family:'Roboto',sans-serif;"><svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.08 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-3.59-13.46-8.66l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>Accedi con Google</button>`;
+// ── API LAYER via Cloudflare Worker (nessun OAuth, nessun login) ─
+async function wFetch(path,options={}){
+    const resp=await fetch(`${WORKER_URL}/${path}`,{
+        ...options,
+        headers:{'Content-Type':'application/json','X-App-Secret':APP_SECRET,...(options.headers||{})}
+    });
+    if(!resp.ok)throw new Error(`Errore Worker ${resp.status}: ${await resp.text()}`);
+    return resp.json();
 }
-async function autorizzaGoogle(){_tokenClient.callback=r=>{if(r.error){alert('Errore: '+r.error);return;}_accessToken=r.access_token;localStorage.setItem('gs_token',_accessToken);gapi.client.setToken({access_token:_accessToken});document.getElementById('login-screen').style.display='none';document.getElementById('app-screen').style.display='flex';sincronizza();};_tokenClient.requestAccessToken({prompt:'consent'});}
-function setGapiToken(){if(_accessToken)gapi.client.setToken({access_token:_accessToken});}
+
+let _sheetIds={};
 
 const GS={
-    async getSheets(){await richiediToken();setGapiToken();const r=await gapi.client.sheets.spreadsheets.get({spreadsheetId:SPREADSHEET_ID,fields:'sheets.properties'});return r.result.sheets.map(s=>({name:s.properties.title,id:s.properties.sheetId}));},
-    async getAll(n){await richiediToken();setGapiToken();const r=await gapi.client.sheets.spreadsheets.values.get({spreadsheetId:SPREADSHEET_ID,range:n,valueRenderOption:'FORMATTED_VALUE'});const v=r.result.values||[];if(!v.length)return{headers:[],rows:[]};const h=v[0];const rows=v.slice(1).map((row,i)=>{const o={_rowIndex:i+2};h.forEach((hh,j)=>{o[hh]=row[j]!==undefined?String(row[j]):'';});return o;});return{headers:h,rows};},
-    async append(n,p,h){await richiediToken();setGapiToken();await gapi.client.sheets.spreadsheets.values.append({spreadsheetId:SPREADSHEET_ID,range:`${n}!A1`,valueInputOption:'USER_ENTERED',insertDataOption:'INSERT_ROWS',resource:{values:[h.map(hh=>p[hh]??'')]}});},
-    async updateCell(n,ri,ci,v){await richiediToken();setGapiToken();const l=colIndexToLetter(ci);await gapi.client.sheets.spreadsheets.values.update({spreadsheetId:SPREADSHEET_ID,range:`${n}!${l}${ri}`,valueInputOption:'USER_ENTERED',resource:{values:[[v]]}});},
-    async deleteRows(n,idxs){await richiediToken();setGapiToken();const sid=_sheetIds[n];if(sid===undefined)throw new Error('sheetId mancante');const reqs=[...idxs].sort((a,b)=>b-a).map(r=>({deleteDimension:{range:{sheetId:sid,dimension:'ROWS',startIndex:r-1,endIndex:r}}}));await gapi.client.sheets.spreadsheets.batchUpdate({spreadsheetId:SPREADSHEET_ID,resource:{requests:reqs}});},
-    async loadConfig(){await richiediToken();setGapiToken();try{const r=await gapi.client.sheets.spreadsheets.values.get({spreadsheetId:SPREADSHEET_ID,range:`${SETTINGS_SHEET}!A1`,valueRenderOption:'FORMATTED_VALUE'});const v=r.result.values?.[0]?.[0];if(v){const p=JSON.parse(v);localStorage.setItem(CONFIG_KEY,JSON.stringify(p));return p;}}catch(e){console.warn('loadConfig:',e.message);}return JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');},
-    async saveConfig(c){const s=JSON.stringify(c);localStorage.setItem(CONFIG_KEY,s);try{await richiediToken();setGapiToken();await gapi.client.sheets.spreadsheets.values.update({spreadsheetId:SPREADSHEET_ID,range:`${SETTINGS_SHEET}!A1`,valueInputOption:'USER_ENTERED',resource:{values:[[s]]}});}catch(e){console.warn('saveConfig:',e.message);}}
+    async getSheets(){
+        const data=await wFetch('sheets');
+        return data.sheets.map(s=>({name:s.properties.title,id:s.properties.sheetId}));
+    },
+    async getAll(n){
+        const data=await wFetch(`read?range=${encodeURIComponent(n)}`);
+        const v=data.values||[];
+        if(!v.length)return{headers:[],rows:[]};
+        const h=v[0];
+        const rows=v.slice(1).map((row,i)=>{const o={_rowIndex:i+2};h.forEach((hh,j)=>{o[hh]=row[j]!==undefined?String(row[j]):'';});return o;});
+        return{headers:h,rows};
+    },
+    async append(n,p,h){
+        await wFetch('append',{method:'POST',body:JSON.stringify({range:`${n}!A1`,values:[h.map(hh=>p[hh]??'')]})});
+    },
+    async updateCell(n,ri,ci,v){
+        const l=colIndexToLetter(ci);
+        await wFetch('update',{method:'POST',body:JSON.stringify({range:`${n}!${l}${ri}`,values:[[v]]})});
+    },
+    async deleteRows(n,idxs){
+        const sid=_sheetIds[n];if(sid===undefined)throw new Error('sheetId mancante per '+n);
+        const requests=[...idxs].sort((a,b)=>b-a).map(r=>({deleteDimension:{range:{sheetId:sid,dimension:'ROWS',startIndex:r-1,endIndex:r}}}));
+        await wFetch('batchDelete',{method:'POST',body:JSON.stringify({requests})});
+    },
+    async loadConfig(){
+        try{
+            const data=await wFetch(`read?range=${encodeURIComponent(SETTINGS_SHEET+'!A1')}`);
+            const v=data.values?.[0]?.[0];
+            if(v){const p=JSON.parse(v);localStorage.setItem(CONFIG_KEY,JSON.stringify(p));return p;}
+        }catch(e){console.warn('loadConfig:',e.message);}
+        return JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');
+    },
+    async saveConfig(c){
+        const s=JSON.stringify(c);localStorage.setItem(CONFIG_KEY,s);
+        try{await wFetch('update',{method:'POST',body:JSON.stringify({range:`${SETTINGS_SHEET}!A1`,values:[[s]]})});}
+        catch(e){console.warn('saveConfig:',e.message);}
+    }
 };
 function colIndexToLetter(i){let s='',n=i;while(n>=0){s=String.fromCharCode(65+(n%26))+s;n=Math.floor(n/26)-1;}return s;}
-window.gapiLoaded=inizializzaGapi;window.gisLoaded=inizializzaGis;
 
 // ── STATE ─────────────────────────────────────────────────────
 let DATABASE={},APP_CONFIG={},FOGLIO_ATTIVO='',RIGA_ORIGINALE_IN_MODIFICA=null;
@@ -387,7 +399,7 @@ let _fontSize=14; // default, verrà sovrascritto da APP_CONFIG
 const FOGLI_CON_DATE=['SAT','APP PNM','FLOTTE'],NOME_COLONNA_DATA='DATA e ORA';
 const CONFIG_KEY='appConfig_gs';
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
-window.onload=()=>setTimeout(()=>{if(typeof google!=='undefined'&&google.accounts)inizializzaGis();if(typeof gapi!=='undefined')inizializzaGapi();},1500);
+window.onload=()=>{ aggiornaFont(); sincronizza(); };
 
 function aggiornaFont(){
     const fs=_fontSize+'px';
@@ -526,12 +538,10 @@ function toggleSelezione(){_selezioneAttiva=!_selezioneAttiva;document.getElemen
 // ── SYNC ──────────────────────────────────────────────────────
 async function sincronizza(){
     const btn=document.getElementById('btn-sync');btn.innerText='…';
-    if(!_accessToken){localStorage.removeItem('gs_token');document.getElementById('app-screen').style.display='none';document.getElementById('login-screen').style.display='flex';return;}
     try{
         const sheets=await GS.getSheets();sheets.forEach(s=>{_sheetIds[s.name]=s.id;});
         const hasSet=sheets.some(s=>s.name===SETTINGS_SHEET);
         APP_CONFIG=hasSet?await GS.loadConfig():JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');
-        // Ripristina font size da config
         if(APP_CONFIG._fontSize){_fontSize=APP_CONFIG._fontSize;aggiornaFont();}
         const escludi=new Set([...(typeof FOGLI_DA_ESCLUDERE!=='undefined'?FOGLI_DA_ESCLUDERE:[]),SETTINGS_SHEET]);
         const db={};
@@ -543,8 +553,7 @@ async function sincronizza(){
         if(autoSyncTimer)clearTimeout(autoSyncTimer);autoSyncTimer=setTimeout(sincronizza,5*60*1000);
     }catch(e){
         btn.innerText='↻ Errore';console.error(e);
-        if(e.status===401||String(e.message).includes('401')||String(e.message).includes('invalid')){_accessToken=null;localStorage.removeItem('gs_token');document.getElementById('app-screen').style.display='none';document.getElementById('login-screen').style.display='flex';}
-        else alert('Errore sync: '+e.message);
+        alert('Errore sync: '+e.message);
     }
 }
 
@@ -784,8 +793,8 @@ function selezionaTutti(chk){document.querySelectorAll('.row-chk').forEach(c=>{c
 function aggiornaBarraMulti(){const n=document.querySelectorAll('.row-chk:checked').length+_selectedRows.size;const bar=document.getElementById('multi-delete-bar');bar.style.display=n>0?'flex':'none';document.getElementById('multi-count-label').innerText=`${n} rig${n===1?'a':'he'}`;}
 function deselezionaTutti(){document.querySelectorAll('.row-chk').forEach(c=>{c.checked=false;c.closest('tr').classList.remove('selected-row');});_selectedRows.clear();const a=document.getElementById('chk-all');if(a)a.checked=false;aggiornaBarraMulti();}
 document.addEventListener('change',e=>{if(e.target.classList.contains('row-chk')){e.target.closest('tr').classList.toggle('selected-row',e.target.checked);aggiornaBarraMulti();}});
-async function eliminaSelezionate(){const idxs=[...new Set([...Array.from(document.querySelectorAll('.row-chk:checked')).map(c=>parseInt(c.dataset.idx)),..._selectedRows])];if(!idxs.length)return;if(!confirm(`Eliminare ${idxs.length} rig${idxs.length===1?'a':'he'}?`))return;try{await GS.deleteRows(FOGLIO_ATTIVO,idxs);_selectedRows.clear();deselezionaTutti();sincronizza();}catch(e){alert('Errore: '+e.message);}}
-async function eliminaRiga(ri){if(!confirm('Eliminare questa riga?'))return;try{await GS.deleteRows(FOGLIO_ATTIVO,[ri]);sincronizza();}catch(e){alert('Errore: '+e.message);}}
+async function eliminaSelezionate(){const idxs=[...new Set([...Array.from(document.querySelectorAll('.row-chk:checked')).map(c=>parseInt(c.dataset.idx)),..._selectedRows])];if(!idxs.length)return;if(!confirm(`Eliminare ${idxs.length} rig${idxs.length===1?'a':'he'}?`))return;try{await GS.deleteRows(FOGLIO_ATTIVO,idxs,_sheetIds);_selectedRows.clear();deselezionaTutti();sincronizza();}catch(e){alert('Errore: '+e.message);}}
+async function eliminaRiga(ri){if(!confirm('Eliminare questa riga?'))return;try{await GS.deleteRows(FOGLIO_ATTIVO,[ri],_sheetIds);sincronizza();}catch(e){alert('Errore: '+e.message);}}
 
 // ── FORM ──────────────────────────────────────────────────────
 function chiudiModal(id){document.getElementById(id).style.display='none';}
@@ -976,8 +985,5 @@ async function salvaImpostazioni(){
     btn.innerText='Salva';btn.disabled=false;
 }
 </script>
-<script>function gapiLoaded(){inizializzaGapi();}function gisLoaded(){inizializzaGis();}</script>
-<script src="https://apis.google.com/js/api.js?onload=gapiLoaded"></script>
-<script src="https://accounts.google.com/gsi/client" onload="gisLoaded()" async defer></script>
 </body>
 </html>
