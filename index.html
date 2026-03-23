@@ -499,9 +499,6 @@ function fieldColorAll(fieldName,fmts){
 }
 // Retrocompatibilità
 function fieldColor(fieldName,fmt){return fieldColorAll(fieldName,fmt?[fmt]:[]);}
-    if(fmt.target==='riga')return fmt.colore;
-    return null;
-}
 
 // ── CALENDARIO: formattazione condizionale hardcoded ──────────
 // Colonne tecnici: ANDREA, MATTEO, SARA
