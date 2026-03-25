@@ -184,6 +184,37 @@
 
         #tabella-container{flex-grow:1;}
         #config-saving{display:none;position:fixed;bottom:16px;right:16px;background:var(--sid-dark);color:white;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;z-index:9999;box-shadow:var(--sh2);}
+        /* --- CSS VISTA CALENDARIO ORIZZONTALE --- */
+:root {
+  --cell-h: 55px; --cell-w: 30px;
+  --w-c1: 60px; --w-c2: 60px; --w-c3: 60px; --w-c4: 20px;
+}
+.cale-table { border-collapse: separate; border-spacing: 0; table-layout: fixed; width: max-content; background: white; }
+.cale-table th { position: sticky; top: 0; background: #c6dafc; z-index: 40; border-bottom: 2px solid #ccc; border-right: 1px solid #ccc; height: 35px; font-weight: bold; font-size: 11px; text-align: center; padding:0; color:#111; }
+.cale-table .sticky-left { position: sticky; z-index: 20; background: #fff; border-right: 1px solid #eee; border-bottom: 1px solid #eee; }
+.cale-table th.sticky-left { z-index: 50; }
+.cale-table .col-1 { width: var(--w-c1); left: 0; }
+.cale-table .col-2 { width: var(--w-c2); left: var(--w-c1); }
+.cale-table .col-3 { width: var(--w-c3); left: calc(var(--w-c1) + var(--w-c2)); }
+.cale-table .col-4 { width: var(--w-c4); left: calc(var(--w-c1) + var(--w-c2) + var(--w-c3)); }
+.cale-table .col-time { width: var(--cell-w); min-width: var(--cell-w); }
+.cale-table .bordo-pausa { border-right: 2px solid #000 !important; }
+.cale-table .bordo-giorno-sup { border-top: 2px solid #000 !important; }
+.cale-table .bordo-giorno-inf { border-bottom: 2px solid #000 !important; }
+.cale-table td { height: var(--cell-h); border-right: 1px solid #eee; border-bottom: 1px solid #eee; padding: 0; background-color: white; cursor: pointer; position: relative; }
+.cale-table td.sticky-left:hover { background-color: #fff9c4 !important; outline: 2px solid #000; z-index: 30; }
+.cale-table td:not(.sticky-left):hover { z-index: 10; outline: 2px solid #fbc531; }
+.cale-table .testo-unito { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; align-items: center; overflow: hidden; white-space: normal; word-break: break-word; font-weight: bold; font-size: 11px; line-height: 1.1; padding: 4px; text-align: center; pointer-events: none; z-index: 10; }
+.cale-table .bg-att { background-color: #f7b7b1 !important; color: #b71c1c; border: 1px solid #b71c1c !important; }
+.cale-table .bg-m { background-color: #adcaf9 !important; color: #0d47a1; border: 1px solid #0d47a1 !important; }
+.cale-table .bg-pnm { background-color: #fddb66 !important; color: #bf360c; border: 1px solid #bf360c !important; }
+.cale-table .bg-sat { background-color: #a8dab5 !important; color: #1b5e20; border: 1px solid #1b5e20 !important; }
+.cale-table .bg-panda { background-color: #ff9800 !important; color: white !important; }
+.cale-table .bg-clio { background-color: #9c27b0 !important; color: white !important; }
+.cale-table .bg-generic { background-color: #e8e8e8 !important; color: #333; border: 1px solid #000 !important; }
+.cale-table .bg-mf-special { background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(13,71,161,0.2) 10px, rgba(13,71,161,0.2) 20px) !important; background-color: #adcaf9 !important; color: #0d47a1; border: 1px solid #0d47a1 !important; }
+.cale-table .bg-mp-special { background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(183,28,28,0.2) 10px, rgba(183,28,28,0.2) 20px) !important; background-color: #f7b7b1 !important; color: #b71c1c; border: 1px solid #b71c1c !important; }
+.cale-table .bg-pnm-special { background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,152,0,0.4) 10px, rgba(255,152,0,0.4) 20px) !important; background-color: #fddb66 !important; color: #bf360c; border: 1px solid #bf360c !important; }
     </style>
 </head>
 <body>
@@ -1174,47 +1205,141 @@ async function salvaImpostazioni(){
     btn.innerText='Salva';btn.disabled=false;
 }
 
-    function mostraVistaOrizzontale() {
-    // 1. Gestione visibilità
+    // --- LOGICA VISTA CALENDARIO ORIZZONTALE (Versione Originale Adattata) ---
+function mostraVistaOrizzontale() {
     document.getElementById('tabella-container').style.display = 'none';
     const container = document.getElementById('vista-orizzontale-container');
-    container.style.display = 'flex';
-    if(typeof chiudiDrawer === "function") chiudiDrawer(); // Chiude il menu su mobile
+    container.style.display = 'block'; // Usiamo block per la tabella
+    container.style.padding = '0'; // Togliamo il padding per far attaccare le righe sticky
+    if(typeof chiudiDrawer === "function") chiudiDrawer();
 
-    // 2. Recupero dati (usa quelli già caricati in DATABASE)
     const foglio = DATABASE["CALENDARIO"];
     if (!foglio || !foglio.righe) {
-        container.innerHTML = "<div style='padding:20px;'>Caricamento dati in corso o foglio non trovato...</div>";
+        container.innerHTML = "<div style='padding:20px;'>Nessun dato.</div>";
         return;
     }
 
-    // 3. Raggruppamento per data
-    const giorni = {};
-    foglio.righe.forEach(r => {
-        const d = r.DATA || "Senza Data";
-        if (!giorni[d]) giorni[d] = [];
-        giorni[d].push(r);
+    // 1. Definisci gli orari
+    const orari = [];
+    for (let h = 8; h <= 12; h++) {
+        for (let m = 0; m < 60; m += 10) {
+            orari.push(`${h < 10 ? '0' + h : h}:${m === 0 ? '00' : m}`);
+            if (h === 12 && m === 0) break;
+        }
+    }
+    orari.push("13:50");
+    for (let h = 14; h <= 18; h++) {
+        for (let m = 0; m < 60; m += 10) {
+            orari.push(`${h < 10 ? '0' + h : h}:${m === 0 ? '00' : m}`);
+            if (h === 18 && m === 30) break;
+        }
+    }
+
+    // 2. Parsa i dati nel formato mappa[data][ora][tecnico]
+    const mappa = {};
+    const dateSet = new Set();
+    foglio.righe.forEach(riga => {
+        const data = String(riga['DATA'] || '').trim();
+        const ora = String(riga['ORA'] || '').trim();
+        if (!data || !ora) return;
+        
+        dateSet.add(data);
+        if (!mappa[data]) mappa[data] = {};
+        if (!mappa[data][ora]) mappa[data][ora] = {};
+        
+        mappa[data][ora]['ANDREA'] = String(riga['ANDREA'] || '').trim();
+        mappa[data][ora]['MATTEO'] = String(riga['MATTEO'] || '').trim();
+        mappa[data][ora]['SARA'] = String(riga['SARA'] || '').trim();
+        mappa[data][ora]['PANDA'] = String(riga['PANDA'] || '').trim();
+        mappa[data][ora]['CLIO'] = String(riga['CLIO'] || '').trim();
+        mappa[data][ora]['_rowIndex'] = riga._rowIndex; // Conserviamo l'id riga per poterla modificare!
     });
 
-    // 4. Generazione HTML delle colonne
-    let html = "";
-    Object.keys(giorni).forEach(data => {
-        html += `
-        <div style="min-width:260px; max-width:260px; background:white; border-radius:8px; box-shadow:var(--sh); display:flex; flex-direction:column; max-height:100%; border:1px solid var(--line);">
-            <div style="padding:12px; background:var(--accent); color:white; font-weight:bold; text-align:center; border-radius:8px 8px 0 0;">${data}</div>
-            <div style="padding:10px; overflow-y:auto;">
-                ${giorni[data].map(app => `
-                    <div style="padding:10px; border-bottom:1px solid #eee; font-size:13px;">
-                        <div style="color:var(--accent); font-weight:700; margin-bottom:3px;">${app.ORA || '--:--'}</div>
-                        <div style="font-weight:500; text-transform:uppercase;">${app.CLIENTE || '-'}</div>
-                        <div style="color:#666; font-size:11px; margin-top:2px;">${app.VEICOLO || ''}</div>
-                    </div>
-                `).join('')}
-            </div>
-        </div>`;
+    const dateTrovate = Array.from(dateSet);
+    const nomi = ["ANDREA", "MATTEO", "SARA"];
+
+    // Funzione interna per i colspan (uguale alla tua)
+    function contaDurataOri(data, nome, oraInizio) {
+        let c = 0; let ok = false;
+        for (let o of orari) {
+            if (o === oraInizio) ok = true;
+            if (ok) {
+                let v = (mappa[data]?.[o]?.[nome] || "").trim();
+                if (o === oraInizio || v === "/") {
+                    c++;
+                    if (o === "12:00") break; // Stop alla pausa pranzo
+                } else break;
+            }
+        }
+        return c;
+    }
+
+    // 3. Costruisci l'HTML della tabella
+    let html = "<table class='cale-table'><thead><tr>";
+    html += "<th class='sticky-left col-1'>DATA</th>";
+    html += "<th class='sticky-left col-2'>PANDA</th>";
+    html += "<th class='sticky-left col-3'>CLIO</th>";
+    html += "<th class='sticky-left col-4'>TEC</th>";
+    orari.forEach(ora => {
+        html += `<th class='col-time ${ora === "12:00" ? "bordo-pausa" : ""}'>${ora}</th>`;
+    });
+    html += "</tr></thead><tbody>";
+
+    dateTrovate.forEach(data => {
+        let valPanda = (mappa[data]?.["08:00"]?.["PANDA"] || "").trim();
+        let valClio  = (mappa[data]?.["08:00"]?.["CLIO"]  || "").trim();
+        let rowIdxPandaClio = mappa[data]?.["08:00"]?.["_rowIndex"] || null;
+
+        nomi.forEach((nome, index) => {
+            let visualNome = nome === "ANDREA" ? "A" : nome === "MATTEO" ? "M" : "S";
+            let rigaBordoCls = nome === "ANDREA" ? "bordo-giorno-sup" : nome === "SARA" ? "bordo-giorno-inf" : "";
+
+            html += "<tr>";
+
+            // Colonne sticky di sinistra (stampate solo alla prima riga "ANDREA")
+            if (index === 0) {
+                html += `<td rowspan="3" class='sticky-left col-1 bordo-giorno-sup bordo-giorno-inf'><div class="testo-unito">${data}</div></td>`;
+                html += `<td rowspan="3" class='sticky-left col-2 bordo-giorno-sup bordo-giorno-inf ${valPanda && valPanda !== '/' && valPanda !== '.' ? 'bg-panda' : ''}' onclick="if(${rowIdxPandaClio}) apriFormByIdx(${rowIdxPandaClio})"><div class="testo-unito">${valPanda === '/' || valPanda === '.' ? '' : valPanda}</div></td>`;
+                html += `<td rowspan="3" class='sticky-left col-3 bordo-giorno-sup bordo-giorno-inf ${valClio  && valClio  !== '/' && valClio  !== '.' ? 'bg-clio'  : ''}' onclick="if(${rowIdxPandaClio}) apriFormByIdx(${rowIdxPandaClio})"><div class="testo-unito">${valClio  === '/' || valClio  === '.' ? '' : valClio}</div></td>`;
+            }
+
+            html += `<td class='sticky-left col-4 ${rigaBordoCls}'><div class="testo-unito" style="color:#555">${visualNome}</div></td>`;
+
+            // Loop degli slot orari
+            let skip = 0;
+            orari.forEach(ora => {
+                if (skip > 0) { skip--; return; }
+
+                let valRaw = (mappa[data]?.[ora]?.[nome] || "").trim();
+                let isPausa = (ora === "12:00");
+                let classiTd = `${rigaBordoCls} ${isPausa ? "bordo-pausa" : ""}`;
+                let rowIdx = mappa[data]?.[ora]?.["_rowIndex"] || null;
+                let clickEvt = rowIdx ? `onclick="apriFormByIdx(${rowIdx})"` : `onclick="alert('Riga non presente nel database') "`;
+
+                if (valRaw && valRaw !== "/" && valRaw !== ".") {
+                    let n = contaDurataOri(data, nome, ora);
+                    let tVal = valRaw.toUpperCase();
+                    let cls = "bg-generic";
+
+                    if (tVal.startsWith("MF")) cls = "bg-mf-special";
+                    else if (tVal.startsWith("MP")) cls = "bg-mp-special";
+                    else if (tVal === "PNM 1H" || tVal === "PNM 3H") cls = "bg-pnm-special";
+                    else if (tVal.startsWith("ATT")) cls = "bg-att";
+                    else if (tVal.startsWith("PNM")) cls = "bg-pnm";
+                    else if (tVal.startsWith("SAT")) cls = "bg-sat";
+                    else if (tVal.startsWith("M")) cls = "bg-m";
+
+                    html += `<td colspan="${n}" class="${cls} ${classiTd}" ${clickEvt}><div class="testo-unito">${valRaw}</div></td>`;
+                    skip = n - 1;
+                } else {
+                    html += `<td class="${classiTd}" ${clickEvt}></td>`;
+                }
+            });
+            html += "</tr>";
+        });
     });
 
-    container.innerHTML = html || "<div style='padding:20px;'>Nessun appuntamento in calendario.</div>";
+    container.innerHTML = html + "</tbody></table>";
 }
 </script>
 </body>
