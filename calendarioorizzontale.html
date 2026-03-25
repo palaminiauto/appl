@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vista Orizzontale - PALAMINIAUTO</title>
+    <script src="config.js"></script>
+    <style>
+        :root {
+            --accent: #4f8bc4;
+            --bg: #f4f7f6;
+            --line: #d8d8d8;
+            --text: #333;
+        }
+        body { font-family: 'Roboto', sans-serif; margin: 0; background: var(--bg); color: var(--text); }
+        .header-cale { 
+            padding: 15px; background: var(--accent); color: white; 
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .btn-back { background: rgba(0,0,0,0.2); border: none; color: white; padding: 8px 12px; border-radius: 4px; cursor: pointer; text-decoration: none; font-size: 14px; }
+        
+        /* Qui andrà il tuo CSS specifico per la vista orizzontale */
+        .container-orizzontale { overflow-x: auto; padding: 20px; white-space: nowrap; }
+        .giorno-colonna { 
+            display: inline-block; vertical-align: top; width: 250px; 
+            background: white; margin-right: 15px; border-radius: 8px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); border: 1px solid var(--line);
+        }
+        .giorno-header { padding: 10px; border-bottom: 1px solid var(--line); font-weight: bold; text-align: center; background: #fafafa; border-radius: 8px 8px 0 0; }
+        .slot { padding: 10px; border-bottom: 1px dashed #eee; font-size: 13px; }
+        .slot:last-child { border: none; }
+        .loading { padding: 50px; text-align: center; font-style: italic; color: #666; }
+    </style>
+</head>
+<body>
+
+    <div class="header-cale">
+        <a href="index.html" class="btn-back">← Torna all'App</a>
+        <div style="font-weight: 500;">CALENDARIO ORIZZONTALE</div>
+        <div id="status-sync" style="font-size: 12px; opacity: 0.8;">Caricamento...</div>
+    </div>
+
+    <div id="main-container" class="container-orizzontale">
+        <div class="loading">Sincronizzazione dati con Google Sheets...</div>
+    </div>
+
+    <script>
+        // --- MOTORE DI COMUNICAZIONE (Cloudflare/Google) ---
+        async function wFetch(action, payload = {}) {
+            const response = await fetch(CONFIG.workerUrl, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action,
+                    key: CONFIG.key,
+                    spreadsheetId: CONFIG.spreadsheetId,
+                    ...payload
+                })
+            });
+            const result = await response.json();
+            if (result.error) throw new Error(result.error);
+            return result;
+        }
+
+        async function caricaDati() {
+            try {
+                document.getElementById('status-sync').innerText = "Sincronizzazione...";
+                // Chiediamo i dati del foglio CALENDARIO (o quello che ti serve)
+                const data = await wFetch('getSheets', { sheets: ["CALENDARIO"] });
+                const righe = data.CALENDARIO.rows;
+                renderOrizzontale(righe);
+                document.getElementById('status-sync').innerText = "Aggiornato";
+            } catch (err) {
+                console.error(err);
+                document.getElementById('main-container').innerHTML = `<div style="color:red; padding:20px;">Errore: ${err.message}</div>`;
+            }
+        }
+
+        // --- TUA LOGICA DI VISUALIZZAZIONE ---
+        function renderOrizzontale(righe) {
+            const container = document.getElementById('main-container');
+            if (!righe || righe.length === 0) {
+                container.innerHTML = "Nessun dato trovato nel foglio CALENDARIO.";
+                return;
+            }
+
+            // ESEMPIO DI LOGICA: Raggruppiamo per data (Colonna 'DATA' o la prima colonna)
+            // Sostituisci questa logica con la tua specifica del file che mi hai passato
+            let html = "";
+            
+            // Qui inseriresti il ciclo che genera le tue colonne orizzontali
+            // Per ora creo un esempio basato sulle tue righe
+            righe.forEach(r => {
+                html += `
+                <div class="giorno-colonna">
+                    <div class="giorno-header">${r.DATA || 'Senza Data'}</div>
+                    <div class="slot">
+                        <strong>${r.ORA || '--:--'}</strong> - ${r.CLIENTE || 'Disponibile'}<br>
+                        <small>${r.NOTE || ''}</small>
+                    </div>
+                </div>`;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // Avvio automatico
+        window.onload = caricaDati;
+    </script>
+</body>
+</html>
