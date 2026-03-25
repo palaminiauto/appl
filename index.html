@@ -962,15 +962,34 @@ if(dlCfg){
             >${inputVal.replace(/</g,'&lt;')}</textarea>`;
         }
         if(tipo==='date'||tipo==='datetime-local'){
-            let converted='';
-            const mIt=inputVal.match(/^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}))?/);
-            if(mIt)converted=tipo==='date'?`${mIt[3]}-${mIt[2]}-${mIt[1]}`:`${mIt[3]}-${mIt[2]}-${mIt[1]}T${mIt[4]||'00'}:${mIt[5]||'00'}`;
-            if(!converted){const mIso=inputVal.match(/^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2}))?/);if(mIso)converted=tipo==='date'?`${mIso[1]}-${mIso[2]}-${mIso[3]}`:`${mIso[1]}-${mIso[2]}-${mIso[3]}T${mIso[4]||'00'}:${mIso[5]||'00'}`;}
-            if(converted)inputVal=converted;
-            const titleAttr=val?'Valore originale: '+val:'';
-            const placeholderAttr=val||'';
-            return`<input type="${tipo}" id="${safeId}" value="${inputVal.replace(/"/g,'&quot;')}"${isRO?' disabled':''} title="${titleAttr}" placeholder="${placeholderAttr}">`;
+    let converted='';
+    if(inputVal){
+        // Gestisce il formato italiano GG/MM/AAAA (es. 26/3/2026 o 26/03/2026)
+        const parti = inputVal.split(/[\/\-\s]/); // Divide per slash, trattino o spazio
+        if(parti.length >= 3){
+            let g = parti[0].padStart(2, '0');
+            let m = parti[1].padStart(2, '0');
+            let a = parti[2];
+            
+            // Se l'anno è di due cifre (es. 26), lo portiamo a 2026
+            if(a.length === 2) a = '20' + a;
+
+            if(tipo==='date'){
+                converted = `${a}-${m}-${g}`;
+            } else {
+                // Per datetime-local serve anche l'ora
+                let ora = parti[3] || '00:00';
+                converted = `${a}-${m}-${g}T${ora}`;
+            }
         }
+    }
+    
+    // Se la conversione ha funzionato, usiamo il nuovo valore, altrimenti lasciamo vuoto per non mandare in crash l'input
+    const finalVal = converted || "";
+    const titleAttr = val ? 'Valore originale: ' + val : '';
+    
+    return `<input type="${tipo}" id="${safeId}" value="${finalVal}"${isRO?' disabled':''} title="${titleAttr}" style="width:100%;padding:6px 9px;border:1px solid var(--line);border-radius:var(--radius);">`;
+}
         if(tipo==='time'){
             const mt=inputVal.match(/(\d{2}:\d{2})/);if(mt)inputVal=mt[1];
             return`<input type="time" id="${safeId}" value="${inputVal}"${isRO?' disabled':''}>`;
