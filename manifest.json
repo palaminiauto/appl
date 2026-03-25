@@ -1,16 +1,28 @@
 {
-  "name": "PALAMINI AUTO",
-  "short_name": "PALAMINI AUTO",
+  "name": "PALAMINIAUTO",
+  "short_name": "PALAMINIAUTO",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#f4f7f6",
   "theme_color": "#4f8bc4",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/732/732220.png",
+      "src": "logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "logo.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "favicon.png",
+      "sizes": "64x64",
+      "type": "image/png",
+      "purpose": "any"
     }
   ]
 }
