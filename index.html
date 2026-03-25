@@ -220,6 +220,7 @@
                 <button id="btn-sort-dir" class="btn-sort" onclick="cambiaDirezioneOrdinamento()">⬇ A–Z</button>
             </div>
             <div id="tabella-container"></div>
+            <div id="vista-orizzontale-container" style="display:none; flex-direction:row; overflow-x:auto; padding:20px; gap:15px; background:#e9e9e9; height:calc(100vh - 65px); align-items:flex-start;"></div>
             <div id="multi-delete-bar">
                 <span id="multi-count-label">0 righe</span>
                 <button onclick="eliminaSelezionate()">🗑 Elimina</button>
@@ -639,7 +640,27 @@ function renderMenu(){
     const cont=document.getElementById('buttons-container'),drw=document.getElementById('drawer-buttons');cont.innerHTML='';drw.innerHTML='';
     let disp=Object.keys(DATABASE),ord=(APP_CONFIG._sheetOrder||[]).filter(f=>disp.includes(f));
     disp.forEach(f=>{if(!ord.includes(f))ord.push(f);});APP_CONFIG._sheetOrder=ord;
-    ord.forEach(nome=>{[[cont,false],[drw,true]].forEach(([c,isD])=>{const b=document.createElement('button');b.innerText=getNomeDinamico(nome);b.setAttribute('data-foglio',nome);b.onclick=()=>{caricaDati(nome);if(isD)chiudiDrawer();};if(nome===FOGLIO_ATTIVO)b.classList.add('active');c.appendChild(b);});});
+    ord.forEach(nome=>{
+        [[cont,false],[drw,true]].forEach(([c,isD])=>{
+            const b=document.createElement('button');
+            b.innerText=getNomeDinamico(nome);
+            b.setAttribute('data-foglio',nome);
+            b.onclick=()=>{caricaDati(nome);if(isD)chiudiDrawer();};
+            if(nome===FOGLIO_ATTIVO)b.classList.add('active');
+            c.appendChild(b);
+        });
+    });
+
+    // --- AGGIUNTA TASTO CALENDARIO ORIZZONTALE ---
+    [[cont,false],[drw,true]].forEach(([c,isD])=>{
+        const btnOrizz = document.createElement('button');
+        btnOrizz.innerHTML = '📅 Calendario Orizz.';
+        btnOrizz.style.marginTop = '15px';
+        btnOrizz.style.borderLeft = '4px solid white';
+        btnOrizz.style.background = 'rgba(0,0,0,0.1)';
+        btnOrizz.onclick = () => { mostraVistaOrizzontale(); if(isD) chiudiDrawer(); };
+        c.appendChild(btnOrizz);
+    });
 }
 
 function apriOrdinamento(){aggiornaListaOrdinamento();document.getElementById('modal-order').style.display='flex';}
@@ -647,9 +668,17 @@ function aggiornaListaOrdinamento(){document.getElementById('order-list').innerH
 async function spostaFoglio(i,d){const a=APP_CONFIG._sheetOrder,t=a[i];a[i]=a[i+d];a[i+d]=t;aggiornaListaOrdinamento();renderMenu();await salvaConfig();}
 
 function caricaDati(nome){
+    // --- RESET VISTA ORIZZONTALE ---
+    const vOri = document.getElementById('vista-orizzontale-container');
+    const tStd = document.getElementById('tabella-container');
+    if (vOri) vOri.style.display = 'none';
+    if (tStd) tStd.style.display = 'block';
+    // -------------------------------
+
     FOGLIO_ATTIVO=nome;document.getElementById('titolo-foglio').innerText=getNomeDinamico(nome);
     document.querySelectorAll('#sidebar button[data-foglio]').forEach(b=>b.classList.toggle('active',b.getAttribute('data-foglio')===nome));
     _selezioneAttiva=false;_selectedRows.clear();document.getElementById('btn-toggle-selezione').classList.remove('attivo');document.getElementById('multi-delete-bar').style.display='none';
+    
     // Reset scroll
     const contentEl=document.getElementById('content');if(contentEl)contentEl.scrollTop=0;
     const tabEl=document.getElementById('tabella-container');if(tabEl)tabEl.scrollTop=0;
@@ -1143,6 +1172,49 @@ async function salvaImpostazioni(){
     };
     await salvaConfig();chiudiModal('modal-settings');renderMenu();caricaDati(FOGLIO_ATTIVO);
     btn.innerText='Salva';btn.disabled=false;
+}
+
+    function mostraVistaOrizzontale() {
+    // 1. Gestione visibilità
+    document.getElementById('tabella-container').style.display = 'none';
+    const container = document.getElementById('vista-orizzontale-container');
+    container.style.display = 'flex';
+    if(typeof chiudiDrawer === "function") chiudiDrawer(); // Chiude il menu su mobile
+
+    // 2. Recupero dati (usa quelli già caricati in DATABASE)
+    const foglio = DATABASE["CALENDARIO"];
+    if (!foglio || !foglio.righe) {
+        container.innerHTML = "<div style='padding:20px;'>Caricamento dati in corso o foglio non trovato...</div>";
+        return;
+    }
+
+    // 3. Raggruppamento per data
+    const giorni = {};
+    foglio.righe.forEach(r => {
+        const d = r.DATA || "Senza Data";
+        if (!giorni[d]) giorni[d] = [];
+        giorni[d].push(r);
+    });
+
+    // 4. Generazione HTML delle colonne
+    let html = "";
+    Object.keys(giorni).forEach(data => {
+        html += `
+        <div style="min-width:260px; max-width:260px; background:white; border-radius:8px; box-shadow:var(--sh); display:flex; flex-direction:column; max-height:100%; border:1px solid var(--line);">
+            <div style="padding:12px; background:var(--accent); color:white; font-weight:bold; text-align:center; border-radius:8px 8px 0 0;">${data}</div>
+            <div style="padding:10px; overflow-y:auto;">
+                ${giorni[data].map(app => `
+                    <div style="padding:10px; border-bottom:1px solid #eee; font-size:13px;">
+                        <div style="color:var(--accent); font-weight:700; margin-bottom:3px;">${app.ORA || '--:--'}</div>
+                        <div style="font-weight:500; text-transform:uppercase;">${app.CLIENTE || '-'}</div>
+                        <div style="color:#666; font-size:11px; margin-top:2px;">${app.VEICOLO || ''}</div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>`;
+    });
+
+    container.innerHTML = html || "<div style='padding:20px;'>Nessun appuntamento in calendario.</div>";
 }
 </script>
 </body>
