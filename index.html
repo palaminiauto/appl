@@ -411,7 +411,7 @@ let _fontSize=14; // default, verrà sovrascritto da APP_CONFIG
 const FOGLI_CON_DATE=['SAT','APP PNM','FLOTTE'],NOME_COLONNA_DATA='DATA e ORA';
 const CONFIG_KEY='appConfig_gs';
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
-window.onload=()=>{ aggiornaFont(); sincronizza(); };
+window.addEventListener('load',()=>{ aggiornaFont(); sincronizza(); });
 
 function aggiornaFont(){
     const fs=_fontSize+'px';
@@ -424,7 +424,6 @@ function cambiaFont(d){
     APP_CONFIG._fontSize=_fontSize;
     salvaConfig();
 }
-window.addEventListener('load',aggiornaFont);
 
 async function salvaConfig(){const ind=document.getElementById('config-saving');ind.style.display='block';try{await GS.saveConfig(APP_CONFIG);}finally{setTimeout(()=>{ind.style.display='none';},1200);}}
 
