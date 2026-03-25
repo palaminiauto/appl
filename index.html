@@ -2,8 +2,10 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PALAMINI AUTO</title>
+    <title>PALAMINIAUTO</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#4f8bc4">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
@@ -198,7 +200,7 @@
     <div id="sidebar"><h3>Fogli</h3><div id="buttons-container"></div></div>
     <div id="main-container">
         <div id="header">
-            <h2 id="titolo-foglio">Palamini Auto</h2>
+            <h2 id="titolo-foglio">PALAMINIAUTO</h2>
             <div class="header-right">
                 <button id="hamburger-btn" class="hb" onclick="apriDrawer()">☰</button>
                 <button onclick="sincronizza()" id="btn-sync" class="hb btn-sync">↻ Sync</button>
@@ -889,7 +891,7 @@ function getDatalistOpzioni(dlCfg){
         const v=String(r[dlCfg.colonnaSorgente]||'').trim();
         if(v)valori.add(v);
     });
-    return [...valori].sort((a,b)=>a.localeCompare(b));
+    return [...valori];
 }
 
 // ── FORM ──────────────────────────────────────────────────────
