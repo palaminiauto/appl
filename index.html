@@ -934,17 +934,26 @@ function apriForm(rigaObj){
 
         if(tipo==='text'||tipo===''){
             const r=Math.max(1,Math.ceil(inputVal.length/50));
-            if(dlCfg){
-                // Campi con suggerimenti: input + datalist appeso al body
-                const listId='dl-'+safeId;
-                const opzioni=getDatalistOpzioni(dlCfg);
-                // Rimuove datalist precedente con stesso id se esiste
-                const existing=document.getElementById(listId);if(existing)existing.remove();
-                const dl=document.createElement('datalist');dl.id=listId;
-                opzioni.forEach(o=>{const opt=document.createElement('option');opt.value=o;dl.appendChild(opt);});
-                document.body.appendChild(dl);
-                return`<input type="text" id="${safeId}" value="${inputVal.replace(/"/g,'&quot;')}" list="${listId}"${isRO?' disabled':''} autocomplete="off" style="width:100%;padding:6px 9px;border:1px solid var(--line);border-radius:var(--radius);font-size:13px;">`;
-            }
+            // ✅ NUOVO CODICE (Menu a tendina puro)
+if(dlCfg){
+    const opzioni = getDatalistOpzioni(dlCfg);
+    
+    // Se il valore attuale del campo non è presente tra le opzioni libere, lo aggiungiamo in cima alla lista
+    if (inputVal && !opzioni.includes(inputVal)) {
+        opzioni.unshift(inputVal); 
+    }
+
+    let selectHtml = `<select id="${safeId}" ${isRO ? 'disabled' : ''} style="width:100%;padding:6px 9px;border:1px solid var(--line);border-radius:var(--radius);font-size:13px;background:white;">`;
+    selectHtml += `<option value="">– Seleziona –</option>`;
+    
+    opzioni.forEach(o => {
+        const selected = (o === inputVal) ? 'selected' : '';
+        selectHtml += `<option value="${o.replace(/"/g,'&quot;')}" ${selected}>${o}</option>`;
+    });
+    
+    selectHtml += `</select>`;
+    return selectHtml;
+}
             return`<textarea id="${safeId}" rows="${Math.min(r,6)}"${isRO?' disabled':''}
                 oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"
                 style="height:auto;width:100%;${r>1?'min-height:'+(r*22+12)+'px;':''}"
