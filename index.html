@@ -881,19 +881,23 @@ async function eliminaRiga(ri){if(!confirm('Eliminare questa riga?'))return;try{
 
 // ── DATALIST SUGGERIMENTI ─────────────────────────────────────
 function getDatalistOpzioni(dlCfg){
-    if(!dlCfg||!dlCfg.foglio||!dlCfg.colonna)return[];
+    if(!dlCfg||!dlCfg.foglio||!dlCfg.colonnaSorgente)return[];
     const foglio=DATABASE[dlCfg.foglio];
-    if(!foglio)return[];
+    if(!foglio){console.warn('Foglio datalist non trovato:',dlCfg.foglio,'disponibili:',Object.keys(DATABASE));return[];}
     const valori=new Set();
     foglio.righe.forEach(r=>{
-        const v=String(r[dlCfg.colonna]||'').trim();
+        const v=String(r[dlCfg.colonnaSorgente]||'').trim();
         if(v)valori.add(v);
     });
     return [...valori].sort((a,b)=>a.localeCompare(b));
 }
 
 // ── FORM ──────────────────────────────────────────────────────
-function chiudiModal(id){document.getElementById(id).style.display='none';}
+function chiudiModal(id){
+    document.getElementById(id).style.display='none';
+    // Pulisce datalist appesi al body
+    if(id==='modal-form')document.querySelectorAll('datalist[id^="dl-input-"]').forEach(el=>el.remove());
+}
 
 // Store globale delle righe correnti → evita enc/onclick fragile
 let _righeStore={};
@@ -931,11 +935,15 @@ function apriForm(rigaObj){
         if(tipo==='text'||tipo===''){
             const r=Math.max(1,Math.ceil(inputVal.length/50));
             if(dlCfg){
-                // Campi con suggerimenti: input + datalist
+                // Campi con suggerimenti: input + datalist appeso al body
                 const listId='dl-'+safeId;
                 const opzioni=getDatalistOpzioni(dlCfg);
-                const datalist=`<datalist id="${listId}">${opzioni.map(o=>`<option value="${o.replace(/"/g,'&quot;')}">`).join('')}</datalist>`;
-                return`${datalist}<input type="text" id="${safeId}" value="${inputVal.replace(/"/g,'&quot;')}" list="${listId}"${isRO?' disabled':''} style="width:100%;padding:6px 9px;border:1px solid var(--line);border-radius:var(--radius);font-size:13px;">`;
+                // Rimuove datalist precedente con stesso id se esiste
+                const existing=document.getElementById(listId);if(existing)existing.remove();
+                const dl=document.createElement('datalist');dl.id=listId;
+                opzioni.forEach(o=>{const opt=document.createElement('option');opt.value=o;dl.appendChild(opt);});
+                document.body.appendChild(dl);
+                return`<input type="text" id="${safeId}" value="${inputVal.replace(/"/g,'&quot;')}" list="${listId}"${isRO?' disabled':''} autocomplete="off" style="width:100%;padding:6px 9px;border:1px solid var(--line);border-radius:var(--radius);font-size:13px;">`;
             }
             return`<textarea id="${safeId}" rows="${Math.min(r,6)}"${isRO?' disabled':''}
                 oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"
