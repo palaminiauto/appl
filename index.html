@@ -20,11 +20,12 @@
             --fs:14px;
         }
         *,*::before,*::after{box-sizing:border-box;}
-        body{font-family:'Roboto',sans-serif;margin:0;background:var(--bg);height:100vh;overflow:hidden;font-size:var(--fs);color:var(--ink);-webkit-font-smoothing:antialiased;}
+        body{font-family:'Roboto',sans-serif;margin:0;background:var(--bg);height:100vh;overflow:hidden;font-size:var(--fs);color:var(--ink);-webkit-font-smoothing:antialiased;text-transform:uppercase;}
+        input, textarea, select { text-transform: uppercase; }
         #app-screen{display:flex;height:100vh;flex-direction:row;}
         #sidebar{width:var(--sidebar-w,160px);min-width:120px;max-width:220px;background:var(--sidebar);padding:8px 6px;overflow-y:auto;flex-shrink:0;display:flex;flex-direction:column;}
-        #sidebar-logo{display:flex;align-items:center;justify-content:center;padding:8px 4px 10px;flex-shrink:0;}
-        #sidebar-logo img{width:100%;max-width:120px;height:auto;object-fit:contain;filter:brightness(0) invert(1);opacity:0.9;}
+        #sidebar-logo{display:flex;align-items:center;justify-content:center;padding:8px 4px 12px;flex-shrink:0;min-height:50px;}
+        #sidebar-logo img{width:90%;max-width:110px;height:40px;object-fit:contain;filter:invert(1);mix-blend-mode:screen;opacity:0.9;display:block;-webkit-user-drag:none;}
         #buttons-container{flex-grow:1;overflow-y:auto;display:flex;flex-direction:column;gap:1px;}
         #sidebar button{display:block;width:100%;padding:7px 10px;cursor:pointer;background:transparent;color:var(--sid-txt);border:none;text-align:left;border-radius:var(--radius);font-size:12px;font-weight:400;transition:background .12s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.4;font-family:'Roboto',sans-serif;}
         #sidebar button:hover{background:rgba(0,0,0,0.10);}
@@ -70,6 +71,9 @@
         .act-btn.quick{background:rgba(241,196,15,0.10);}
         .act-btn.quick:hover{background:#fff8e0;border-color:#f0d87a;opacity:1;}
         .cards-grid{display:flex;flex-direction:column;}
+        @media(min-width: 1024px) {
+            .cards-grid { display: grid !important; grid-template-columns: repeat(4, 1fr) !important; gap: 16px; align-items: start; }
+        }
         .card{background:var(--sheet);padding:13px 16px 10px;cursor:pointer;border-bottom:1px solid var(--line);transition:background .10s;}
         .card:hover{background:#f0f6ff;}
         .card.card-selected{background:#ddeaf5!important;border-left:3px solid var(--accent);}
@@ -79,12 +83,11 @@
         .card-corpo{font-size:var(--card-font,14px);color:var(--ink-2);line-height:1.55;margin-top:2px;}
         .card-actions{display:flex;gap:2px;margin-top:8px;justify-content:flex-end;align-items:center;}
         .kanban-wrapper{position:relative;display:flex;flex-direction:column;height:100%;overflow:hidden;}
-        .kanban-nav{display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--sheet);border-bottom:1px solid var(--line);flex-shrink:0;}
-        .kanban-nav button{border:1px solid var(--line);background:white;border-radius:var(--radius);padding:4px 12px;cursor:pointer;font-size:16px;color:var(--ink-2);transition:background .12s;}
-        .kanban-nav button:hover{background:var(--bg);}
-        .kanban-nav-label{font-size:11px;color:var(--ink-3);margin-left:4px;}
-        .kanban-board{display:flex;gap:0;overflow-x:auto;height:100%;background:var(--bg);scroll-behavior:smooth;}
-        .kanban-col{min-width:260px;max-width:295px;flex-shrink:0;display:flex;flex-direction:column;background:var(--bg);border-right:1px solid var(--line);}
+        /* Kanban 4 colonne fisse su PC, scroll orizzontale su mobile */
+        .kanban-board{display:grid;grid-template-columns:repeat(4,1fr);gap:0;overflow-y:auto;height:100%;background:var(--bg);}
+        @media(max-width:900px){.kanban-board{display:flex;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;height:100%;}}
+        .kanban-col{display:flex;flex-direction:column;background:var(--bg);border-right:1px solid var(--line);border-bottom:1px solid var(--line);min-width:0;}
+        @media(max-width:900px){.kanban-col{min-width:260px;flex-shrink:0;}}
         .kanban-col-header{padding:11px 12px;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--ink-2);display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);}
         .kanban-col-count{font-size:11px;color:var(--ink-3);font-weight:500;}
         .kanban-col-body{flex:1;overflow-y:auto;display:flex;flex-direction:column;padding:6px;}
@@ -194,7 +197,7 @@
 <body>
 <div id="drawer-overlay" onclick="chiudiDrawer()"></div>
 <div id="drawer">
-    <div style="padding:8px 4px 12px;text-align:center;"><img src="logo.png" alt="" style="max-width:100px;width:100%;filter:brightness(0) invert(1);opacity:0.85;" onerror="this.style.display='none'"></div>
+    <div style="padding:8px 4px 12px;text-align:center;"><img src="logo.png" alt="" style="max-width:100px;width:100%;filter:invert(1);mix-blend-mode:screen;opacity:0.85;" onerror="this.style.display='none'"></div>
     <div id="drawer-buttons"></div>
     <div id="drawer-footer">
         <button style="background:rgba(0,0,0,0.15);color:white;" onclick="apriOrdinamento();chiudiDrawer()">↕</button>
@@ -239,7 +242,6 @@
 </div>
 <div id="config-saving">💾 Salvataggio…</div>
 
-<!-- MODAL FORM -->
 <div id="modal-form" class="modal-overlay">
     <div class="modal-content">
         <h3 id="modal-title">Nuovo</h3>
@@ -251,7 +253,6 @@
     </div>
 </div>
 
-<!-- MODAL SETTINGS -->
 <div id="modal-settings" class="modal-overlay">
     <div class="modal-content">
         <h3>⚙ Impostazioni — <span id="settings-nome-foglio"></span></h3>
@@ -413,7 +414,6 @@ function parseValoriFissi(testo){
     }).filter(Boolean);
 }
 function aggiornaLarghezzaSidebar(){
-    // Auto-larghezza basata sul nome più lungo
     const nomi=Array.from(document.querySelectorAll('#sidebar button')).map(b=>b.innerText);
     if(!nomi.length)return;
     const maxLen=Math.max(...nomi.map(n=>n.length));
@@ -445,27 +445,53 @@ function parsaDataPerSort(s){if(!s)return null;const str=String(s).trim();const 
 function isRigaVuota(r,cols){return cols.every(c=>!String(r[c]||'').trim());}
 function getTelefono(riga,config){const col=config.whatsappColonna||'';if(col&&riga[col]!==undefined)return String(riga[col]||'');for(const c of['CONTATTO TELEFONICO','TELEFONO','TEL','CELLULARE','CELL']){if(riga[c]!==undefined)return String(riga[c]||'');}return'';}
 
+function getDynColorStr(str) {
+    let h=0;for(let i=0;i<str.length;i++)h=str.charCodeAt(i)+((h<<5)-h);
+    return `hsl(${Math.abs(h)%360}, 75%, 40%)`;
+}
+function getDynColorSat(col, allData) {
+    if(String(col).toLowerCase() === 'data e ora sat') {
+        const sv = allData['Sort data'] || allData['SORT DATA'];
+        if(sv) return getDynColorStr(String(sv));
+    }
+    return null;
+}
+
 // ── FORMAT RULES ──────────────────────────────────────────────
 function valutaFormatRulesAll(riga,config){
-    // Calcola anche le colonne virtuali per usarle nelle regole
     const extra=calcolaVirtuali(riga,config);
     const allFields={...riga,...extra};
     const matched=[];
     for(const r of(config.formatRules||[])){
         if(!r.colonna||!r.colore)continue;
-        // Cerca il valore sia nelle colonne reali che in quelle virtuali
         const v=String(allFields[r.colonna]||'').trim();
         let match=false;
         switch(r.operatore){
-            case'uguale':match=v===r.valore;break;case'non uguale':match=v!==r.valore;break;
-            case'contiene':match=v.toLowerCase().includes((r.valore||'').toLowerCase());break;
-            case'inizia con':match=v.toLowerCase().startsWith((r.valore||'').toLowerCase());break;
+            case'uguale':
+                if(String(r.valore).includes('||')){
+                    match=String(r.valore).split('||').some(x=>v.toLowerCase()===x.trim().toLowerCase());
+                }else{match=v===r.valore;}
+                break;
+            case'non uguale':
+                if(String(r.valore).includes('||')){
+                    match=!String(r.valore).split('||').some(x=>v.toLowerCase()===x.trim().toLowerCase());
+                }else{match=v!==r.valore;}
+                break;
+            case'contiene':
+                if(String(r.valore).includes('||')){
+                    match=String(r.valore).split('||').some(x=>v.toLowerCase().includes(x.trim().toLowerCase()));
+                }else{match=v.toLowerCase().includes((r.valore||'').toLowerCase());}
+                break;
+            case'inizia con':
+                if(String(r.valore).includes('||')){
+                    match=String(r.valore).split('||').some(x=>v.toLowerCase().startsWith(x.trim().toLowerCase()));
+                }else{match=v.toLowerCase().startsWith((r.valore||'').toLowerCase());}
+                break;
             case'non vuoto':match=v!=='';break;case'vuoto':match=v==='';break;
             case'data > (dopo)':{const a=parsaData(v),b=parsaData(r.valore);match=a!=null&&b!=null&&a>b;break;}
             case'data < (prima)':{const a=parsaData(v),b=parsaData(r.valore);match=a!=null&&b!=null&&a<b;break;}
             case'entro X giorni':{const a=parsaDataPerSort(v);if(a!=null){const oggi=Date.now(),giorni=parseInt(r.valore)||7;match=a>=oggi&&a<=(oggi+giorni*86400000);}break;}
             case'scaduto da X giorni':{const a=parsaDataPerSort(v);if(a!=null){const oggi=Date.now(),giorni=parseInt(r.valore)||7;match=a<oggi&&a>=(oggi-giorni*86400000);}break;}
-            // FIX: "data passata" colora qualsiasi data già scaduta (senza limite di giorni)
             case'data passata':{const a=parsaDataPerSort(v);if(a!=null){match=a<Date.now();}break;}
             case'è oggi':{const a=parsaDataPerSort(v);if(a!=null){const d=new Date(a),o=new Date();match=d.getFullYear()===o.getFullYear()&&d.getMonth()===o.getMonth()&&d.getDate()===o.getDate();}break;}
         }
@@ -491,7 +517,6 @@ function toggleSelezione(){_selezioneAttiva=!_selezioneAttiva;document.getElemen
 // ── SYNC ──────────────────────────────────────────────────────
 async function sincronizza(){
     const btn=document.getElementById('btn-sync');btn.innerText='…';
-    // FIX: salva posizione scroll CALENDARIO prima del reload
     if(FOGLIO_ATTIVO==='CALENDARIO'){
         const ce=document.getElementById('content');
         if(ce)_calScrollTop=ce.scrollTop;
@@ -509,7 +534,7 @@ async function sincronizza(){
             const primo=DATABASE['CALENDARIO']?'CALENDARIO':(APP_CONFIG._sheetOrder?.[0]||Object.keys(DATABASE)[0]);
             if(primo&&DATABASE[primo])caricaDati(primo);
         }else if(_vistaOrizzontale){
-            mostraVistaOrizzontale(true); // reload preservando stato
+            mostraVistaOrizzontale(true); 
         }else if(DATABASE[FOGLIO_ATTIVO]){
             caricaDati(FOGLIO_ATTIVO);
         }
@@ -533,7 +558,6 @@ function renderMenu(){
             b.onclick=()=>{caricaDati(nome);if(isD)chiudiDrawer();};
             if(nome===FOGLIO_ATTIVO&&!_vistaOrizzontale)b.classList.add('active');
             c.appendChild(b);
-            // Inserisci CALE-ORIZZ subito dopo CALENDARIO
             if(nome==='CALENDARIO'){
                 const bCale=document.createElement('button');
                 bCale.innerText='CALE-ORIZZ';
@@ -544,7 +568,6 @@ function renderMenu(){
             }
         });
     });
-    // Se CALENDARIO non è tra i fogli, aggiungi CALE-ORIZZ in fondo
     if(!ord.includes('CALENDARIO')){
         [[cont,false],[drw,true]].forEach(([c,isD])=>{
             const b=document.createElement('button');b.innerText='CALE-ORIZZ';b.setAttribute('data-foglio','__CALE__');
@@ -568,7 +591,6 @@ function caricaDati(nome){
     document.querySelectorAll('#sidebar button[data-foglio]').forEach(b=>b.classList.toggle('active',b.getAttribute('data-foglio')===nome));
     document.querySelector('#sidebar button[data-foglio="__CALE__"]')?.classList.remove('active');
     _selezioneAttiva=false;_selectedRows.clear();document.getElementById('btn-toggle-selezione').classList.remove('attivo');document.getElementById('multi-delete-bar').style.display='none';
-    // FIX: reset scroll solo se NON è il CALENDARIO che si ricarica da solo
     if(nome!=='CALENDARIO'){
         const contentEl=document.getElementById('content');if(contentEl)contentEl.scrollTop=0;
         const tabEl=document.getElementById('tabella-container');if(tabEl)tabEl.scrollTop=0;
@@ -582,7 +604,6 @@ function caricaDati(nome){
     document.getElementById('toolbar').style.display='flex';document.getElementById('search-input').value='';
     const sortSel=document.getElementById('sort-column');
     const colVirtNomi=(config.colonneVirtuali||[]).map(v=>v.nome);
-    // FIX: CALENDARIO — nascondi sort
     const isCal=(nome==='CALENDARIO');
     if(isCal){
         document.getElementById('sort-column').style.display='none';
@@ -620,14 +641,19 @@ function renderCard(righe,config){
         const extra=calcolaVirtuali(riga,config),all={...riga,...extra};
         const fmts=valutaFormatRulesAll(riga,config);
         const valData=cc.data?formattaValoreCella(all[cc.data]):'';const valBadge=cc.badge?formattaValoreCella(all[cc.badge]):'';
-        const cData=fieldColorAll(cc.data,fmts);const cBadge=fieldColorAll(cc.badge,fmts);
+        const cData=getDynColorSat(cc.data,all)||fieldColorAll(cc.data,fmts);
+        const cBadge=fieldColorAll(cc.badge,fmts);
         const rowIdx=riga._rowIndex;const isSel=_selectedRows.has(rowIdx);
         const clickFn=_selezioneAttiva?`toggleCardSelection(${rowIdx},this.closest('.card'))`:`apriFormByIdx(${rowIdx})`;
         const tel=getTelefono(riga,config);
         h+=`<div class="card${isSel?' card-selected':''}" onclick="${clickFn}">
             <div class="card-top"><div class="card-label"${cData?` style="color:${cData};"`:''} >${valData}</div>${valBadge?`<div class="card-badge-right"${cBadge?` style="color:${cBadge};"`:''} >${valBadge}</div>`:''}</div>
             <div class="card-corpo">`;
-        const items=(cc.corpo||[]).map(col=>{const v=formattaValoreCella(all[col]);if(!v)return null;const fc=fieldColorAll(col,fmts);return`<span${fc?` style="color:${fc};font-weight:600;"`:''} >${v}</span>`;}).filter(Boolean);
+        const items=(cc.corpo||[]).map(col=>{
+            const v=formattaValoreCella(all[col]);if(!v)return null;
+            const fc=getDynColorSat(col,all)||fieldColorAll(col,fmts);
+            return`<span${fc?` style="color:${fc};font-weight:600;"`:''} >${v}</span>`;
+        }).filter(Boolean);
         h+=items.join('<span style="color:var(--ink-3);margin:0 4px;font-weight:400;">—</span>');
         h+=`</div>`;
         if(!_selezioneAttiva&&(config.puoModificare||config.puoEliminare||hasWA||(qa.attiva&&qa.colonna))){
@@ -659,9 +685,14 @@ function renderKanban(righe,config){
             const extra=calcolaVirtuali(riga,config),all={...riga,...extra};
             const fmts=valutaFormatRulesAll(riga,config);const rowIdx=riga._rowIndex;const isSel=_selectedRows.has(rowIdx);
             const clickFn=_selezioneAttiva?`toggleCardSelection(${rowIdx},this.closest('.kanban-card'))`:`apriFormByIdx(${rowIdx})`;
-            const cLabel=fieldColorAll(cc.data,fmts);const tel=getTelefono(riga,config);
+            const cLabel=getDynColorSat(cc.data,all)||fieldColorAll(cc.data,fmts);
+            const tel=getTelefono(riga,config);
             h+=`<div class="kanban-card${isSel?' card-selected':''}" onclick="${clickFn}"><div class="kanban-card-label"${cLabel?` style="color:${cLabel};"`:''} >${cc.data?formattaValoreCella(all[cc.data]):''}</div><div>`;
-            (cc.corpo||[]).forEach(col=>{const v=formattaValoreCella(all[col]);if(!v)return;const fc=fieldColorAll(col,fmts);h+=`<div class="kanban-card-body-line"${fc?` style="color:${fc};font-weight:600;"`:''} >${v}</div>`;});
+            (cc.corpo||[]).forEach(col=>{
+                const v=formattaValoreCella(all[col]);if(!v)return;
+                const fc=getDynColorSat(col,all)||fieldColorAll(col,fmts);
+                h+=`<div class="kanban-card-body-line"${fc?` style="color:${fc};font-weight:600;"`:''} ><span style="font-size:0.85em;color:var(--ink-3);font-weight:500;">${col}:</span> <span style="font-weight:bold;color:var(--ink);">${v}</span></div>`;
+            });
             h+=`</div>`;const vb=cc.badge?formattaValoreCella(all[cc.badge]):'';if(vb){const fc=fieldColorAll(cc.badge,fmts);h+=`<div class="kanban-card-meta"${fc?` style="color:${fc};"`:''} >${vb}</div>`;}
             if(!_selezioneAttiva&&(config.puoModificare||config.puoEliminare||hasWA||(qa.attiva&&qa.colonna))){h+=`<div class="kanban-card-actions" onclick="event.stopPropagation()">${hasWA&&tel?`<button class="act-btn wa" onclick="apriWhatsApp('${String(tel).replace(/'/g,'&#39;')}')" title="WhatsApp">💬</button>`:''}${qa.attiva&&qa.colonna?`<button class="act-btn quick" onclick="eseguiAzioneRapida(${rowIdx})" title="${qa.valore}">${qa.emoji||'⚡'}</button>`:''}${config.puoModificare?`<button class="act-btn edit" onclick="apriFormByIdx(${rowIdx})">✏️</button>`:''}${config.puoEliminare?`<button class="act-btn del" onclick="eliminaRiga(${rowIdx})">🗑️</button>`:''};</div>`;}
             h+=`</div>`;
@@ -704,6 +735,7 @@ function renderTabella(){
     html+='</tr></thead><tbody>';let ultData=null;
     righe.forEach(riga=>{
         const extra=calcolaVirtuali(riga,config);const rowIdx=riga._rowIndex;
+        const allData={...riga,...extra};
         if(isCal){const dr=String(riga[C0]||'');if(dr!==ultData){ultData=dr;const tot=colTabAll.length+(haAct?1:0)+(isCal?1:0)+(mostraChk?1:0);html+=`<tr class="cal-date-row"><td colspan="${tot}">${formattaDataGruppo(dr)}</td></tr>`;}}
         const fmts=valutaFormatRulesAll(riga,config);const rowFmt=fmts.find(f=>f.target==='riga');const rowColor=rowFmt?rowFmt.colore:null;
         const trClick=!_selezioneAttiva&&config.puoModificare?`onclick="apriFormByIdx(${rowIdx})"` :'';
@@ -715,7 +747,11 @@ function renderTabella(){
             const cb=isV?'':(coloriCol[c]||'');
             const cellFmt=fmts.find(f=>f.target==='cella'&&String(f.colonna||'').trim().toLowerCase()===c.trim().toLowerCase());
             let cellStyle='';
-            if(cellFmt)cellStyle=`color:${cellFmt.colore};font-weight:700;${cb?`background:color-mix(in srgb,${cb} 25%,white 75%);`:''}`;
+            
+            const dynColor=getDynColorSat(c,allData);
+            
+            if(dynColor)cellStyle=`color:${dynColor};font-weight:700;${cb?`background:color-mix(in srgb,${cb} 25%,white 75%);`:''}`;
+            else if(cellFmt)cellStyle=`color:${cellFmt.colore};font-weight:700;${cb?`background:color-mix(in srgb,${cb} 25%,white 75%);`:''}`;
             else if(rowColor)cellStyle=`color:${rowColor};font-weight:600;${cb?`background:color-mix(in srgb,${cb} 25%,white 75%);`:''}`;
             else if(cb)cellStyle=`background:color-mix(in srgb,${cb} 12%,white 88%);`;
             if(isCal&&!isV){const calColor=getCalColorCell(c,riga[c]);if(calColor)cellStyle=`background:${calColor}20;color:${calColor};font-weight:600;border-radius:4px;`;}
@@ -727,7 +763,6 @@ function renderTabella(){
     html+='</tbody></table></div>';
     document.getElementById('tabella-container').innerHTML=html;
     aggiornaRigheStore();
-    // FIX: ripristina scroll CALENDARIO dopo reload
     if(isCal&&_calScrollTop>0){
         const ce=document.getElementById('content');
         if(ce)setTimeout(()=>{ce.scrollTop=_calScrollTop;},50);
@@ -767,11 +802,9 @@ function apriForm(rigaObj){
         const isRO=roSet.has(col);
         const safeId='input-'+col.replace(/[^a-zA-Z0-9]/g,'_');
         const dlCfg=(config.datalistConfig||[]).find(d=>d.colonna===col);
-        // FIX: controlla valori fissi (pulsanti)
         const vfCfg=(config.colonneValoriFissi||[]).find(d=>d.colonna===col);
 
         if(tipo==='text'||tipo===''){
-            // Valori fissi: pulsanti o dropdown
             if(vfCfg&&vfCfg.valori.length>0){
                 if(vfCfg.tipo==='dropdown'){
                     let sel=`<select id="${safeId}"${isRO?' disabled':''} style="width:100%;padding:6px 9px;border:1px solid var(--line);border-radius:var(--radius);font-size:13px;background:white;"><option value="">– Seleziona –</option>`;
@@ -782,7 +815,6 @@ function apriForm(rigaObj){
                     return`<div style="flex:1;"><div class="val-btn-group">${btns}</div><input type="hidden" id="${safeId}" value="${inputVal.replace(/"/g,'&quot;')}"></div>`;
                 }
             }
-            // Dropdown da foglio sorgente
             if(dlCfg){
                 const opzioni=getDatalistOpzioni(dlCfg);
                 if(inputVal&&!opzioni.includes(inputVal))opzioni.unshift(inputVal);
@@ -906,7 +938,6 @@ async function salvaImpostazioni(){
 }
 
 // ── VISTA CALENDARIO ORIZZONTALE ──────────────────────────────
-// FIX: usa nomi colonna dinamici dal foglio CALENDARIO reale
 function mostraVistaOrizzontale(preservaScroll){
     _vistaOrizzontale=true;
     document.getElementById('tabella-container').style.display='none';
@@ -916,7 +947,6 @@ function mostraVistaOrizzontale(preservaScroll){
     container.style.padding='0';
     if(typeof chiudiDrawer==='function')chiudiDrawer();
 
-    // Aggiorna sidebar attivo
     document.querySelectorAll('#sidebar button[data-foglio]').forEach(b=>b.classList.remove('active'));
     document.querySelector('#sidebar button[data-foglio="__CALE__"]')?.classList.add('active');
     document.getElementById('titolo-foglio').innerText='📅 Calendario';
@@ -924,30 +954,25 @@ function mostraVistaOrizzontale(preservaScroll){
     const foglio=DATABASE['CALENDARIO'];
     if(!foglio||!foglio.righe||!foglio.intestazioni){container.innerHTML='<div style="padding:20px;color:#888;">Foglio CALENDARIO non trovato o vuoto.</div>';return;}
 
-    // FIX: usa i nomi reali delle colonne
     const intst=foglio.intestazioni;
-    const COL_DATA=intst[0]||'DATA';   // prima colonna = data
-    const COL_ORA=intst[1]||'ORA';    // seconda colonna = orario
-    // Cerca dinamicamente le colonne tecnici e veicoli
+    const COL_DATA=intst[0]||'DATA';
+    const COL_ORA=intst[1]||'ORA';
     const TECNICI=['ANDREA','MATTEO','SARA'].filter(n=>intst.includes(n));
     const HAS_PANDA=intst.includes('PANDA');
     const HAS_CLIO=intst.includes('CLIO');
 
     if(!foglio.righe.length){container.innerHTML='<div style="padding:20px;color:#888;">Nessuna riga nel CALENDARIO.</div>';return;}
 
-    // Orari
     const orari=[];
     for(let h=8;h<=12;h++){for(let m=0;m<60;m+=10){orari.push(`${h<10?'0'+h:h}:${m===0?'00':m}`);if(h===12&&m===0)break;}}
     orari.push("13:50");
     for(let h=14;h<=18;h++){for(let m=0;m<60;m+=10){orari.push(`${h<10?'0'+h:h}:${m===0?'00':m}`);if(h===18&&m===10)break;}}
 
-    // FIX: costruisce mappa usando i nomi colonna reali
     const mappa={};const dateSet=new Set();
     foglio.righe.forEach(riga=>{
         const data=String(riga[COL_DATA]||'').trim();
         const oraRaw=String(riga[COL_ORA]||'').trim();
         if(!data||!oraRaw)return;
-        // Normalizza l'ora a HH:MM
         const oraMatch=oraRaw.match(/(\d{1,2}):(\d{2})/);
         if(!oraMatch)return;
         const ora=oraMatch[1].padStart(2,'0')+':'+oraMatch[2];
@@ -960,7 +985,6 @@ function mostraVistaOrizzontale(preservaScroll){
         mappa[data][ora]['_rowIndex']=riga._rowIndex;
     });
 
-    // Aggiorna righe store per poter usare apriFormByIdx
     aggiornaRigheStore();
 
     const dateTrovate=Array.from(dateSet).sort((a,b)=>{
@@ -970,8 +994,6 @@ function mostraVistaOrizzontale(preservaScroll){
     });
     const nomi=TECNICI.length>0?TECNICI:['ANDREA','MATTEO','SARA'];
 
-    // Precomputa il colore di ogni slot (per gestire "/" come continuazione)
-    // Struttura: colori[data][nome][ora] = cls
     const classeSlot={};
     dateTrovate.forEach(data=>{
         classeSlot[data]={};
@@ -1028,7 +1050,6 @@ function mostraVistaOrizzontale(preservaScroll){
             }
             html+=`<td class='sticky-left col-4 ${rigaBordoCls}'><div class="testo-unito" style="color:#555">${visualNome}</div></td>`;
 
-            // FIX: ogni slot è una cella separata con il proprio onclick → click su 9:30 apre la riga 9:30
             orari.forEach(ora=>{
                 const slot=classeSlot[data][nome][ora];
                 const isPausa=(ora==='12:00');
@@ -1036,7 +1057,6 @@ function mostraVistaOrizzontale(preservaScroll){
                 const rowIdx=mappa[data]?.[ora]?.['_rowIndex']||null;
                 const clickEvt=rowIdx?`onclick="apriFormByIdx(${rowIdx})"` :'';
                 if(slot.cls){
-                    // Cella colorata: prima del blocco ha testo, continuazioni no
                     const contStyle=slot.isCont?'border-left:none!important;':'';
                     html+=`<td class="${slot.cls} ${classiTd}" ${clickEvt} style="${contStyle}">`;
                     if(!slot.isCont)html+=`<div class="testo-unito">${slot.testo}</div>`;
