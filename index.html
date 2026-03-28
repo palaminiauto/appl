@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="it">
 <head>
     <meta charset="UTF-8">
@@ -20,12 +21,11 @@
             --fs:14px;
         }
         *,*::before,*::after{box-sizing:border-box;}
-        body{font-family:'Roboto',sans-serif;margin:0;background:var(--bg);height:100vh;overflow:hidden;font-size:var(--fs);color:var(--ink);-webkit-font-smoothing:antialiased;text-transform:uppercase;}
-        input, textarea, select { text-transform: uppercase; }
+        body{font-family:'Roboto',sans-serif;margin:0;background:var(--bg);height:100vh;overflow:hidden;font-size:var(--fs);color:var(--ink);-webkit-font-smoothing:antialiased;}
         #app-screen{display:flex;height:100vh;flex-direction:row;}
         #sidebar{width:var(--sidebar-w,160px);min-width:120px;max-width:220px;background:var(--sidebar);padding:8px 6px;overflow-y:auto;flex-shrink:0;display:flex;flex-direction:column;}
         #sidebar-logo{display:flex;align-items:center;justify-content:center;padding:8px 4px 12px;flex-shrink:0;min-height:50px;}
-        #sidebar-logo img{width:90%;max-width:110px;height:40px;object-fit:contain;filter:invert(1);mix-blend-mode:screen;opacity:0.9;display:block;-webkit-user-drag:none;}
+        #sidebar-logo img{width:90%;max-width:110px;height:40px;object-fit:contain;display:block;-webkit-user-drag:none;}
         #buttons-container{flex-grow:1;overflow-y:auto;display:flex;flex-direction:column;gap:1px;}
         #sidebar button{display:block;width:100%;padding:7px 10px;cursor:pointer;background:transparent;color:var(--sid-txt);border:none;text-align:left;border-radius:var(--radius);font-size:12px;font-weight:400;transition:background .12s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.4;font-family:'Roboto',sans-serif;}
         #sidebar button:hover{background:rgba(0,0,0,0.10);}
@@ -71,9 +71,6 @@
         .act-btn.quick{background:rgba(241,196,15,0.10);}
         .act-btn.quick:hover{background:#fff8e0;border-color:#f0d87a;opacity:1;}
         .cards-grid{display:flex;flex-direction:column;}
-        @media(min-width: 1024px) {
-            .cards-grid { display: grid !important; grid-template-columns: repeat(4, 1fr) !important; gap: 16px; align-items: start; }
-        }
         .card{background:var(--sheet);padding:13px 16px 10px;cursor:pointer;border-bottom:1px solid var(--line);transition:background .10s;}
         .card:hover{background:#f0f6ff;}
         .card.card-selected{background:#ddeaf5!important;border-left:3px solid var(--accent);}
@@ -87,8 +84,7 @@
         .kanban-board{display:grid;grid-template-columns:repeat(4,1fr);gap:0;overflow-y:auto;height:100%;background:var(--bg);}
         @media(max-width:900px){.kanban-board{display:flex;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;height:100%;}}
         .kanban-col{display:flex;flex-direction:column;background:var(--bg);border-right:1px solid var(--line);border-bottom:1px solid var(--line);min-width:0;}
-        @media(max-width:900px){.kanban-col{min-width:260px;flex-shrink:0;}}
-        .kanban-col-header{padding:11px 12px;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--ink-2);display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);}
+        @media(max-width:900px){.kanban-col{min-width:260px;flex-shrink:0;}}        .kanban-col-header{padding:11px 12px;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--ink-2);display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);}
         .kanban-col-count{font-size:11px;color:var(--ink-3);font-weight:500;}
         .kanban-col-body{flex:1;overflow-y:auto;display:flex;flex-direction:column;padding:6px;}
         .kanban-card{background:var(--sheet);border-radius:var(--radius);padding:11px 12px;box-shadow:var(--sh);cursor:pointer;transition:box-shadow .12s;margin-bottom:4px;}
@@ -197,7 +193,7 @@
 <body>
 <div id="drawer-overlay" onclick="chiudiDrawer()"></div>
 <div id="drawer">
-    <div style="padding:8px 4px 12px;text-align:center;"><img src="logo.png" alt="" style="max-width:100px;width:100%;filter:invert(1);mix-blend-mode:screen;opacity:0.85;" onerror="this.style.display='none'"></div>
+    <div style="padding:8px 4px 12px;text-align:center;"><img src="logo.png" alt="" style="max-width:100px;width:100%;filter:brightness(0) invert(1);opacity:0.85;" onerror="this.style.display='none'"></div>
     <div id="drawer-buttons"></div>
     <div id="drawer-footer">
         <button style="background:rgba(0,0,0,0.15);color:white;" onclick="apriOrdinamento();chiudiDrawer()">↕</button>
@@ -242,6 +238,8 @@
 </div>
 <div id="config-saving">💾 Salvataggio…</div>
 
+<!-- MODAL FORM -->
+
 <div id="modal-form" class="modal-overlay">
     <div class="modal-content">
         <h3 id="modal-title">Nuovo</h3>
@@ -252,6 +250,8 @@
         </div>
     </div>
 </div>
+
+<!-- MODAL SETTINGS -->
 
 <div id="modal-settings" class="modal-overlay">
     <div class="modal-content">
@@ -267,6 +267,7 @@
             </div>
         </div>
         <hr><div id="settings-colonne"></div>
+        <label class="checkbox-label" style="margin-top:6px;"><input type="checkbox" id="set-maiuscolo"> 🔤 Visualizza tutto in MAIUSCOLO (solo display)</label>
         <hr>
         <div>
             <label style="font-weight:700;font-size:14px;display:block;margin-bottom:6px;">🔒 Colonne Sola Lettura</label>
@@ -321,6 +322,7 @@
             </div>
             <div class="form-group"><label>Colonna di raggruppamento</label><select id="kanban-col-gruppo" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:var(--radius);"></select></div>
             <div class="form-group"><label>Ordine colonne kanban (una per riga)</label><textarea id="kanban-ordine" rows="4" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:var(--radius);font-size:13px;font-family:inherit;"></textarea></div>
+            <div class="form-group"><label>Etichette colonne kanban (VALORE = Etichetta leggibile, una per riga)</label><textarea id="kanban-etichette" rows="4" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:var(--radius);font-size:12px;font-family:monospace;resize:vertical;" placeholder="1 = 1) PREVENTIVI DA FARE&#10;2 = 2) DA AUTORIZZARE"></textarea></div>
         </div>
         <hr>
         <div><label style="font-weight:700;font-size:14px;display:block;margin-bottom:6px;">📅 Formato Data/Ora</label><div id="formati-colonne-list"></div></div>
@@ -414,6 +416,7 @@ function parseValoriFissi(testo){
     }).filter(Boolean);
 }
 function aggiornaLarghezzaSidebar(){
+    // Auto-larghezza basata sul nome più lungo
     const nomi=Array.from(document.querySelectorAll('#sidebar button')).map(b=>b.innerText);
     if(!nomi.length)return;
     const maxLen=Math.max(...nomi.map(n=>n.length));
@@ -445,62 +448,52 @@ function parsaDataPerSort(s){if(!s)return null;const str=String(s).trim();const 
 function isRigaVuota(r,cols){return cols.every(c=>!String(r[c]||'').trim());}
 function getTelefono(riga,config){const col=config.whatsappColonna||'';if(col&&riga[col]!==undefined)return String(riga[col]||'');for(const c of['CONTATTO TELEFONICO','TELEFONO','TEL','CELLULARE','CELL']){if(riga[c]!==undefined)return String(riga[c]||'');}return'';}
 
-function getDynColorStr(str) {
-    let h=0;for(let i=0;i<str.length;i++)h=str.charCodeAt(i)+((h<<5)-h);
-    return `hsl(${Math.abs(h)%360}, 75%, 40%)`;
-}
-function getDynColorSat(col, allData) {
-    if(String(col).toLowerCase() === 'data e ora sat') {
-        const sv = allData['Sort data'] || allData['SORT DATA'];
-        if(sv) return getDynColorStr(String(sv));
-    }
-    return null;
-}
-
 // ── FORMAT RULES ──────────────────────────────────────────────
 function valutaFormatRulesAll(riga,config){
+    // Calcola anche le colonne virtuali per usarle nelle regole
     const extra=calcolaVirtuali(riga,config);
     const allFields={...riga,...extra};
     const matched=[];
     for(const r of(config.formatRules||[])){
         if(!r.colonna||!r.colore)continue;
+        // Cerca il valore sia nelle colonne reali che in quelle virtuali
         const v=String(allFields[r.colonna]||'').trim();
         let match=false;
         switch(r.operatore){
-            case'uguale':
-                if(String(r.valore).includes('||')){
-                    match=String(r.valore).split('||').some(x=>v.toLowerCase()===x.trim().toLowerCase());
-                }else{match=v===r.valore;}
-                break;
-            case'non uguale':
-                if(String(r.valore).includes('||')){
-                    match=!String(r.valore).split('||').some(x=>v.toLowerCase()===x.trim().toLowerCase());
-                }else{match=v!==r.valore;}
-                break;
-            case'contiene':
-                if(String(r.valore).includes('||')){
-                    match=String(r.valore).split('||').some(x=>v.toLowerCase().includes(x.trim().toLowerCase()));
-                }else{match=v.toLowerCase().includes((r.valore||'').toLowerCase());}
-                break;
-            case'inizia con':
-                if(String(r.valore).includes('||')){
-                    match=String(r.valore).split('||').some(x=>v.toLowerCase().startsWith(x.trim().toLowerCase()));
-                }else{match=v.toLowerCase().startsWith((r.valore||'').toLowerCase());}
-                break;
+            case'uguale':match=v===r.valore;break;case'non uguale':match=v!==r.valore;break;
+            case'contiene':match=v.toLowerCase().includes((r.valore||'').toLowerCase());break;
+            case'inizia con':match=v.toLowerCase().startsWith((r.valore||'').toLowerCase());break;
             case'non vuoto':match=v!=='';break;case'vuoto':match=v==='';break;
             case'data > (dopo)':{const a=parsaData(v),b=parsaData(r.valore);match=a!=null&&b!=null&&a>b;break;}
             case'data < (prima)':{const a=parsaData(v),b=parsaData(r.valore);match=a!=null&&b!=null&&a<b;break;}
             case'entro X giorni':{const a=parsaDataPerSort(v);if(a!=null){const oggi=Date.now(),giorni=parseInt(r.valore)||7;match=a>=oggi&&a<=(oggi+giorni*86400000);}break;}
             case'scaduto da X giorni':{const a=parsaDataPerSort(v);if(a!=null){const oggi=Date.now(),giorni=parseInt(r.valore)||7;match=a<oggi&&a>=(oggi-giorni*86400000);}break;}
+            // FIX: "data passata" colora qualsiasi data già scaduta (senza limite di giorni)
             case'data passata':{const a=parsaDataPerSort(v);if(a!=null){match=a<Date.now();}break;}
             case'è oggi':{const a=parsaDataPerSort(v);if(a!=null){const d=new Date(a),o=new Date();match=d.getFullYear()===o.getFullYear()&&d.getMonth()===o.getMonth()&&d.getDate()===o.getDate();}break;}
         }
-        if(match)matched.push({colore:r.colore,target:r.target||'riga',colonna:r.colonna});
+        if(match)matched.push({colore:r.colore,target:r.target||'riga',colonna:r.colonna,colonna2:r.colonna2||''});
     }
     return matched;
 }
 function valutaFormatRules(riga,config){return valutaFormatRulesAll(riga,config)[0]||null;}
-function fieldColorAll(fieldName,fmts){if(!fmts||!fmts.length||!fieldName)return null;const fn=String(fieldName||'').trim().toLowerCase();for(const fmt of fmts){if(fmt.target==='cella'&&String(fmt.colonna||'').trim().toLowerCase()===fn)return fmt.colore;}for(const fmt of fmts){if(fmt.target==='riga')return fmt.colore;}return null;}
+function fieldColorAll(fieldName,fmts){
+    if(!fmts||!fmts.length||!fieldName)return null;
+    const fn=String(fieldName||'').trim().toLowerCase();
+    // Prima cerca regola cella specifica per questo campo (colonna o colonna2)
+    for(const fmt of fmts){
+        if(fmt.target==='cella'&&(String(fmt.colonna||'').trim().toLowerCase()===fn||String(fmt.colonna2||'').trim().toLowerCase()===fn))return fmt.colore;
+    }
+    // Poi colonna2 su riga intera
+    for(const fmt of fmts){
+        if(fmt.target==='riga'&&fmt.colonna2&&String(fmt.colonna2||'').trim().toLowerCase()===fn)return fmt.colore;
+    }
+    // Poi regola riga generica
+    for(const fmt of fmts){
+        if(fmt.target==='riga')return fmt.colore;
+    }
+    return null;
+}
 function fieldColor(fieldName,fmt){return fieldColorAll(fieldName,fmt?[fmt]:[]);}
 
 // ── CALENDARIO colori hardcoded ───────────────────────────────
@@ -517,6 +510,7 @@ function toggleSelezione(){_selezioneAttiva=!_selezioneAttiva;document.getElemen
 // ── SYNC ──────────────────────────────────────────────────────
 async function sincronizza(){
     const btn=document.getElementById('btn-sync');btn.innerText='…';
+    // FIX: salva posizione scroll CALENDARIO prima del reload
     if(FOGLIO_ATTIVO==='CALENDARIO'){
         const ce=document.getElementById('content');
         if(ce)_calScrollTop=ce.scrollTop;
@@ -534,7 +528,7 @@ async function sincronizza(){
             const primo=DATABASE['CALENDARIO']?'CALENDARIO':(APP_CONFIG._sheetOrder?.[0]||Object.keys(DATABASE)[0]);
             if(primo&&DATABASE[primo])caricaDati(primo);
         }else if(_vistaOrizzontale){
-            mostraVistaOrizzontale(true); 
+            mostraVistaOrizzontale(true); // reload preservando stato
         }else if(DATABASE[FOGLIO_ATTIVO]){
             caricaDati(FOGLIO_ATTIVO);
         }
@@ -558,6 +552,7 @@ function renderMenu(){
             b.onclick=()=>{caricaDati(nome);if(isD)chiudiDrawer();};
             if(nome===FOGLIO_ATTIVO&&!_vistaOrizzontale)b.classList.add('active');
             c.appendChild(b);
+            // Inserisci CALE-ORIZZ subito dopo CALENDARIO
             if(nome==='CALENDARIO'){
                 const bCale=document.createElement('button');
                 bCale.innerText='CALE-ORIZZ';
@@ -568,6 +563,7 @@ function renderMenu(){
             }
         });
     });
+    // Se CALENDARIO non è tra i fogli, aggiungi CALE-ORIZZ in fondo
     if(!ord.includes('CALENDARIO')){
         [[cont,false],[drw,true]].forEach(([c,isD])=>{
             const b=document.createElement('button');b.innerText='CALE-ORIZZ';b.setAttribute('data-foglio','__CALE__');
@@ -591,6 +587,7 @@ function caricaDati(nome){
     document.querySelectorAll('#sidebar button[data-foglio]').forEach(b=>b.classList.toggle('active',b.getAttribute('data-foglio')===nome));
     document.querySelector('#sidebar button[data-foglio="__CALE__"]')?.classList.remove('active');
     _selezioneAttiva=false;_selectedRows.clear();document.getElementById('btn-toggle-selezione').classList.remove('attivo');document.getElementById('multi-delete-bar').style.display='none';
+    // FIX: reset scroll solo se NON è il CALENDARIO che si ricarica da solo
     if(nome!=='CALENDARIO'){
         const contentEl=document.getElementById('content');if(contentEl)contentEl.scrollTop=0;
         const tabEl=document.getElementById('tabella-container');if(tabEl)tabEl.scrollTop=0;
@@ -604,6 +601,7 @@ function caricaDati(nome){
     document.getElementById('toolbar').style.display='flex';document.getElementById('search-input').value='';
     const sortSel=document.getElementById('sort-column');
     const colVirtNomi=(config.colonneVirtuali||[]).map(v=>v.nome);
+    // FIX: CALENDARIO — nascondi sort
     const isCal=(nome==='CALENDARIO');
     if(isCal){
         document.getElementById('sort-column').style.display='none';
@@ -624,7 +622,7 @@ function caricaDati(nome){
 }
 
 function convertiDataAssoluta(val){if(!val)return 0;const s=String(val);const iso=s.match(/^(\d{4})-(\d{2})-(\d{2})/);if(iso)return new Date(iso[1],iso[2]-1,iso[3]).getTime();const mesi={gennaio:0,febbraio:1,marzo:2,aprile:3,maggio:4,giugno:5,luglio:6,agosto:7,settembre:8,ottobre:9,novembre:10,dicembre:11};const pts=s.toLowerCase().split(' ');let mi=-1,g=1;for(let i=0;i<pts.length;i++){if(mesi[pts[i]]!==undefined){mi=mesi[pts[i]];g=parseInt(pts[i-1])||1;}}if(mi===-1)return 0;return new Date(new Date().getFullYear(),mi,g).getTime();}
-function formattaValoreCella(val){if(!val)return'';const s=String(val);const m=s.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);if(m)return`${m[3]}/${m[2]}/${m[1]} ${m[4]}:${m[5]}`;return s;}
+function formattaValoreCella(val,maiuscolo){if(!val)return'';const s=String(val);const m=s.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);const r=m?`${m[3]}/${m[2]}/${m[1]} ${m[4]}:${m[5]}`:s;return maiuscolo?r.toUpperCase():r;}
 function formattaOrario(val){if(!val)return'';const s=String(val);if(s.includes('T')&&s.includes('-')){const d=new Date(s);if(!isNaN(d))return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');}const m1=s.match(/1899[^\d]*(\d{1,2}):(\d{2})/);if(m1)return`${m1[1].padStart(2,'0')}:${m1[2]}`;const m2=s.match(/^(\d{1,2}):(\d{2})/);if(m2)return`${m2[1].padStart(2,'0')}:${m2[2]}`;return s;}
 function formattaDataGruppo(val){if(!val)return'';const s=String(val);const gg=["Domenica","Lunedì","Martedì","Mercoledì","Giovedì","Venerdì","Sabato"];const mm=["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];const iso=s.match(/^(\d{4})-(\d{2})-(\d{2})/);if(iso){const d=new Date(iso[1],iso[2]-1,iso[3]);return`${gg[d.getDay()]} ${d.getDate()} ${mm[d.getMonth()]}`;}return s.replace(/^\w/,c=>c.toUpperCase());}
 function cambiaOrdinamento(){if(_sortFixed)return;ORDINAMENTO.colonna=document.getElementById('sort-column').value||null;renderTabella();}
@@ -636,24 +634,21 @@ function apriWhatsApp(tel){if(!tel){alert('Nessun numero.');return;}window.open(
 // ── CARD ──────────────────────────────────────────────────────
 function renderCard(righe,config){
     const cc=config.cardConfig||{};if(!righe.length)return'<p style="padding:32px;color:var(--ink-3);">Nessuna riga trovata.</p>';
-    const hasWA=!!(config.whatsappAttivo),qa=config.quickAction||{};let h='<div class="cards-grid">';
+    const hasWA=!!(config.whatsappAttivo),qa=config.quickAction||{};
+    const maiuscolo=!!config.tuttoMaiuscolo;
+    let h='<div class="cards-grid">';
     righe.forEach(riga=>{
         const extra=calcolaVirtuali(riga,config),all={...riga,...extra};
         const fmts=valutaFormatRulesAll(riga,config);
-        const valData=cc.data?formattaValoreCella(all[cc.data]):'';const valBadge=cc.badge?formattaValoreCella(all[cc.badge]):'';
-        const cData=getDynColorSat(cc.data,all)||fieldColorAll(cc.data,fmts);
-        const cBadge=fieldColorAll(cc.badge,fmts);
+        const valData=cc.data?formattaValoreCella(all[cc.data],maiuscolo):'';const valBadge=cc.badge?formattaValoreCella(all[cc.badge],maiuscolo):'';
+        const cData=fieldColorAll(cc.data,fmts);const cBadge=fieldColorAll(cc.badge,fmts);
         const rowIdx=riga._rowIndex;const isSel=_selectedRows.has(rowIdx);
         const clickFn=_selezioneAttiva?`toggleCardSelection(${rowIdx},this.closest('.card'))`:`apriFormByIdx(${rowIdx})`;
         const tel=getTelefono(riga,config);
         h+=`<div class="card${isSel?' card-selected':''}" onclick="${clickFn}">
             <div class="card-top"><div class="card-label"${cData?` style="color:${cData};"`:''} >${valData}</div>${valBadge?`<div class="card-badge-right"${cBadge?` style="color:${cBadge};"`:''} >${valBadge}</div>`:''}</div>
             <div class="card-corpo">`;
-        const items=(cc.corpo||[]).map(col=>{
-            const v=formattaValoreCella(all[col]);if(!v)return null;
-            const fc=getDynColorSat(col,all)||fieldColorAll(col,fmts);
-            return`<span${fc?` style="color:${fc};font-weight:600;"`:''} >${v}</span>`;
-        }).filter(Boolean);
+        const items=(cc.corpo||[]).map(col=>{const v=formattaValoreCella(all[col],maiuscolo);if(!v)return null;const fc=fieldColorAll(col,fmts);return`<span${fc?` style="color:${fc};font-weight:600;"`:''} >${v}</span>`;}).filter(Boolean);
         h+=items.join('<span style="color:var(--ink-3);margin:0 4px;font-weight:400;">—</span>');
         h+=`</div>`;
         if(!_selezioneAttiva&&(config.puoModificare||config.puoEliminare||hasWA||(qa.attiva&&qa.colonna))){
@@ -673,33 +668,41 @@ function toggleCardSelection(rowIndex,el){if(_selectedRows.has(rowIndex)){_selec
 // ── KANBAN ────────────────────────────────────────────────────
 function renderKanban(righe,config){
     const cc=config.cardConfig||{},cg=config.kanbanGruppo,ord=config.kanbanOrdine||[];
+    const etichette=config.kanbanEtichette||{};
+    const maiuscolo=!!config.tuttoMaiuscolo;
     if(!righe.length)return'<p style="padding:32px;color:var(--ink-3);">Nessuna riga trovata.</p>';
     const gruppi={},trovati=new Set();
     righe.forEach(r=>{const g=String(r[cg]||'—');if(!gruppi[g])gruppi[g]=[];gruppi[g].push(r);trovati.add(g);});
     const ordinati=[...ord.filter(g=>trovati.has(g)),...Array.from(trovati).filter(g=>!ord.includes(g))];
     const hasWA=!!(config.whatsappAttivo),qa=config.quickAction||{};
-    let h=`<div class="kanban-wrapper"><div class="kanban-nav"><button onclick="kanbanScroll(-1)">◀</button><button onclick="kanbanScroll(1)">▶</button><span class="kanban-nav-label" id="kanban-pos"></span></div><div class="kanban-board" id="kanban-board-el" onscroll="aggiornaKanbanPos()">`;
+    let h=`<div class="kanban-wrapper"><div class="kanban-board" id="kanban-board-el">`;
     ordinati.forEach(g=>{
-        h+=`<div class="kanban-col"><div class="kanban-col-header"><span>${g}</span><span class="kanban-col-count">${gruppi[g].length}</span></div><div class="kanban-col-body">`;
+        const etichetta=etichette[g]||g;
+        h+=`<div class="kanban-col"><div class="kanban-col-header"><span>${maiuscolo?etichetta.toUpperCase():etichetta}</span><span class="kanban-col-count">${gruppi[g].length}</span></div><div class="kanban-col-body">`;
         gruppi[g].forEach(riga=>{
             const extra=calcolaVirtuali(riga,config),all={...riga,...extra};
             const fmts=valutaFormatRulesAll(riga,config);const rowIdx=riga._rowIndex;const isSel=_selectedRows.has(rowIdx);
             const clickFn=_selezioneAttiva?`toggleCardSelection(${rowIdx},this.closest('.kanban-card'))`:`apriFormByIdx(${rowIdx})`;
-            const cLabel=getDynColorSat(cc.data,all)||fieldColorAll(cc.data,fmts);
-            const tel=getTelefono(riga,config);
-            h+=`<div class="kanban-card${isSel?' card-selected':''}" onclick="${clickFn}"><div class="kanban-card-label"${cLabel?` style="color:${cLabel};"`:''} >${cc.data?formattaValoreCella(all[cc.data]):''}</div><div>`;
-            (cc.corpo||[]).forEach(col=>{
-                const v=formattaValoreCella(all[col]);if(!v)return;
-                const fc=getDynColorSat(col,all)||fieldColorAll(col,fmts);
-                h+=`<div class="kanban-card-body-line"${fc?` style="color:${fc};font-weight:600;"`:''} ><span style="font-size:0.85em;color:var(--ink-3);font-weight:500;">${col}:</span> <span style="font-weight:bold;color:var(--ink);">${v}</span></div>`;
-            });
-            h+=`</div>`;const vb=cc.badge?formattaValoreCella(all[cc.badge]):'';if(vb){const fc=fieldColorAll(cc.badge,fmts);h+=`<div class="kanban-card-meta"${fc?` style="color:${fc};"`:''} >${vb}</div>`;}
-            if(!_selezioneAttiva&&(config.puoModificare||config.puoEliminare||hasWA||(qa.attiva&&qa.colonna))){h+=`<div class="kanban-card-actions" onclick="event.stopPropagation()">${hasWA&&tel?`<button class="act-btn wa" onclick="apriWhatsApp('${String(tel).replace(/'/g,'&#39;')}')" title="WhatsApp">💬</button>`:''}${qa.attiva&&qa.colonna?`<button class="act-btn quick" onclick="eseguiAzioneRapida(${rowIdx})" title="${qa.valore}">${qa.emoji||'⚡'}</button>`:''}${config.puoModificare?`<button class="act-btn edit" onclick="apriFormByIdx(${rowIdx})">✏️</button>`:''}${config.puoEliminare?`<button class="act-btn del" onclick="eliminaRiga(${rowIdx})">🗑️</button>`:''};</div>`;}
+            const cLabel=fieldColorAll(cc.data,fmts);const tel=getTelefono(riga,config);
+            h+=`<div class="kanban-card${isSel?' card-selected':''}" onclick="${clickFn}">`;
+            h+=`<div class="kanban-card-label"${cLabel?` style="color:${cLabel};"`:''} >${cc.data?formattaValoreCella(all[cc.data],maiuscolo):''}</div><div>`;
+            (cc.corpo||[]).forEach(col=>{const v=formattaValoreCella(all[col],maiuscolo);if(!v)return;const fc=fieldColorAll(col,fmts);h+=`<div class="kanban-card-body-line"${fc?` style="color:${fc};font-weight:600;"`:''} >${v}</div>`;});
+            h+=`</div>`;
+            const vb=cc.badge?formattaValoreCella(all[cc.badge],maiuscolo):'';
+            if(vb){const fc=fieldColorAll(cc.badge,fmts);h+=`<div class="kanban-card-meta"${fc?` style="color:${fc};"`:''} >${vb}</div>`;}
+            if(!_selezioneAttiva&&(config.puoModificare||config.puoEliminare||hasWA||(qa.attiva&&qa.colonna))){
+                h+=`<div class="kanban-card-actions" onclick="event.stopPropagation()">`;
+                if(hasWA&&tel)h+=`<button class="act-btn wa" onclick="apriWhatsApp('${String(tel).replace(/'/g,'&#39;')}')" title="WhatsApp">💬</button>`;
+                if(qa.attiva&&qa.colonna)h+=`<button class="act-btn quick" onclick="eseguiAzioneRapida(${rowIdx})" title="${qa.valore}">${qa.emoji||'⚡'}</button>`;
+                if(config.puoModificare)h+=`<button class="act-btn edit" onclick="apriFormByIdx(${rowIdx})">✏️</button>`;
+                if(config.puoEliminare)h+=`<button class="act-btn del" onclick="eliminaRiga(${rowIdx})">🗑️</button>`;
+                h+=`</div>`;
+            }
             h+=`</div>`;
         });
         h+=`</div></div>`;
     });
-    return h+'</div></div></div>';
+    return h+'</div></div>';
 }
 function kanbanScroll(dir){const el=document.getElementById('kanban-board-el');if(!el)return;el.scrollLeft+=dir*280;setTimeout(aggiornaKanbanPos,200);}
 function aggiornaKanbanPos(){const el=document.getElementById('kanban-board-el'),lbl=document.getElementById('kanban-pos');if(!el||!lbl)return;const cols=el.querySelectorAll('.kanban-col'),w=el.clientWidth,visibili=Math.round(w/280);lbl.innerText=cols.length?`${Math.min(visibili,cols.length)} / ${cols.length} colonne`:'';}
@@ -735,7 +738,6 @@ function renderTabella(){
     html+='</tr></thead><tbody>';let ultData=null;
     righe.forEach(riga=>{
         const extra=calcolaVirtuali(riga,config);const rowIdx=riga._rowIndex;
-        const allData={...riga,...extra};
         if(isCal){const dr=String(riga[C0]||'');if(dr!==ultData){ultData=dr;const tot=colTabAll.length+(haAct?1:0)+(isCal?1:0)+(mostraChk?1:0);html+=`<tr class="cal-date-row"><td colspan="${tot}">${formattaDataGruppo(dr)}</td></tr>`;}}
         const fmts=valutaFormatRulesAll(riga,config);const rowFmt=fmts.find(f=>f.target==='riga');const rowColor=rowFmt?rowFmt.colore:null;
         const trClick=!_selezioneAttiva&&config.puoModificare?`onclick="apriFormByIdx(${rowIdx})"` :'';
@@ -743,15 +745,11 @@ function renderTabella(){
         if(mostraChk)html+=`<td class="sel-td" onclick="event.stopPropagation()"><input type="checkbox" class="row-chk" data-idx="${rowIdx}"></td>`;
         if(isCal)html+=`<td class="cal-orario"${rowColor?` style="color:${rowColor};"`:''} >${formattaOrario(riga[C1])}</td>`;
         colTabAll.forEach(c=>{
-            const isV=colVirtNomi.includes(c);const valRaw=isV?(extra[c]||''):riga[c];const val=formattaValoreCella(valRaw);
+            const isV=colVirtNomi.includes(c);const valRaw=isV?(extra[c]||''):riga[c];const val=formattaValoreCella(valRaw,config.tuttoMaiuscolo);
             const cb=isV?'':(coloriCol[c]||'');
             const cellFmt=fmts.find(f=>f.target==='cella'&&String(f.colonna||'').trim().toLowerCase()===c.trim().toLowerCase());
             let cellStyle='';
-            
-            const dynColor=getDynColorSat(c,allData);
-            
-            if(dynColor)cellStyle=`color:${dynColor};font-weight:700;${cb?`background:color-mix(in srgb,${cb} 25%,white 75%);`:''}`;
-            else if(cellFmt)cellStyle=`color:${cellFmt.colore};font-weight:700;${cb?`background:color-mix(in srgb,${cb} 25%,white 75%);`:''}`;
+            if(cellFmt)cellStyle=`color:${cellFmt.colore};font-weight:700;${cb?`background:color-mix(in srgb,${cb} 25%,white 75%);`:''}`;
             else if(rowColor)cellStyle=`color:${rowColor};font-weight:600;${cb?`background:color-mix(in srgb,${cb} 25%,white 75%);`:''}`;
             else if(cb)cellStyle=`background:color-mix(in srgb,${cb} 12%,white 88%);`;
             if(isCal&&!isV){const calColor=getCalColorCell(c,riga[c]);if(calColor)cellStyle=`background:${calColor}20;color:${calColor};font-weight:600;border-radius:4px;`;}
@@ -763,6 +761,7 @@ function renderTabella(){
     html+='</tbody></table></div>';
     document.getElementById('tabella-container').innerHTML=html;
     aggiornaRigheStore();
+    // FIX: ripristina scroll CALENDARIO dopo reload
     if(isCal&&_calScrollTop>0){
         const ce=document.getElementById('content');
         if(ce)setTimeout(()=>{ce.scrollTop=_calScrollTop;},50);
@@ -802,9 +801,11 @@ function apriForm(rigaObj){
         const isRO=roSet.has(col);
         const safeId='input-'+col.replace(/[^a-zA-Z0-9]/g,'_');
         const dlCfg=(config.datalistConfig||[]).find(d=>d.colonna===col);
+        // FIX: controlla valori fissi (pulsanti)
         const vfCfg=(config.colonneValoriFissi||[]).find(d=>d.colonna===col);
 
         if(tipo==='text'||tipo===''){
+            // Valori fissi: pulsanti o dropdown
             if(vfCfg&&vfCfg.valori.length>0){
                 if(vfCfg.tipo==='dropdown'){
                     let sel=`<select id="${safeId}"${isRO?' disabled':''} style="width:100%;padding:6px 9px;border:1px solid var(--line);border-radius:var(--radius);font-size:13px;background:white;"><option value="">– Seleziona –</option>`;
@@ -815,6 +816,7 @@ function apriForm(rigaObj){
                     return`<div style="flex:1;"><div class="val-btn-group">${btns}</div><input type="hidden" id="${safeId}" value="${inputVal.replace(/"/g,'&quot;')}"></div>`;
                 }
             }
+            // Dropdown da foglio sorgente
             if(dlCfg){
                 const opzioni=getDatalistOpzioni(dlCfg);
                 if(inputVal&&!opzioni.includes(inputVal))opzioni.unshift(inputVal);
@@ -824,252 +826,297 @@ function apriForm(rigaObj){
             }
             const r=Math.max(1,Math.ceil(inputVal.length/50));
             return`<textarea id="${safeId}" rows="${Math.min(r,6)}"${isRO?' disabled':''} oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'" style="height:auto;width:100%;${r>1?'min-height:'+(r*22+12)+'px;':''}">${inputVal.replace(/</g,'&lt;')}</textarea>`;
-        }
-        if(tipo==='date'||tipo==='datetime-local'){
-            let converted='';
-            const mIt=inputVal.match(/^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}))?/);
-            if(mIt)converted=tipo==='date'?`${mIt[3]}-${mIt[2]}-${mIt[1]}`:`${mIt[3]}-${mIt[2]}-${mIt[1]}T${mIt[4]||'00'}:${mIt[5]||'00'}`;
-            if(!converted){const mIso=inputVal.match(/^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2}))?/);if(mIso){const dd=tipo==='date'?`${mIso[1]}-${mIso[2]}-${mIso[3]}`:`${mIso[1]}-${mIso[2]}-${mIso[3]}T${mIso[4]||'00'}:${mIso[5]||'00'}`;converted=dd;}}
-            if(converted)inputVal=converted;
-            return`<input type="${tipo}" id="${safeId}" value="${inputVal.replace(/"/g,'&quot;')}"${isRO?' disabled':''} title="${val?'Originale: '+val:''}" placeholder="${val||''}">`;
-        }
-        if(tipo==='time'){const mt=inputVal.match(/(\d{2}:\d{2})/);if(mt)inputVal=mt[1];return`<input type="time" id="${safeId}" value="${inputVal}"${isRO?' disabled':''}>`;}
-        return`<input type="${tipo}" id="${safeId}" value="${inputVal.replace(/"/g,'&quot;')}"${isRO?' disabled':''}>`;
-    }
-    function fieldRow(col){return`<div class="form-field-row"><label>${col}${roSet.has(col)?' 🔒':''}</label>${buildInput(col)}</div>`;}
 
-    if(isCal){
-        const C1col=intst[1];const TECNICI=['ANDREA','MATTEO','SARA'];const VEICOLI=['CLIO','PANDA'];const usati=new Set();
-        if(cols.includes(C1col)){cont.innerHTML+=fieldRow(C1col);usati.add(C1col);}
-        const tecFound=TECNICI.filter(c=>cols.includes(c));
-        if(tecFound.length){cont.innerHTML+=`<div class="form-field-row" style="grid-column:1/-1;flex-wrap:wrap;"><label style="width:100%;min-width:unset;max-width:unset;padding-top:0;margin-bottom:4px;">Tecnici</label><div style="display:flex;gap:8px;flex:1;flex-wrap:wrap;">${tecFound.map(col=>`<div style="flex:1;min-width:100px;"><label style="display:block;font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px;">${col}</label>${buildInput(col)}</div>`).join('')}</div></div>`;tecFound.forEach(c=>usati.add(c));}
-        const veiFound=VEICOLI.filter(c=>cols.includes(c));
-        if(veiFound.length){cont.innerHTML+=`<div class="form-field-row" style="grid-column:1/-1;flex-wrap:wrap;"><label style="width:100%;min-width:unset;max-width:unset;padding-top:0;margin-bottom:4px;">Veicoli</label><div style="display:flex;gap:8px;flex:1;flex-wrap:wrap;">${veiFound.map(col=>`<div style="flex:1;min-width:120px;"><label style="display:block;font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px;">${col}</label>${buildInput(col)}</div>`).join('')}</div></div>`;veiFound.forEach(c=>usati.add(c));}
-        cols.filter(c=>!usati.has(c)).forEach(col=>{cont.innerHTML+=fieldRow(col);});
-    }else{
-        cols.forEach(col=>{cont.innerHTML+=fieldRow(col);});
+```
     }
-    document.getElementById('modal-form').style.display='flex';
-    setTimeout(()=>document.querySelectorAll('#modal-form-fields textarea').forEach(t=>{t.style.height='auto';t.style.height=t.scrollHeight+'px';}),0);
+    if(tipo==='date'||tipo==='datetime-local'){
+        let converted='';
+        const mIt=inputVal.match(/^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}))?/);
+        if(mIt)converted=tipo==='date'?`${mIt[3]}-${mIt[2]}-${mIt[1]}`:`${mIt[3]}-${mIt[2]}-${mIt[1]}T${mIt[4]||'00'}:${mIt[5]||'00'}`;
+        if(!converted){const mIso=inputVal.match(/^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2}))?/);if(mIso){const dd=tipo==='date'?`${mIso[1]}-${mIso[2]}-${mIso[3]}`:`${mIso[1]}-${mIso[2]}-${mIso[3]}T${mIso[4]||'00'}:${mIso[5]||'00'}`;converted=dd;}}
+        if(converted)inputVal=converted;
+        return`<input type="${tipo}" id="${safeId}" value="${inputVal.replace(/"/g,'&quot;')}"${isRO?' disabled':''} title="${val?'Originale: '+val:''}" placeholder="${val||''}">`;
+    }
+    if(tipo==='time'){const mt=inputVal.match(/(\d{2}:\d{2})/);if(mt)inputVal=mt[1];return`<input type="time" id="${safeId}" value="${inputVal}"${isRO?' disabled':''}>`;}
+    return`<input type="${tipo}" id="${safeId}" value="${inputVal.replace(/"/g,'&quot;')}"${isRO?' disabled':''}>`;
+}
+function fieldRow(col){return`<div class="form-field-row"><label>${col}${roSet.has(col)?' 🔒':''}</label>${buildInput(col)}</div>`;}
+
+if(isCal){
+    const C1col=intst[1];const TECNICI=['ANDREA','MATTEO','SARA'];const VEICOLI=['CLIO','PANDA'];const usati=new Set();
+    if(cols.includes(C1col)){cont.innerHTML+=fieldRow(C1col);usati.add(C1col);}
+    const tecFound=TECNICI.filter(c=>cols.includes(c));
+    if(tecFound.length){cont.innerHTML+=`<div class="form-field-row" style="grid-column:1/-1;flex-wrap:wrap;"><label style="width:100%;min-width:unset;max-width:unset;padding-top:0;margin-bottom:4px;">Tecnici</label><div style="display:flex;gap:8px;flex:1;flex-wrap:wrap;">${tecFound.map(col=>`<div style="flex:1;min-width:100px;"><label style="display:block;font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px;">${col}</label>${buildInput(col)}</div>`).join('')}</div></div>`;tecFound.forEach(c=>usati.add(c));}
+    const veiFound=VEICOLI.filter(c=>cols.includes(c));
+    if(veiFound.length){cont.innerHTML+=`<div class="form-field-row" style="grid-column:1/-1;flex-wrap:wrap;"><label style="width:100%;min-width:unset;max-width:unset;padding-top:0;margin-bottom:4px;">Veicoli</label><div style="display:flex;gap:8px;flex:1;flex-wrap:wrap;">${veiFound.map(col=>`<div style="flex:1;min-width:120px;"><label style="display:block;font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px;">${col}</label>${buildInput(col)}</div>`).join('')}</div></div>`;veiFound.forEach(c=>usati.add(c));}
+    cols.filter(c=>!usati.has(c)).forEach(col=>{cont.innerHTML+=fieldRow(col);});
+}else{
+    cols.forEach(col=>{cont.innerHTML+=fieldRow(col);});
+}
+document.getElementById('modal-form').style.display='flex';
+setTimeout(()=>document.querySelectorAll('#modal-form-fields textarea').forEach(t=>{t.style.height='auto';t.style.height=t.scrollHeight+'px';}),0);
+```
+
 }
 
 async function salvaDati(){
-    const intst=DATABASE[FOGLIO_ATTIVO].intestazioni,config=APP_CONFIG[FOGLIO_ATTIVO]||{};
-    const roSet=new Set(config.colonneReadOnly||[]);
-    let cols=config.colonneVisibili&&config.colonneVisibili.length>0?intst.filter(h=>config.colonneVisibili.includes(h)):intst;
-    const btn=document.getElementById('btn-save-modal');btn.innerText='…';btn.disabled=true;
-    function getInputVal(col){const id='input-'+col.replace(/[^a-zA-Z0-9]/g,'_');const el=document.getElementById(id);return el?el.value:'';}
-    try{
-        const rigaId=RIGA_ORIGINALE_IN_MODIFICA?._rowIndex??null;
-        if(rigaId){for(const col of cols){if(roSet.has(col))continue;const ci=intst.indexOf(col);if(ci<0)continue;await GS.updateCell(FOGLIO_ATTIVO,rigaId,ci,getInputVal(col));}}
-        else{const payload={};intst.forEach(col=>{if(roSet.has(col)&&RIGA_ORIGINALE_IN_MODIFICA){payload[col]=RIGA_ORIGINALE_IN_MODIFICA[col]||'';}else{payload[col]=cols.includes(col)?getInputVal(col):(RIGA_ORIGINALE_IN_MODIFICA?RIGA_ORIGINALE_IN_MODIFICA[col]||'':'');}});await GS.append(FOGLIO_ATTIVO,payload,intst);}
-        chiudiModal('modal-form');sincronizza();
-    }catch(e){alert('Errore: '+e.message);}
-    finally{btn.innerText='Salva';btn.disabled=false;}
+const intst=DATABASE[FOGLIO_ATTIVO].intestazioni,config=APP_CONFIG[FOGLIO_ATTIVO]||{};
+const roSet=new Set(config.colonneReadOnly||[]);
+let cols=config.colonneVisibili&&config.colonneVisibili.length>0?intst.filter(h=>config.colonneVisibili.includes(h)):intst;
+const btn=document.getElementById(‘btn-save-modal’);btn.innerText=’…’;btn.disabled=true;
+function getInputVal(col){const id=‘input-’+col.replace(/[^a-zA-Z0-9]/g,’_’);const el=document.getElementById(id);return el?el.value:’’;}
+try{
+const rigaId=RIGA_ORIGINALE_IN_MODIFICA?._rowIndex??null;
+if(rigaId){for(const col of cols){if(roSet.has(col))continue;const ci=intst.indexOf(col);if(ci<0)continue;await GS.updateCell(FOGLIO_ATTIVO,rigaId,ci,getInputVal(col));}}
+else{const payload={};intst.forEach(col=>{if(roSet.has(col)&&RIGA_ORIGINALE_IN_MODIFICA){payload[col]=RIGA_ORIGINALE_IN_MODIFICA[col]||’’;}else{payload[col]=cols.includes(col)?getInputVal(col):(RIGA_ORIGINALE_IN_MODIFICA?RIGA_ORIGINALE_IN_MODIFICA[col]||’’:’’);}});await GS.append(FOGLIO_ATTIVO,payload,intst);}
+chiudiModal(‘modal-form’);sincronizza();
+}catch(e){alert(’Errore: ’+e.message);}
+finally{btn.innerText=‘Salva’;btn.disabled=false;}
 }
 
 // ── IMPOSTAZIONI ──────────────────────────────────────────────
 function apriImpostazioni(){
-    if(!FOGLIO_ATTIVO)return alert('Seleziona un foglio.');
-    const config=APP_CONFIG[FOGLIO_ATTIVO]||{},intst=DATABASE[FOGLIO_ATTIVO].intestazioni;
-    document.getElementById('settings-nome-foglio').innerText=FOGLIO_ATTIVO;
-    document.getElementById('set-display-name').value=config.displayName||'';
-    document.getElementById('set-add').checked=!!config.puoAggiungere;document.getElementById('set-edit').checked=!!config.puoModificare;document.getElementById('set-delete').checked=!!config.puoEliminare;
-    document.getElementById('set-sort-col').innerHTML=`<option value="">– Nessuno –</option>`+[...intst,...(config.colonneVirtuali||[]).map(v=>v.nome)].map(c=>`<option value="${c}" ${config.sortColonna===c?'selected':''}>${c}</option>`).join('');
-    document.getElementById('set-sort-dir').value=config.sortDirezione||1;
-    let cHtml=`<label style="font-weight:700;font-size:11px;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-3);display:block;margin-bottom:6px;">Colonne Visibili</label>`;
-    intst.forEach(c=>{cHtml+=`<label class="checkbox-label"><input type="checkbox" class="chk-colonna" value="${c}" ${config.colonneVisibili&&config.colonneVisibili.includes(c)?'checked':''}> ${c}</label>`;});
-    document.getElementById('settings-colonne').innerHTML=cHtml;
-    const roSet=new Set(config.colonneReadOnly||[]);
-    document.getElementById('settings-readonly').innerHTML=intst.map(c=>`<label class="checkbox-label"><input type="checkbox" class="chk-readonly" value="${c}" ${roSet.has(c)?'checked':''}> ${c}</label>`).join('');
-    document.getElementById('set-colonne-virtuali').value=(config.colonneVirtuali||[]).map(v=>`${v.nome} = ${v.formula}`).join('\n');
-    document.getElementById('set-valori-fissi').value=(config.colonneValoriFissi||[]).map(d=>`${d.colonna} = ${d.tipo&&d.tipo!=='pulsanti'?d.tipo+': ':''}${d.valori.join(' | ')}`).join('\n');
-    document.getElementById('set-datalist').value=(config.datalistConfig||[]).map(d=>`${d.colonna} → ${d.foglio}:${d.colonnaSorgente}`).join('\n');
-    document.getElementById('set-wa-attivo').checked=!!config.whatsappAttivo;
-    document.getElementById('set-wa-colonna').innerHTML=`<option value="">– Auto-detect –</option>`+intst.map(c=>`<option value="${c}" ${config.whatsappColonna===c?'selected':''}>${c}</option>`).join('');
-    const qa=config.quickAction||{};
-    document.getElementById('set-qa-attiva').checked=!!qa.attiva;
-    document.getElementById('set-qa-colonna').innerHTML=`<option value="">– Nessuna –</option>`+intst.map(c=>`<option value="${c}" ${qa.colonna===c?'selected':''}>${c}</option>`).join('');
-    document.getElementById('set-qa-valore').value=qa.valore||'';document.getElementById('set-qa-emoji').value=qa.emoji||'⚡';
-    const cc=config.cardConfig||{};
-    document.getElementById('set-card-attiva').checked=!!config.vistaCardAttiva;
-    const mkOpts=sel=>`<option value="">– Nessuna –</option>`+intst.map(c=>`<option value="${c}" ${sel===c?'selected':''}>${c}</option>`).join('');
-    document.getElementById('card-col-data').innerHTML=mkOpts(cc.data||'');document.getElementById('card-col-badge').innerHTML=mkOpts(cc.badge||'');
-    const tutteColCard=[...intst,...(config.colonneVirtuali||[]).map(v=>v.nome)];
-    document.getElementById('card-col-corpo-list').innerHTML=tutteColCard.map(c=>`<label class="checkbox-label"><input type="checkbox" class="chk-card-corpo" value="${c}" ${(cc.corpo||[]).includes(c)?'checked':''}> ${c}${!intst.includes(c)?' <em style="color:var(--ink-3);font-size:11px;">(virtuale)</em>':''}</label>`).join('');
-    document.getElementById('set-kanban-attiva').checked=!!config.vistaKanbanAttiva;
-    document.getElementById('kanban-col-gruppo').innerHTML=`<option value="">– Nessuna –</option>`+intst.map(c=>`<option value="${c}" ${config.kanbanGruppo===c?'selected':''}>${c}</option>`).join('');
-    document.getElementById('kanban-ordine').value=(config.kanbanOrdine||[]).join('\n');
-    const fmtCol=config.formatiColonne||{};
-    const tipi=[{v:'',l:'– Testo libero –'},{v:'date',l:'📅 Data'},{v:'datetime-local',l:'📅 Data e Ora'},{v:'time',l:'🕐 Orario'}];
-    document.getElementById('formati-colonne-list').innerHTML=intst.map(c=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><span style="flex:1;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${c}</span><select class="chk-col-format" data-col="${c}" style="width:150px;padding:5px;border:1px solid var(--line);border-radius:4px;font-size:12px;">${tipi.map(t=>`<option value="${t.v}" ${fmtCol[c]===t.v?'selected':''}>${t.l}</option>`).join('')}</select></div>`).join('');
-    const regole=config.formatRules||[];while(regole.length<5)regole.push({});
-    const ops=['uguale','non uguale','contiene','inizia con','non vuoto','vuoto','data > (dopo)','data < (prima)','entro X giorni','scaduto da X giorni','data passata','è oggi'];
-    document.getElementById('format-rules-list').innerHTML=regole.slice(0,5).map((r,i)=>`<div class="fmt-rule"><select class="fmt-col" data-i="${i}"><option value="">– –</option>${intst.map(c=>`<option value="${c}" ${r.colonna===c?'selected':''}>${c}</option>`).join('')}</select><select class="fmt-op" data-i="${i}">${ops.map(o=>`<option value="${o}" ${r.operatore===o?'selected':''}>${o}</option>`).join('')}</select><input type="text" class="fmt-val" data-i="${i}" value="${r.valore||''}" placeholder="valore"><input type="color" class="fmt-color" data-i="${i}" value="${r.colore||'#e74c3c'}"><select class="fmt-target" data-i="${i}" style="padding:4px;border:1px solid var(--line);border-radius:4px;font-size:11px;"><option value="riga" ${(r.target||'riga')==='riga'?'selected':''}>Riga intera</option><option value="cella" ${r.target==='cella'?'selected':''}>Solo cella</option></select></div>`).join('');
-    const coloriCol=config.coloriColonne||{};
-    document.getElementById('colori-colonne-list').innerHTML=intst.map(c=>`<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;"><input type="color" class="chk-col-color" data-col="${c}" value="${coloriCol[c]||'#ffffff'}" style="width:36px;height:26px;border:1px solid var(--line);border-radius:4px;"><span style="font-size:14px;">${c}</span></div>`).join('');
-    document.getElementById('modal-settings').style.display='flex';
+if(!FOGLIO_ATTIVO)return alert(‘Seleziona un foglio.’);
+const config=APP_CONFIG[FOGLIO_ATTIVO]||{},intst=DATABASE[FOGLIO_ATTIVO].intestazioni;
+document.getElementById(‘settings-nome-foglio’).innerText=FOGLIO_ATTIVO;
+document.getElementById(‘set-display-name’).value=config.displayName||’’;
+document.getElementById(‘set-add’).checked=!!config.puoAggiungere;document.getElementById(‘set-edit’).checked=!!config.puoModificare;document.getElementById(‘set-delete’).checked=!!config.puoEliminare;
+document.getElementById(‘set-sort-col’).innerHTML=`<option value="">– Nessuno –</option>`+[…intst,…(config.colonneVirtuali||[]).map(v=>v.nome)].map(c=>`<option value="${c}" ${config.sortColonna===c?'selected':''}>${c}</option>`).join(’’);
+document.getElementById(‘set-sort-dir’).value=config.sortDirezione||1;
+let cHtml=`<label style="font-weight:700;font-size:11px;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-3);display:block;margin-bottom:6px;">Colonne Visibili</label>`;
+intst.forEach(c=>{cHtml+=`<label class="checkbox-label"><input type="checkbox" class="chk-colonna" value="${c}" ${config.colonneVisibili&&config.colonneVisibili.includes(c)?'checked':''}> ${c}</label>`;});
+document.getElementById(‘settings-colonne’).innerHTML=cHtml;
+const roSet=new Set(config.colonneReadOnly||[]);
+document.getElementById(‘settings-readonly’).innerHTML=intst.map(c=>`<label class="checkbox-label"><input type="checkbox" class="chk-readonly" value="${c}" ${roSet.has(c)?'checked':''}> ${c}</label>`).join(’’);
+document.getElementById(‘set-colonne-virtuali’).value=(config.colonneVirtuali||[]).map(v=>`${v.nome} = ${v.formula}`).join(’\n’);
+document.getElementById(‘set-valori-fissi’).value=(config.colonneValoriFissi||[]).map(d=>`${d.colonna} = ${d.tipo&&d.tipo!=='pulsanti'?d.tipo+': ':''}${d.valori.join(' | ')}`).join(’\n’);
+document.getElementById(‘set-datalist’).value=(config.datalistConfig||[]).map(d=>`${d.colonna} → ${d.foglio}:${d.colonnaSorgente}`).join(’\n’);
+document.getElementById(‘set-wa-attivo’).checked=!!config.whatsappAttivo;
+document.getElementById(‘set-wa-colonna’).innerHTML=`<option value="">– Auto-detect –</option>`+intst.map(c=>`<option value="${c}" ${config.whatsappColonna===c?'selected':''}>${c}</option>`).join(’’);
+const qa=config.quickAction||{};
+document.getElementById(‘set-qa-attiva’).checked=!!qa.attiva;
+document.getElementById(‘set-qa-colonna’).innerHTML=`<option value="">– Nessuna –</option>`+intst.map(c=>`<option value="${c}" ${qa.colonna===c?'selected':''}>${c}</option>`).join(’’);
+document.getElementById(‘set-qa-valore’).value=qa.valore||’’;document.getElementById(‘set-qa-emoji’).value=qa.emoji||‘⚡’;
+const cc=config.cardConfig||{};
+document.getElementById(‘set-card-attiva’).checked=!!config.vistaCardAttiva;
+const mkOpts=sel=>`<option value="">– Nessuna –</option>`+intst.map(c=>`<option value="${c}" ${sel===c?'selected':''}>${c}</option>`).join(’’);
+document.getElementById(‘card-col-data’).innerHTML=mkOpts(cc.data||’’);document.getElementById(‘card-col-badge’).innerHTML=mkOpts(cc.badge||’’);
+const tutteColCard=[…intst,…(config.colonneVirtuali||[]).map(v=>v.nome)];
+document.getElementById(‘card-col-corpo-list’).innerHTML=tutteColCard.map(c=>`<label class="checkbox-label"><input type="checkbox" class="chk-card-corpo" value="${c}" ${(cc.corpo||[]).includes(c)?'checked':''}> ${c}${!intst.includes(c)?' <em style="color:var(--ink-3);font-size:11px;">(virtuale)</em>':''}</label>`).join(’’);
+document.getElementById(‘set-kanban-attiva’).checked=!!config.vistaKanbanAttiva;
+document.getElementById(‘kanban-col-gruppo’).innerHTML=`<option value="">– Nessuna –</option>`+intst.map(c=>`<option value="${c}" ${config.kanbanGruppo===c?'selected':''}>${c}</option>`).join(’’);
+document.getElementById(‘kanban-ordine’).value=(config.kanbanOrdine||[]).join(’\n’);
+document.getElementById(‘kanban-etichette’).value=Object.entries(config.kanbanEtichette||{}).map(([k,v])=>`${k} = ${v}`).join(’\n’);
+document.getElementById(‘set-maiuscolo’).checked=!!config.tuttoMaiuscolo;
+const fmtCol=config.formatiColonne||{};
+const tipi=[{v:’’,l:’– Testo libero –’},{v:‘date’,l:‘📅 Data’},{v:‘datetime-local’,l:‘📅 Data e Ora’},{v:‘time’,l:‘🕐 Orario’}];
+document.getElementById(‘formati-colonne-list’).innerHTML=intst.map(c=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><span style="flex:1;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${c}</span><select class="chk-col-format" data-col="${c}" style="width:150px;padding:5px;border:1px solid var(--line);border-radius:4px;font-size:12px;">${tipi.map(t=>`<option value=”${t.v}” ${fmtCol[c]===t.v?‘selected’:’’}>${t.l}</option>`).join('')}</select></div>`).join(’’);
+// Format rules: 8 regole, include colonne virtuali, aggiunto campo OR (colore2)
+const tutteColFmt=[…intst,…(config.colonneVirtuali||[]).map(v=>v.nome)];
+const regole=config.formatRules||[];while(regole.length<8)regole.push({});
+const ops=[‘uguale’,‘non uguale’,‘contiene’,‘inizia con’,‘non vuoto’,‘vuoto’,‘data > (dopo)’,‘data < (prima)’,‘entro X giorni’,‘scaduto da X giorni’,‘data passata’,‘è oggi’];
+document.getElementById(‘format-rules-list’).innerHTML=` <div style="display:grid;grid-template-columns:1fr 110px 1fr 46px 76px 110px;gap:4px;margin-bottom:4px;font-size:10px;color:var(--ink-3);font-weight:700;padding:0 2px;"> <span>Colonna</span><span>Operatore</span><span>Valore</span><span>Col.</span><span>Target</span><span>Colora anche →</span> </div>`+
+regole.slice(0,8).map((r,i)=>`<div class="fmt-rule" style="grid-template-columns:1fr 110px 1fr 46px 76px 110px;"> <select class="fmt-col" data-i="${i}"><option value="">– –</option>${tutteColFmt.map(c=>`<option value=”${c}” ${r.colonna===c?‘selected’:’’}>${c}</option>`).join('')}</select> <select class="fmt-op" data-i="${i}">${ops.map(o=>`<option value=”${o}” ${r.operatore===o?‘selected’:’’}>${o}</option>`).join('')}</select> <input type="text" class="fmt-val" data-i="${i}" value="${r.valore||''}" placeholder="valore"> <input type="color" class="fmt-color" data-i="${i}" value="${r.colore||'#e74c3c'}"> <select class="fmt-target" data-i="${i}" style="padding:4px;border:1px solid var(--line);border-radius:4px;font-size:11px;"><option value="riga" ${(r.target||'riga')==='riga'?'selected':''}>Riga intera</option><option value="cella" ${r.target==='cella'?'selected':''}>Solo cella</option></select> <select class="fmt-col2" data-i="${i}" style="padding:4px;border:1px solid var(--line);border-radius:4px;font-size:11px;"><option value="">– nessuna –</option>${tutteColFmt.map(c=>`<option value=”${c}” ${r.colonna2===c?‘selected’:’’}>${c}</option>`).join('')}</select> </div>`).join(’’);
+const coloriCol=config.coloriColonne||{};
+document.getElementById(‘colori-colonne-list’).innerHTML=intst.map(c=>`<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;"><input type="color" class="chk-col-color" data-col="${c}" value="${coloriCol[c]||'#ffffff'}" style="width:36px;height:26px;border:1px solid var(--line);border-radius:4px;"><span style="font-size:14px;">${c}</span></div>`).join(’’);
+document.getElementById(‘modal-settings’).style.display=‘flex’;
 }
 
 async function salvaImpostazioni(){
-    const btn=document.getElementById('btn-save-settings');btn.innerText='…';btn.disabled=true;
-    const formatRules=[];
-    for(let i=0;i<5;i++){const col=document.querySelector(`.fmt-col[data-i="${i}"]`)?.value||'';if(col)formatRules.push({colonna:col,operatore:document.querySelector(`.fmt-op[data-i="${i}"]`)?.value||'uguale',valore:document.querySelector(`.fmt-val[data-i="${i}"]`)?.value||'',colore:document.querySelector(`.fmt-color[data-i="${i}"]`)?.value||'#e74c3c',target:document.querySelector(`.fmt-target[data-i="${i}"]`)?.value||'riga'});}
-    const coloriColonne={};document.querySelectorAll('.chk-col-color').forEach(el=>{if(el.value&&el.value!=='#ffffff')coloriColonne[el.dataset.col]=el.value;});
-    const formatiColonne={};document.querySelectorAll('.chk-col-format').forEach(el=>{if(el.value)formatiColonne[el.dataset.col]=el.value;});
-    APP_CONFIG[FOGLIO_ATTIVO]={
-        displayName:document.getElementById('set-display-name').value,
-        puoAggiungere:document.getElementById('set-add').checked,puoModificare:document.getElementById('set-edit').checked,puoEliminare:document.getElementById('set-delete').checked,
-        sortColonna:document.getElementById('set-sort-col').value||null,sortDirezione:parseInt(document.getElementById('set-sort-dir').value)||1,
-        colonneVisibili:Array.from(document.querySelectorAll('.chk-colonna:checked')).map(c=>c.value),
-        colonneReadOnly:Array.from(document.querySelectorAll('.chk-readonly:checked')).map(c=>c.value),
-        colonneVirtuali:parseColonneVirtuali(document.getElementById('set-colonne-virtuali').value),
-        colonneValoriFissi:parseValoriFissi(document.getElementById('set-valori-fissi').value),
-        datalistConfig:parseDatalistConfig(document.getElementById('set-datalist').value),
-        whatsappAttivo:document.getElementById('set-wa-attivo').checked,whatsappColonna:document.getElementById('set-wa-colonna').value||null,
-        quickAction:{attiva:document.getElementById('set-qa-attiva').checked,colonna:document.getElementById('set-qa-colonna').value||null,valore:document.getElementById('set-qa-valore').value||'',emoji:document.getElementById('set-qa-emoji').value||'⚡'},
-        vistaCardAttiva:document.getElementById('set-card-attiva').checked,vistaKanbanAttiva:document.getElementById('set-kanban-attiva').checked,
-        kanbanGruppo:document.getElementById('kanban-col-gruppo').value||null,kanbanOrdine:(document.getElementById('kanban-ordine').value||'').split('\n').map(s=>s.trim()).filter(Boolean),
-        cardConfig:{data:document.getElementById('card-col-data').value||null,badge:document.getElementById('card-col-badge').value||null,corpo:Array.from(document.querySelectorAll('.chk-card-corpo:checked')).map(c=>c.value)},
-        formatRules,coloriColonne,formatiColonne
-    };
-    await salvaConfig();chiudiModal('modal-settings');renderMenu();caricaDati(FOGLIO_ATTIVO);
-    btn.innerText='Salva';btn.disabled=false;
+const btn=document.getElementById(‘btn-save-settings’);btn.innerText=’…’;btn.disabled=true;
+const formatRules=[];
+for(let i=0;i<8;i++){
+const col=document.querySelector(`.fmt-col[data-i="${i}"]`)?.value||’’;
+if(col)formatRules.push({
+colonna:col,
+operatore:document.querySelector(`.fmt-op[data-i="${i}"]`)?.value||‘uguale’,
+valore:document.querySelector(`.fmt-val[data-i="${i}"]`)?.value||’’,
+colore:document.querySelector(`.fmt-color[data-i="${i}"]`)?.value||’#e74c3c’,
+target:document.querySelector(`.fmt-target[data-i="${i}"]`)?.value||‘riga’,
+colonna2:document.querySelector(`.fmt-col2[data-i="${i}"]`)?.value||’’
+});
+}
+// Parsing etichette kanban: “VALORE = Etichetta”
+const kanbanEtichette={};
+(document.getElementById(‘kanban-etichette’).value||’’).split(’\n’).forEach(l=>{
+const eq=l.indexOf(’=’);if(eq<0)return;
+const k=l.slice(0,eq).trim(),v=l.slice(eq+1).trim();
+if(k)kanbanEtichette[k]=v;
+});
+const coloriColonne={};document.querySelectorAll(’.chk-col-color’).forEach(el=>{if(el.value&&el.value!==’#ffffff’)coloriColonne[el.dataset.col]=el.value;});
+const formatiColonne={};document.querySelectorAll(’.chk-col-format’).forEach(el=>{if(el.value)formatiColonne[el.dataset.col]=el.value;});
+APP_CONFIG[FOGLIO_ATTIVO]={
+displayName:document.getElementById(‘set-display-name’).value,
+puoAggiungere:document.getElementById(‘set-add’).checked,puoModificare:document.getElementById(‘set-edit’).checked,puoEliminare:document.getElementById(‘set-delete’).checked,
+sortColonna:document.getElementById(‘set-sort-col’).value||null,sortDirezione:parseInt(document.getElementById(‘set-sort-dir’).value)||1,
+tuttoMaiuscolo:document.getElementById(‘set-maiuscolo’).checked,
+colonneVisibili:Array.from(document.querySelectorAll(’.chk-colonna:checked’)).map(c=>c.value),
+colonneReadOnly:Array.from(document.querySelectorAll(’.chk-readonly:checked’)).map(c=>c.value),
+colonneVirtuali:parseColonneVirtuali(document.getElementById(‘set-colonne-virtuali’).value),
+colonneValoriFissi:parseValoriFissi(document.getElementById(‘set-valori-fissi’).value),
+datalistConfig:parseDatalistConfig(document.getElementById(‘set-datalist’).value),
+whatsappAttivo:document.getElementById(‘set-wa-attivo’).checked,whatsappColonna:document.getElementById(‘set-wa-colonna’).value||null,
+quickAction:{attiva:document.getElementById(‘set-qa-attiva’).checked,colonna:document.getElementById(‘set-qa-colonna’).value||null,valore:document.getElementById(‘set-qa-valore’).value||’’,emoji:document.getElementById(‘set-qa-emoji’).value||‘⚡’},
+vistaCardAttiva:document.getElementById(‘set-card-attiva’).checked,vistaKanbanAttiva:document.getElementById(‘set-kanban-attiva’).checked,
+kanbanGruppo:document.getElementById(‘kanban-col-gruppo’).value||null,
+kanbanOrdine:(document.getElementById(‘kanban-ordine’).value||’’).split(’\n’).map(s=>s.trim()).filter(Boolean),
+kanbanEtichette,
+cardConfig:{data:document.getElementById(‘card-col-data’).value||null,badge:document.getElementById(‘card-col-badge’).value||null,corpo:Array.from(document.querySelectorAll(’.chk-card-corpo:checked’)).map(c=>c.value)},
+formatRules,coloriColonne,formatiColonne
+};
+await salvaConfig();chiudiModal(‘modal-settings’);renderMenu();caricaDati(FOGLIO_ATTIVO);
+btn.innerText=‘Salva’;btn.disabled=false;
 }
 
 // ── VISTA CALENDARIO ORIZZONTALE ──────────────────────────────
+// FIX: usa nomi colonna dinamici dal foglio CALENDARIO reale
 function mostraVistaOrizzontale(preservaScroll){
-    _vistaOrizzontale=true;
-    document.getElementById('tabella-container').style.display='none';
-    document.getElementById('toolbar').style.display='none';
-    const container=document.getElementById('vista-orizzontale-container');
-    container.style.display='block';
-    container.style.padding='0';
-    if(typeof chiudiDrawer==='function')chiudiDrawer();
+_vistaOrizzontale=true;
+document.getElementById(‘tabella-container’).style.display=‘none’;
+document.getElementById(‘toolbar’).style.display=‘none’;
+const container=document.getElementById(‘vista-orizzontale-container’);
+container.style.display=‘block’;
+container.style.padding=‘0’;
+if(typeof chiudiDrawer===‘function’)chiudiDrawer();
 
-    document.querySelectorAll('#sidebar button[data-foglio]').forEach(b=>b.classList.remove('active'));
-    document.querySelector('#sidebar button[data-foglio="__CALE__"]')?.classList.add('active');
-    document.getElementById('titolo-foglio').innerText='📅 Calendario';
+```
+// Aggiorna sidebar attivo
+document.querySelectorAll('#sidebar button[data-foglio]').forEach(b=>b.classList.remove('active'));
+document.querySelector('#sidebar button[data-foglio="__CALE__"]')?.classList.add('active');
+document.getElementById('titolo-foglio').innerText='📅 Calendario';
 
-    const foglio=DATABASE['CALENDARIO'];
-    if(!foglio||!foglio.righe||!foglio.intestazioni){container.innerHTML='<div style="padding:20px;color:#888;">Foglio CALENDARIO non trovato o vuoto.</div>';return;}
+const foglio=DATABASE['CALENDARIO'];
+if(!foglio||!foglio.righe||!foglio.intestazioni){container.innerHTML='<div style="padding:20px;color:#888;">Foglio CALENDARIO non trovato o vuoto.</div>';return;}
 
-    const intst=foglio.intestazioni;
-    const COL_DATA=intst[0]||'DATA';
-    const COL_ORA=intst[1]||'ORA';
-    const TECNICI=['ANDREA','MATTEO','SARA'].filter(n=>intst.includes(n));
-    const HAS_PANDA=intst.includes('PANDA');
-    const HAS_CLIO=intst.includes('CLIO');
+// FIX: usa i nomi reali delle colonne
+const intst=foglio.intestazioni;
+const COL_DATA=intst[0]||'DATA';   // prima colonna = data
+const COL_ORA=intst[1]||'ORA';    // seconda colonna = orario
+// Cerca dinamicamente le colonne tecnici e veicoli
+const TECNICI=['ANDREA','MATTEO','SARA'].filter(n=>intst.includes(n));
+const HAS_PANDA=intst.includes('PANDA');
+const HAS_CLIO=intst.includes('CLIO');
 
-    if(!foglio.righe.length){container.innerHTML='<div style="padding:20px;color:#888;">Nessuna riga nel CALENDARIO.</div>';return;}
+if(!foglio.righe.length){container.innerHTML='<div style="padding:20px;color:#888;">Nessuna riga nel CALENDARIO.</div>';return;}
 
-    const orari=[];
-    for(let h=8;h<=12;h++){for(let m=0;m<60;m+=10){orari.push(`${h<10?'0'+h:h}:${m===0?'00':m}`);if(h===12&&m===0)break;}}
-    orari.push("13:50");
-    for(let h=14;h<=18;h++){for(let m=0;m<60;m+=10){orari.push(`${h<10?'0'+h:h}:${m===0?'00':m}`);if(h===18&&m===10)break;}}
+// Orari
+const orari=[];
+for(let h=8;h<=12;h++){for(let m=0;m<60;m+=10){orari.push(`${h<10?'0'+h:h}:${m===0?'00':m}`);if(h===12&&m===0)break;}}
+orari.push("13:50");
+for(let h=14;h<=18;h++){for(let m=0;m<60;m+=10){orari.push(`${h<10?'0'+h:h}:${m===0?'00':m}`);if(h===18&&m===10)break;}}
 
-    const mappa={};const dateSet=new Set();
-    foglio.righe.forEach(riga=>{
-        const data=String(riga[COL_DATA]||'').trim();
-        const oraRaw=String(riga[COL_ORA]||'').trim();
-        if(!data||!oraRaw)return;
-        const oraMatch=oraRaw.match(/(\d{1,2}):(\d{2})/);
-        if(!oraMatch)return;
-        const ora=oraMatch[1].padStart(2,'0')+':'+oraMatch[2];
-        dateSet.add(data);
-        if(!mappa[data])mappa[data]={};
-        if(!mappa[data][ora])mappa[data][ora]={};
-        TECNICI.forEach(t=>{mappa[data][ora][t]=String(riga[t]||'').trim();});
-        if(HAS_PANDA)mappa[data][ora]['PANDA']=String(riga['PANDA']||'').trim();
-        if(HAS_CLIO)mappa[data][ora]['CLIO']=String(riga['CLIO']||'').trim();
-        mappa[data][ora]['_rowIndex']=riga._rowIndex;
-    });
+// FIX: costruisce mappa usando i nomi colonna reali
+const mappa={};const dateSet=new Set();
+foglio.righe.forEach(riga=>{
+    const data=String(riga[COL_DATA]||'').trim();
+    const oraRaw=String(riga[COL_ORA]||'').trim();
+    if(!data||!oraRaw)return;
+    // Normalizza l'ora a HH:MM
+    const oraMatch=oraRaw.match(/(\d{1,2}):(\d{2})/);
+    if(!oraMatch)return;
+    const ora=oraMatch[1].padStart(2,'0')+':'+oraMatch[2];
+    dateSet.add(data);
+    if(!mappa[data])mappa[data]={};
+    if(!mappa[data][ora])mappa[data][ora]={};
+    TECNICI.forEach(t=>{mappa[data][ora][t]=String(riga[t]||'').trim();});
+    if(HAS_PANDA)mappa[data][ora]['PANDA']=String(riga['PANDA']||'').trim();
+    if(HAS_CLIO)mappa[data][ora]['CLIO']=String(riga['CLIO']||'').trim();
+    mappa[data][ora]['_rowIndex']=riga._rowIndex;
+});
 
-    aggiornaRigheStore();
+// Aggiorna righe store per poter usare apriFormByIdx
+aggiornaRigheStore();
 
-    const dateTrovate=Array.from(dateSet).sort((a,b)=>{
-        const tA=parsaDataPerSort(a)||convertiDataAssoluta(a);
-        const tB=parsaDataPerSort(b)||convertiDataAssoluta(b);
-        return tA-tB;
-    });
-    const nomi=TECNICI.length>0?TECNICI:['ANDREA','MATTEO','SARA'];
+const dateTrovate=Array.from(dateSet).sort((a,b)=>{
+    const tA=parsaDataPerSort(a)||convertiDataAssoluta(a);
+    const tB=parsaDataPerSort(b)||convertiDataAssoluta(b);
+    return tA-tB;
+});
+const nomi=TECNICI.length>0?TECNICI:['ANDREA','MATTEO','SARA'];
 
-    const classeSlot={};
-    dateTrovate.forEach(data=>{
-        classeSlot[data]={};
-        nomi.forEach(nome=>{
-            classeSlot[data][nome]={};
-            let clsCorrente='';
-            orari.forEach(ora=>{
-                const valRaw=(mappa[data]?.[ora]?.[nome]||'').trim();
-                if(valRaw&&valRaw!=='/'&&valRaw!=='.'){
-                    const tVal=valRaw.toUpperCase();
-                    clsCorrente='bg-generic';
-                    if(tVal.startsWith('MF'))clsCorrente='bg-mf-special';
-                    else if(tVal.startsWith('MP'))clsCorrente='bg-mp-special';
-                    else if(tVal==='PNM 1H'||tVal==='PNM 3H')clsCorrente='bg-pnm-special';
-                    else if(tVal.startsWith('ATT'))clsCorrente='bg-att';
-                    else if(tVal.startsWith('PNM'))clsCorrente='bg-pnm';
-                    else if(tVal.startsWith('SAT'))clsCorrente='bg-sat';
-                    else if(tVal.startsWith('M'))clsCorrente='bg-m';
-                    classeSlot[data][nome][ora]={cls:clsCorrente,testo:valRaw,isCont:false};
-                }else if(valRaw==='/'||valRaw==='.'){
-                    classeSlot[data][nome][ora]={cls:clsCorrente,testo:'',isCont:true};
-                }else{
-                    clsCorrente='';
-                    classeSlot[data][nome][ora]={cls:'',testo:'',isCont:false};
-                }
-            });
-        });
-    });
-
-    let html="<table class='cale-table'><thead><tr>";
-    html+=`<th class='sticky-left col-1'>${COL_DATA}</th>`;
-    if(HAS_PANDA)html+=`<th class='sticky-left col-2'>PANDA</th>`;
-    if(HAS_CLIO)html+=`<th class='sticky-left col-3'>CLIO</th>`;
-    html+=`<th class='sticky-left col-4'>TEC</th>`;
-    orari.forEach(ora=>{html+=`<th class='col-time ${ora==="12:00"?"bordo-pausa":""}'>${ora}</th>`;});
-    html+="</tr></thead><tbody>";
-
-    if(dateTrovate.length===0){
-        html+="<tr><td colspan='99' style='padding:20px;color:#888;text-align:center;'>Nessuna data trovata. Verifica i nomi delle colonne nel foglio CALENDARIO.</td></tr>";
-    }
-
-    dateTrovate.forEach(data=>{
-        const valPanda=HAS_PANDA?(mappa[data]?.["08:00"]?.['PANDA']||'').trim():'';
-        const valClio=HAS_CLIO?(mappa[data]?.["08:00"]?.['CLIO']||'').trim():'';
-        const rowIdxPandaClio=mappa[data]?.["08:00"]?.['_rowIndex']||null;
-        nomi.forEach((nome,index)=>{
-            const visualNome=nome==='ANDREA'?'A':nome==='MATTEO'?'M':'S';
-            const rigaBordoCls=nome===nomi[0]?'bordo-giorno-sup':nome===nomi[nomi.length-1]?'bordo-giorno-inf':'';
-            html+="<tr>";
-            if(index===0){
-                html+=`<td rowspan="${nomi.length}" class='sticky-left col-1 bordo-giorno-sup bordo-giorno-inf'><div class="testo-unito">${data}</div></td>`;
-                if(HAS_PANDA)html+=`<td rowspan="${nomi.length}" class='sticky-left col-2 bordo-giorno-sup bordo-giorno-inf ${valPanda&&valPanda!=='/'&&valPanda!=='.'?'bg-panda':''}' onclick="if(${rowIdxPandaClio})apriFormByIdx(${rowIdxPandaClio})"><div class="testo-unito">${valPanda==='/'||valPanda==='.'?'':valPanda}</div></td>`;
-                if(HAS_CLIO)html+=`<td rowspan="${nomi.length}" class='sticky-left col-3 bordo-giorno-sup bordo-giorno-inf ${valClio&&valClio!=='/'&&valClio!=='.'?'bg-clio':''}' onclick="if(${rowIdxPandaClio})apriFormByIdx(${rowIdxPandaClio})"><div class="testo-unito">${valClio==='/'||valClio==='.'?'':valClio}</div></td>`;
+// Precomputa il colore di ogni slot (per gestire "/" come continuazione)
+// Struttura: colori[data][nome][ora] = cls
+const classeSlot={};
+dateTrovate.forEach(data=>{
+    classeSlot[data]={};
+    nomi.forEach(nome=>{
+        classeSlot[data][nome]={};
+        let clsCorrente='';
+        orari.forEach(ora=>{
+            const valRaw=(mappa[data]?.[ora]?.[nome]||'').trim();
+            if(valRaw&&valRaw!=='/'&&valRaw!=='.'){
+                const tVal=valRaw.toUpperCase();
+                clsCorrente='bg-generic';
+                if(tVal.startsWith('MF'))clsCorrente='bg-mf-special';
+                else if(tVal.startsWith('MP'))clsCorrente='bg-mp-special';
+                else if(tVal==='PNM 1H'||tVal==='PNM 3H')clsCorrente='bg-pnm-special';
+                else if(tVal.startsWith('ATT'))clsCorrente='bg-att';
+                else if(tVal.startsWith('PNM'))clsCorrente='bg-pnm';
+                else if(tVal.startsWith('SAT'))clsCorrente='bg-sat';
+                else if(tVal.startsWith('M'))clsCorrente='bg-m';
+                classeSlot[data][nome][ora]={cls:clsCorrente,testo:valRaw,isCont:false};
+            }else if(valRaw==='/'||valRaw==='.'){
+                classeSlot[data][nome][ora]={cls:clsCorrente,testo:'',isCont:true};
+            }else{
+                clsCorrente='';
+                classeSlot[data][nome][ora]={cls:'',testo:'',isCont:false};
             }
-            html+=`<td class='sticky-left col-4 ${rigaBordoCls}'><div class="testo-unito" style="color:#555">${visualNome}</div></td>`;
-
-            orari.forEach(ora=>{
-                const slot=classeSlot[data][nome][ora];
-                const isPausa=(ora==='12:00');
-                const classiTd=`${rigaBordoCls} ${isPausa?'bordo-pausa':''}`;
-                const rowIdx=mappa[data]?.[ora]?.['_rowIndex']||null;
-                const clickEvt=rowIdx?`onclick="apriFormByIdx(${rowIdx})"` :'';
-                if(slot.cls){
-                    const contStyle=slot.isCont?'border-left:none!important;':'';
-                    html+=`<td class="${slot.cls} ${classiTd}" ${clickEvt} style="${contStyle}">`;
-                    if(!slot.isCont)html+=`<div class="testo-unito">${slot.testo}</div>`;
-                    html+=`</td>`;
-                }else{
-                    html+=`<td class="${classiTd}" ${clickEvt}></td>`;
-                }
-            });
-            html+="</tr>";
         });
     });
-    container.innerHTML=html+"</tbody></table>";
+});
+
+let html="<table class='cale-table'><thead><tr>";
+html+=`<th class='sticky-left col-1'>${COL_DATA}</th>`;
+if(HAS_PANDA)html+=`<th class='sticky-left col-2'>PANDA</th>`;
+if(HAS_CLIO)html+=`<th class='sticky-left col-3'>CLIO</th>`;
+html+=`<th class='sticky-left col-4'>TEC</th>`;
+orari.forEach(ora=>{html+=`<th class='col-time ${ora==="12:00"?"bordo-pausa":""}'>${ora}</th>`;});
+html+="</tr></thead><tbody>";
+
+if(dateTrovate.length===0){
+    html+="<tr><td colspan='99' style='padding:20px;color:#888;text-align:center;'>Nessuna data trovata. Verifica i nomi delle colonne nel foglio CALENDARIO.</td></tr>";
+}
+
+dateTrovate.forEach(data=>{
+    const valPanda=HAS_PANDA?(mappa[data]?.["08:00"]?.['PANDA']||'').trim():'';
+    const valClio=HAS_CLIO?(mappa[data]?.["08:00"]?.['CLIO']||'').trim():'';
+    const rowIdxPandaClio=mappa[data]?.["08:00"]?.['_rowIndex']||null;
+    nomi.forEach((nome,index)=>{
+        const visualNome=nome==='ANDREA'?'A':nome==='MATTEO'?'M':'S';
+        const rigaBordoCls=nome===nomi[0]?'bordo-giorno-sup':nome===nomi[nomi.length-1]?'bordo-giorno-inf':'';
+        html+="<tr>";
+        if(index===0){
+            html+=`<td rowspan="${nomi.length}" class='sticky-left col-1 bordo-giorno-sup bordo-giorno-inf'><div class="testo-unito">${data}</div></td>`;
+            if(HAS_PANDA)html+=`<td rowspan="${nomi.length}" class='sticky-left col-2 bordo-giorno-sup bordo-giorno-inf ${valPanda&&valPanda!=='/'&&valPanda!=='.'?'bg-panda':''}' onclick="if(${rowIdxPandaClio})apriFormByIdx(${rowIdxPandaClio})"><div class="testo-unito">${valPanda==='/'||valPanda==='.'?'':valPanda}</div></td>`;
+            if(HAS_CLIO)html+=`<td rowspan="${nomi.length}" class='sticky-left col-3 bordo-giorno-sup bordo-giorno-inf ${valClio&&valClio!=='/'&&valClio!=='.'?'bg-clio':''}' onclick="if(${rowIdxPandaClio})apriFormByIdx(${rowIdxPandaClio})"><div class="testo-unito">${valClio==='/'||valClio==='.'?'':valClio}</div></td>`;
+        }
+        html+=`<td class='sticky-left col-4 ${rigaBordoCls}'><div class="testo-unito" style="color:#555">${visualNome}</div></td>`;
+
+        // FIX: ogni slot è una cella separata con il proprio onclick → click su 9:30 apre la riga 9:30
+        orari.forEach(ora=>{
+            const slot=classeSlot[data][nome][ora];
+            const isPausa=(ora==='12:00');
+            const classiTd=`${rigaBordoCls} ${isPausa?'bordo-pausa':''}`;
+            const rowIdx=mappa[data]?.[ora]?.['_rowIndex']||null;
+            const clickEvt=rowIdx?`onclick="apriFormByIdx(${rowIdx})"` :'';
+            if(slot.cls){
+                // Cella colorata: prima del blocco ha testo, continuazioni no
+                const contStyle=slot.isCont?'border-left:none!important;':'';
+                html+=`<td class="${slot.cls} ${classiTd}" ${clickEvt} style="${contStyle}">`;
+                if(!slot.isCont)html+=`<div class="testo-unito">${slot.testo}</div>`;
+                html+=`</td>`;
+            }else{
+                html+=`<td class="${classiTd}" ${clickEvt}></td>`;
+            }
+        });
+        html+="</tr>";
+    });
+});
+container.innerHTML=html+"</tbody></table>";
+```
+
 }
 </script>
+
 </body>
 </html>
