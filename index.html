@@ -1093,22 +1093,30 @@ dateTrovate.forEach(data=>{
         html+=`<td class='sticky-left col-4 ${rigaBordoCls}'><div class="testo-unito" style="color:#555">${visualNome}</div></td>`;
 
         // FIX: ogni slot è una cella separata con il proprio onclick → click su 9:30 apre la riga 9:30
-        orari.forEach(ora=>{
-            const slot=classeSlot[data][nome][ora];
-            const isPausa=(ora==='12:00');
-            const classiTd=`${rigaBordoCls} ${isPausa?'bordo-pausa':''}`;
-            const rowIdx=mappa[data]?.[ora]?.['_rowIndex']||null;
-            const clickEvt=rowIdx?`onclick="apriFormByIdx(${rowIdx})"` :'';
-            if(slot.cls){
-                // Cella colorata: prima del blocco ha testo, continuazioni no
-                const contStyle=slot.isCont?'border-left:none!important;':'';
-                html+=`<td class="${slot.cls} ${classiTd}" ${clickEvt} style="${contStyle}">`;
-                if(!slot.isCont)html+=`<div class="testo-unito">${slot.testo}</div>`;
-                html+=`</td>`;
-            }else{
-                html+=`<td class="${classiTd}" ${clickEvt}></td>`;
-            }
-        });
+        // FIX: ogni slot è una cella separata con il proprio onclick → click su 9:30 apre la riga 9:30
+orari.forEach(ora => {
+    const slot = classeSlot[data][nome][ora];
+    const isPausa = (ora === '12:00');
+    const classiTd = `${rigaBordoCls} ${isPausa ? 'bordo-pausa' : ''}`;
+    const rowIdx = mappa[data]?.[ora]?.['_rowIndex'] || null;
+    
+    // Aggiunti spazi di sicurezza per evitare errori di parsing col backtick
+    const clickEvt = rowIdx ? `onclick="apriFormByIdx(${rowIdx})"` : "";
+    
+    if (slot.cls) {
+        // Cella colorata: prima del blocco ha testo, continuazioni no
+        const contStyle = slot.isCont ? "border-left:none!important;" : "";
+        html += `<td class="${slot.cls} ${classiTd}" ${clickEvt} style="${contStyle}">`;
+        
+        if (!slot.isCont) {
+            html += `<div class="testo-unito">${slot.testo}</div>`;
+        }
+        
+        html += `</td>`;
+    } else {
+        html += `<td class="${classiTd}" ${clickEvt}></td>`;
+    }
+});
         html+="</tr>";
     });
 });
