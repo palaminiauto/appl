@@ -969,160 +969,173 @@ btn.innerText=‘Salva’;btn.disabled=false;
 }
 
 // ── VISTA CALENDARIO ORIZZONTALE ──────────────────────────────
-// FIX: usa nomi colonna dinamici dal foglio CALENDARIO reale
-function mostraVistaOrizzontale(preservaScroll){
-_vistaOrizzontale=true;
-document.getElementById(‘tabella-container’).style.display=‘none’;
-document.getElementById(‘toolbar’).style.display=‘none’;
-const container=document.getElementById(‘vista-orizzontale-container’);
-container.style.display=‘block’;
-container.style.padding=‘0’;
-if(typeof chiudiDrawer===‘function’)chiudiDrawer();
+function mostraVistaOrizzontale(preservaScroll) {
+    _vistaOrizzontale = true;
+    document.getElementById('tabella-container').style.display = 'none';
+    document.getElementById('toolbar').style.display = 'none';
+    const container = document.getElementById('vista-orizzontale-container');
+    container.style.display = 'block';
+    container.style.padding = '0';
+    if (typeof chiudiDrawer === 'function') chiudiDrawer();
 
-```
-// Aggiorna sidebar attivo
-document.querySelectorAll('#sidebar button[data-foglio]').forEach(b=>b.classList.remove('active'));
-document.querySelector('#sidebar button[data-foglio="__CALE__"]')?.classList.add('active');
-document.getElementById('titolo-foglio').innerText='📅 Calendario';
+    document.querySelectorAll('#sidebar button[data-foglio]').forEach(b => b.classList.remove('active'));
+    const btnCale = document.querySelector('#sidebar button[data-foglio="__CALE__"]');
+    if (btnCale) btnCale.classList.add('active');
+    document.getElementById('titolo-foglio').innerText = '📅 Calendario';
 
-const foglio=DATABASE['CALENDARIO'];
-if(!foglio||!foglio.righe||!foglio.intestazioni){container.innerHTML='<div style="padding:20px;color:#888;">Foglio CALENDARIO non trovato o vuoto.</div>';return;}
+    const foglio = DATABASE['CALENDARIO'];
+    if (!foglio || !foglio.righe || !foglio.intestazioni) {
+        container.innerHTML = "<div style='padding:20px;color:#888;'>Foglio CALENDARIO non trovato o vuoto.</div>";
+        return;
+    }
 
-// FIX: usa i nomi reali delle colonne
-const intst=foglio.intestazioni;
-const COL_DATA=intst[0]||'DATA';   // prima colonna = data
-const COL_ORA=intst[1]||'ORA';    // seconda colonna = orario
-// Cerca dinamicamente le colonne tecnici e veicoli
-const TECNICI=['ANDREA','MATTEO','SARA'].filter(n=>intst.includes(n));
-const HAS_PANDA=intst.includes('PANDA');
-const HAS_CLIO=intst.includes('CLIO');
+    const intst = foglio.intestazioni;
+    const COL_DATA = intst[0] || 'DATA';
+    const COL_ORA = intst[1] || 'ORA';
+    const TECNICI = ['ANDREA', 'MATTEO', 'SARA'].filter(n => intst.includes(n));
+    const HAS_PANDA = intst.includes('PANDA');
+    const HAS_CLIO = intst.includes('CLIO');
 
-if(!foglio.righe.length){container.innerHTML='<div style="padding:20px;color:#888;">Nessuna riga nel CALENDARIO.</div>';return;}
+    if (!foglio.righe.length) {
+        container.innerHTML = "<div style='padding:20px;color:#888;'>Nessuna riga nel CALENDARIO.</div>";
+        return;
+    }
 
-// Orari
-const orari=[];
-for(let h=8;h<=12;h++){for(let m=0;m<60;m+=10){orari.push(`${h<10?'0'+h:h}:${m===0?'00':m}`);if(h===12&&m===0)break;}}
-orari.push("13:50");
-for(let h=14;h<=18;h++){for(let m=0;m<60;m+=10){orari.push(`${h<10?'0'+h:h}:${m===0?'00':m}`);if(h===18&&m===10)break;}}
+    const orari = [];
+    for (let h = 8; h <= 12; h++) {
+        for (let m = 0; m < 60; m += 10) {
+            orari.push((h < 10 ? '0' + h : h) + ':' + (m === 0 ? '00' : m));
+            if (h === 12 && m === 0) break;
+        }
+    }
+    orari.push("13:50");
+    for (let h = 14; h <= 18; h++) {
+        for (let m = 0; m < 60; m += 10) {
+            orari.push((h < 10 ? '0' + h : h) + ':' + (m === 0 ? '00' : m));
+            if (h === 18 && m === 10) break;
+        }
+    }
 
-// FIX: costruisce mappa usando i nomi colonna reali
-const mappa={};const dateSet=new Set();
-foglio.righe.forEach(riga=>{
-    const data=String(riga[COL_DATA]||'').trim();
-    const oraRaw=String(riga[COL_ORA]||'').trim();
-    if(!data||!oraRaw)return;
-    // Normalizza l'ora a HH:MM
-    const oraMatch=oraRaw.match(/(\d{1,2}):(\d{2})/);
-    if(!oraMatch)return;
-    const ora=oraMatch[1].padStart(2,'0')+':'+oraMatch[2];
-    dateSet.add(data);
-    if(!mappa[data])mappa[data]={};
-    if(!mappa[data][ora])mappa[data][ora]={};
-    TECNICI.forEach(t=>{mappa[data][ora][t]=String(riga[t]||'').trim();});
-    if(HAS_PANDA)mappa[data][ora]['PANDA']=String(riga['PANDA']||'').trim();
-    if(HAS_CLIO)mappa[data][ora]['CLIO']=String(riga['CLIO']||'').trim();
-    mappa[data][ora]['_rowIndex']=riga._rowIndex;
-});
+    const mappa = {};
+    const dateSet = new Set();
+    foglio.righe.forEach(riga => {
+        const data = String(riga[COL_DATA] || '').trim();
+        const oraRaw = String(riga[COL_ORA] || '').trim();
+        if (!data || !oraRaw) return;
+        const oraMatch = oraRaw.match(/(\d{1,2}):(\d{2})/);
+        if (!oraMatch) return;
+        const ora = oraMatch[1].padStart(2, '0') + ':' + oraMatch[2];
+        dateSet.add(data);
+        if (!mappa[data]) mappa[data] = {};
+        if (!mappa[data][ora]) mappa[data][ora] = {};
+        TECNICI.forEach(t => { mappa[data][ora][t] = String(riga[t] || '').trim(); });
+        if (HAS_PANDA) mappa[data][ora]['PANDA'] = String(riga['PANDA'] || '').trim();
+        if (HAS_CLIO) mappa[data][ora]['CLIO'] = String(riga['CLIO'] || '').trim();
+        mappa[data][ora]['_rowIndex'] = riga._rowIndex;
+    });
 
-// Aggiorna righe store per poter usare apriFormByIdx
-aggiornaRigheStore();
+    aggiornaRigheStore();
 
-const dateTrovate=Array.from(dateSet).sort((a,b)=>{
-    const tA=parsaDataPerSort(a)||convertiDataAssoluta(a);
-    const tB=parsaDataPerSort(b)||convertiDataAssoluta(b);
-    return tA-tB;
-});
-const nomi=TECNICI.length>0?TECNICI:['ANDREA','MATTEO','SARA'];
+    const dateTrovate = Array.from(dateSet).sort((a, b) => {
+        const tA = parsaDataPerSort(a) || convertiDataAssoluta(a);
+        const tB = parsaDataPerSort(b) || convertiDataAssoluta(b);
+        return tA - tB;
+    });
+    const nomi = TECNICI.length > 0 ? TECNICI : ['ANDREA', 'MATTEO', 'SARA'];
 
-// Precomputa il colore di ogni slot (per gestire "/" come continuazione)
-// Struttura: colori[data][nome][ora] = cls
-const classeSlot={};
-dateTrovate.forEach(data=>{
-    classeSlot[data]={};
-    nomi.forEach(nome=>{
-        classeSlot[data][nome]={};
-        let clsCorrente='';
-        orari.forEach(ora=>{
-            const valRaw=(mappa[data]?.[ora]?.[nome]||'').trim();
-            if(valRaw&&valRaw!=='/'&&valRaw!=='.'){
-                const tVal=valRaw.toUpperCase();
-                clsCorrente='bg-generic';
-                if(tVal.startsWith('MF'))clsCorrente='bg-mf-special';
-                else if(tVal.startsWith('MP'))clsCorrente='bg-mp-special';
-                else if(tVal==='PNM 1H'||tVal==='PNM 3H')clsCorrente='bg-pnm-special';
-                else if(tVal.startsWith('ATT'))clsCorrente='bg-att';
-                else if(tVal.startsWith('PNM'))clsCorrente='bg-pnm';
-                else if(tVal.startsWith('SAT'))clsCorrente='bg-sat';
-                else if(tVal.startsWith('M'))clsCorrente='bg-m';
-                classeSlot[data][nome][ora]={cls:clsCorrente,testo:valRaw,isCont:false};
-            }else if(valRaw==='/'||valRaw==='.'){
-                classeSlot[data][nome][ora]={cls:clsCorrente,testo:'',isCont:true};
-            }else{
-                clsCorrente='';
-                classeSlot[data][nome][ora]={cls:'',testo:'',isCont:false};
-            }
+    const classeSlot = {};
+    dateTrovate.forEach(data => {
+        classeSlot[data] = {};
+        nomi.forEach(nome => {
+            classeSlot[data][nome] = {};
+            let clsCorrente = '';
+            orari.forEach(ora => {
+                const valRaw = (mappa[data]?.[ora]?.[nome] || '').trim();
+                if (valRaw && valRaw !== '/' && valRaw !== '.') {
+                    const tVal = valRaw.toUpperCase();
+                    clsCorrente = 'bg-generic';
+                    if (tVal.startsWith('MF')) clsCorrente = 'bg-mf-special';
+                    else if (tVal.startsWith('MP')) clsCorrente = 'bg-mp-special';
+                    else if (tVal === 'PNM 1H' || tVal === 'PNM 3H') clsCorrente = 'bg-pnm-special';
+                    else if (tVal.startsWith('ATT')) clsCorrente = 'bg-att';
+                    else if (tVal.startsWith('PNM')) clsCorrente = 'bg-pnm';
+                    else if (tVal.startsWith('SAT')) clsCorrente = 'bg-sat';
+                    else if (tVal.startsWith('M')) clsCorrente = 'bg-m';
+                    classeSlot[data][nome][ora] = { cls: clsCorrente, testo: valRaw, isCont: false };
+                } else if (valRaw === '/' || valRaw === '.') {
+                    classeSlot[data][nome][ora] = { cls: clsCorrente, testo: '', isCont: true };
+                } else {
+                    clsCorrente = '';
+                    classeSlot[data][nome][ora] = { cls: '', testo: '', isCont: false };
+                }
+            });
         });
     });
-});
 
-let html="<table class='cale-table'><thead><tr>";
-html+=`<th class='sticky-left col-1'>${COL_DATA}</th>`;
-if(HAS_PANDA)html+=`<th class='sticky-left col-2'>PANDA</th>`;
-if(HAS_CLIO)html+=`<th class='sticky-left col-3'>CLIO</th>`;
-html+=`<th class='sticky-left col-4'>TEC</th>`;
-orari.forEach(ora=>{html+=`<th class='col-time ${ora==="12:00"?"bordo-pausa":""}'>${ora}</th>`;});
-html+="</tr></thead><tbody>";
+    let html = "<table class='cale-table'><thead><tr>";
+    html += "<th class='sticky-left col-1'>" + COL_DATA + "</th>";
+    if (HAS_PANDA) html += "<th class='sticky-left col-2'>PANDA</th>";
+    if (HAS_CLIO) html += "<th class='sticky-left col-3'>CLIO</th>";
+    html += "<th class='sticky-left col-4'>TEC</th>";
+    orari.forEach(ora => { html += "<th class='col-time " + (ora === "12:00" ? "bordo-pausa" : "") + "'>" + ora + "</th>"; });
+    html += "</tr></thead><tbody>";
 
-if(dateTrovate.length===0){
-    html+="<tr><td colspan='99' style='padding:20px;color:#888;text-align:center;'>Nessuna data trovata. Verifica i nomi delle colonne nel foglio CALENDARIO.</td></tr>";
-}
-
-dateTrovate.forEach(data=>{
-    const valPanda=HAS_PANDA?(mappa[data]?.["08:00"]?.['PANDA']||'').trim():'';
-    const valClio=HAS_CLIO?(mappa[data]?.["08:00"]?.['CLIO']||'').trim():'';
-    const rowIdxPandaClio=mappa[data]?.["08:00"]?.['_rowIndex']||null;
-    nomi.forEach((nome,index)=>{
-        const visualNome=nome==='ANDREA'?'A':nome==='MATTEO'?'M':'S';
-        const rigaBordoCls=nome===nomi[0]?'bordo-giorno-sup':nome===nomi[nomi.length-1]?'bordo-giorno-inf':'';
-        html+="<tr>";
-        if(index===0){
-            html+=`<td rowspan="${nomi.length}" class='sticky-left col-1 bordo-giorno-sup bordo-giorno-inf'><div class="testo-unito">${data}</div></td>`;
-            if(HAS_PANDA)html+=`<td rowspan="${nomi.length}" class='sticky-left col-2 bordo-giorno-sup bordo-giorno-inf ${valPanda&&valPanda!=='/'&&valPanda!=='.'?'bg-panda':''}' onclick="if(${rowIdxPandaClio})apriFormByIdx(${rowIdxPandaClio})"><div class="testo-unito">${valPanda==='/'||valPanda==='.'?'':valPanda}</div></td>`;
-            if(HAS_CLIO)html+=`<td rowspan="${nomi.length}" class='sticky-left col-3 bordo-giorno-sup bordo-giorno-inf ${valClio&&valClio!=='/'&&valClio!=='.'?'bg-clio':''}' onclick="if(${rowIdxPandaClio})apriFormByIdx(${rowIdxPandaClio})"><div class="testo-unito">${valClio==='/'||valClio==='.'?'':valClio}</div></td>`;
-        }
-        html+=`<td class='sticky-left col-4 ${rigaBordoCls}'><div class="testo-unito" style="color:#555">${visualNome}</div></td>`;
-
-        // FIX: ogni slot è una cella separata con il proprio onclick → click su 9:30 apre la riga 9:30
-        // FIX: ogni slot è una cella separata con il proprio onclick → click su 9:30 apre la riga 9:30
-orari.forEach(ora => {
-    const slot = classeSlot[data][nome][ora];
-    const isPausa = (ora === '12:00');
-    const classiTd = `${rigaBordoCls} ${isPausa ? 'bordo-pausa' : ''}`;
-    const rowIdx = mappa[data]?.[ora]?.['_rowIndex'] || null;
-    
-    // Aggiunti spazi di sicurezza per evitare errori di parsing col backtick
-    const clickEvt = rowIdx ? `onclick="apriFormByIdx(${rowIdx})"` : "";
-    
-    if (slot.cls) {
-        // Cella colorata: prima del blocco ha testo, continuazioni no
-        const contStyle = slot.isCont ? "border-left:none!important;" : "";
-        html += `<td class="${slot.cls} ${classiTd}" ${clickEvt} style="${contStyle}">`;
-        
-        if (!slot.isCont) {
-            html += `<div class="testo-unito">${slot.testo}</div>`;
-        }
-        
-        html += `</td>`;
-    } else {
-        html += `<td class="${classiTd}" ${clickEvt}></td>`;
+    if (dateTrovate.length === 0) {
+        html += "<tr><td colspan='99' style='padding:20px;color:#888;text-align:center;'>Nessuna data trovata. Verifica i nomi delle colonne.</td></tr>";
     }
-});
-        html+="</tr>";
-    });
-});
-container.innerHTML=html+"</tbody></table>";
-```
 
+    dateTrovate.forEach(data => {
+        const valPanda = HAS_PANDA ? (mappa[data]?.["08:00"]?.['PANDA'] || '').trim() : '';
+        const valClio = HAS_CLIO ? (mappa[data]?.["08:00"]?.['CLIO'] || '').trim() : '';
+        const rowIdxPandaClio = mappa[data]?.["08:00"]?.['_rowIndex'] || null;
+        
+        nomi.forEach((nome, index) => {
+            const visualNome = nome === 'ANDREA' ? 'A' : nome === 'MATTEO' ? 'M' : 'S';
+            const rigaBordoCls = nome === nomi[0] ? 'bordo-giorno-sup' : nome === nomi[nomi.length - 1] ? 'bordo-giorno-inf' : '';
+            html += "<tr>";
+            
+            if (index === 0) {
+                html += "<td rowspan='" + nomi.length + "' class='sticky-left col-1 bordo-giorno-sup bordo-giorno-inf'><div class='testo-unito'>" + data + "</div></td>";
+                
+                if (HAS_PANDA) {
+                    const bgP = (valPanda && valPanda !== '/' && valPanda !== '.') ? 'bg-panda' : '';
+                    const clkP = rowIdxPandaClio ? " onclick='apriFormByIdx(" + rowIdxPandaClio + ")'" : "";
+                    const txtP = (valPanda === '/' || valPanda === '.') ? '' : valPanda;
+                    html += "<td rowspan='" + nomi.length + "' class='sticky-left col-2 bordo-giorno-sup bordo-giorno-inf " + bgP + "'" + clkP + "><div class='testo-unito'>" + txtP + "</div></td>";
+                }
+                
+                if (HAS_CLIO) {
+                    const bgC = (valClio && valClio !== '/' && valClio !== '.') ? 'bg-clio' : '';
+                    const clkC = rowIdxPandaClio ? " onclick='apriFormByIdx(" + rowIdxPandaClio + ")'" : "";
+                    const txtC = (valClio === '/' || valClio === '.') ? '' : valClio;
+                    html += "<td rowspan='" + nomi.length + "' class='sticky-left col-3 bordo-giorno-sup bordo-giorno-inf " + bgC + "'" + clkC + "><div class='testo-unito'>" + txtC + "</div></td>";
+                }
+            }
+            
+            html += "<td class='sticky-left col-4 " + rigaBordoCls + "'><div class='testo-unito' style='color:#555'>" + visualNome + "</div></td>";
+
+            orari.forEach(ora => {
+                const slot = classeSlot[data][nome][ora];
+                const isPausa = (ora === '12:00');
+                const classiTd = rigaBordoCls + (isPausa ? " bordo-pausa" : "");
+                const rowIdx = mappa[data]?.[ora]?.['_rowIndex'] || null;
+                const clickEvt = rowIdx ? " onclick='apriFormByIdx(" + rowIdx + ")'" : "";
+                
+                if (slot.cls) {
+                    const contStyle = slot.isCont ? " style='border-left:none!important;'" : "";
+                    html += "<td class='" + slot.cls + " " + classiTd + "'" + clickEvt + contStyle + ">";
+                    if (!slot.isCont) {
+                        html += "<div class='testo-unito'>" + slot.testo + "</div>";
+                    }
+                    html += "</td>";
+                } else {
+                    html += "<td class='" + classiTd + "'" + clickEvt + "></td>";
+                }
+            });
+            html += "</tr>";
+        });
+    });
+    container.innerHTML = html + "</tbody></table>";
 }
 </script>
 
